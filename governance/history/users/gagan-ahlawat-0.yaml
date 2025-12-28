@@ -10,3 +10,9 @@ events:
 - timestamp: '2025-12-27T10:32:18+05:30'
   type: ACTIVITY_UPDATE
   details: Last activity updated to 2025-12-16
+- timestamp: '2025-12-28T22:36:52+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #243: Feat/update landing page UI (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/243)'
+- timestamp: '2025-12-28T22:36:55+05:30'
+  type: ACTIVITY_UPDATE
+  details: Last activity updated to 2025-12-28
