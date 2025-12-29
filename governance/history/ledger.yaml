@@ -388,3 +388,11 @@ events:
   type: PR_MERGED
   username: RAWx18
   details: 'PR #247: fixed an organization bug'
+- timestamp: '2025-12-29T14:30:51+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #248: chore(gov): automated governance registry & history sync'
+- timestamp: '2025-12-29T14:30:51+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #250: fixes'
