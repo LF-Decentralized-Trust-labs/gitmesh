@@ -388,3 +388,27 @@ events:
   type: PR_MERGED
   username: RAWx18
   details: 'PR #247: fixed an organization bug'
+- timestamp: '2026-01-03T05:51:37+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #248: chore(gov): automated governance registry & history sync'
+- timestamp: '2026-01-03T05:51:38+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #250: fixes'
+- timestamp: '2026-01-03T05:51:38+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #252: fixed docker issues'
+- timestamp: '2026-01-03T05:51:38+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #255: fixed envs'
+- timestamp: '2026-01-03T05:51:38+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #258: fixed automation page'
+- timestamp: '2026-01-03T05:51:38+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #261: Added DevSpace'
