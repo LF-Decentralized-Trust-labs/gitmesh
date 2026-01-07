@@ -421,3 +421,7 @@ events:
   type: PR_MERGED
   username: RAWx18
   details: 'PR #270: added fixes for devspace pages'
+- timestamp: '2026-01-07T05:54:50+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #271: chore(gov): automated governance registry & history sync'
