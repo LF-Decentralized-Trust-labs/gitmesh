@@ -421,3 +421,27 @@ events:
   type: PR_MERGED
   username: RAWx18
   details: 'PR #270: added fixes for devspace pages'
+- timestamp: '2026-01-14T18:54:13+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #271: chore(gov): automated governance registry & history sync'
+- timestamp: '2026-01-14T18:54:13+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #291: Fixed multiple issues '
+- timestamp: '2026-01-14T18:54:13+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #296: fixes issues'
+- timestamp: '2026-01-14T18:54:14+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #298: ip SSRF improper categorization in isPublic fixed'
+- timestamp: '2026-01-14T18:54:14+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #300: fixes'
+- timestamp: '2026-01-14T18:54:14+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #329: fixed some bugs'
