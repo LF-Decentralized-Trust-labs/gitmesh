@@ -458,3 +458,7 @@ events:
   username: DarshanCode2005
   details: 'PR #265: Fix Groups.io integration reliability: cookie refresh, error
     handling, and webhook validation'
+- timestamp: '2026-01-17T05:52:10+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #333: chore(gov): automated governance registry & history sync'
