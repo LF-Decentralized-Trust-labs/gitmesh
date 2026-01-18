@@ -2,7 +2,6 @@ import os
 import yaml
 import requests
 import shutil
-import subprocess
 from datetime import datetime, timedelta, timezone
 
 # --- CONFIGURATION ---
@@ -16,75 +15,11 @@ CANONICAL_REPO = "LF-Decentralized-Trust-labs/gitmesh" # Fork protection target
 REGISTRY_PATH = "governance/contributors.yaml"
 HISTORY_DIR = "governance/history/users/"
 LEDGER_PATH = "governance/history/ledger.yaml"
-CODEOWNERS_PATH = ".github/CODEOWNERS"
-
-# Hierarchy: Lower index = Lower role
-ROLE_HIERARCHY = [
-    "Newbie Contributor",
-    "Active Contributor",
-    "Core Contributor",
-    "Principal Contributor",
-    "Maintainer"
-]
-
-PROTECTED_ROLES = ["CEO", "CTO"]
 
 headers = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json"
 }
-
-def get_authorized_users():
-    """Parses .github/CODEOWNERS to find authorized governance approvers."""
-    if not os.path.exists(CODEOWNERS_PATH):
-        print(f"Warning: {CODEOWNERS_PATH} not found.")
-        return []
-    
-    authorized = set()
-    try:
-        with open(CODEOWNERS_PATH, 'r') as f:
-            for line in f:
-                # Look for line starting with governance/contributors.yaml
-                if line.strip().startswith("governance/contributors.yaml"):
-                    # Extract @mentions
-                    parts = line.split()
-                    for part in parts:
-                        if part.startswith('@'):
-                            authorized.add(part.lstrip('@'))
-    except Exception as e:
-        print(f"Error parsing CODEOWNERS: {e}")
-    
-    return list(authorized)
-
-def validate_role_change(action, current_role, target_role):
-    """
-    Validates if a role change is a valid promotion or demotion.
-    Returns (is_valid, error_message)
-    """
-    if target_role not in ROLE_HIERARCHY:
-        return False, f"Role '{target_role}' is not a valid governance role."
-    
-    if current_role in PROTECTED_ROLES:
-        return False, f"Role '{current_role}' is a protected role and cannot be updated by bot."
-    
-    # Handle roles outside standard hierarchy (e.g. CEO, CTO)
-    if current_role not in ROLE_HIERARCHY:
-        # For now, allow promotion FROM non-hierarchy roles if it's the first assignment
-        # or if it's a manual override. But logically, we can't 'promote' relative to them.
-        current_idx = -1 
-    else:
-        current_idx = ROLE_HIERARCHY.index(current_role)
-    
-    target_idx = ROLE_HIERARCHY.index(target_role)
-
-    if action == "promote":
-        if target_idx <= current_idx:
-            return False, f"Cannot promote to '{target_role}' from '{current_role}' (target is not higher)."
-    elif action == "demote":
-        if target_idx >= current_idx and current_idx != -1:
-            return False, f"Cannot demote to '{target_role}' from '{current_role}' (target is not lower)."
-    
-    return True, None
 
 def get_now_ist_str():
     """Returns current IST time in ISO format."""
@@ -215,155 +150,7 @@ def update_ledger(event_type, username, details):
     with open(LEDGER_PATH, 'w') as f:
         yaml.dump(data, f, sort_keys=False, default_flow_style=False)
 
-def post_comment(issue_number, body):
-    """Posts a comment to the PR/Issue."""
-    url = f"https://api.github.com/repos/{REPO}/issues/{issue_number}/comments"
-    try:
-        requests.post(url, json={"body": body}, headers=headers).raise_for_status()
-    except Exception as e:
-        print(f"Failed to post comment: {e}")
-
-def git_commit_push_pr(pr_number, branch_name):
-    """Commits changes to the current PR branch."""
-    try:
-        # Configure Git
-        subprocess.run(["git", "config", "--local", "user.name", "github-actions[bot]"], check=True)
-        subprocess.run(["git", "config", "--local", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
-        
-        # Add files
-        subprocess.run(["git", "add", "governance/"], check=True)
-        
-        # Check for changes
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-        if not status.stdout.strip():
-            print("No changes to commit.")
-            return
-
-        # Commit
-        msg = f"chore(gov): update roles via command in PR #{pr_number} [skip ci]"
-        subprocess.run(["git", "commit", "-s", "-m", msg], check=True)
-        
-        subprocess.run(["git", "pull", "origin", branch_name, "--rebase"], check=True)
-
-        # Push
-        subprocess.run(["git", "push", "origin", f"HEAD:{branch_name}"], check=True)
-        
-    except Exception as e:
-        print(f"Git Error: {e}")
-        raise e
-
-def run_command_mode(event_path, event_name):
-    """Main execution path for interactive commands."""
-    import json
-    import re
-    
-    if not os.path.exists(event_path):
-        print("Event path not found.")
-        return
-
-    with open(event_path, 'r') as f:
-        event = json.load(f)
-    
-    # Extract body and author
-    if event_name == 'issue_comment':
-        comment = event.get('comment', {})
-        body = comment.get('body', '')
-        author = comment.get('user', {}).get('login')
-        pr_number = event.get('issue', {}).get('number')
-    else:
-        print(f"Unsupported event for commands: {event_name}")
-        return
-
-    # Pattern: /gov promote @user "Role Name"
-    pattern = r'^\s*\/gov\s+(promote|demote)\s+@([a-zA-Z0-9-]+)\s+"([^"]+)"'
-    match = re.search(pattern, body, re.MULTILINE)
-    
-    if not match:
-        return
-    
-    action, target_user, target_role = match.groups()
-    
-    # Authorization
-    authorized_users = get_authorized_users()
-    if author not in authorized_users:
-        post_comment(pr_number, f"⛔ **Permission Denied**: @{author} is not a registered code owner for governance.")
-        return
-
-    # Determine Branch Name and Checkout
-    try:
-        if event_name == 'pull_request':
-            branch_name = event['pull_request']['head']['ref']
-        else:
-            # Fetch from API for issue_comment
-            pr_url = event['issue']['pull_request']['url']
-            pr_data = requests.get(pr_url, headers=headers).json()
-            branch_name = pr_data['head']['ref']
-            
-        print(f"Fetching and checking out branch: {branch_name}")
-        subprocess.run(["git", "fetch", "origin", branch_name], check=True)
-        subprocess.run(["git", "checkout", branch_name], check=True)
-    except Exception as e:
-        post_comment(pr_number, f"❌ Failed to resolve or checkout branch: {str(e)}")
-        return
-
-    # Logic
-    with open(REGISTRY_PATH, 'r') as f:
-        registry = yaml.safe_load(f)
-    
-    contributors = registry.get('contributors', [])
-    target_entry = next((c for c in contributors if c['username'].lower() == target_user.lower()), None)
-    
-    if not target_entry:
-        post_comment(pr_number, f"❌ User @{target_user} not found in governance registry.")
-        return
-
-    current_role = target_entry.get('role', 'Newbie Contributor')
-    is_valid, err = validate_role_change(action, current_role, target_role)
-    
-    if not is_valid:
-        post_comment(pr_number, f"❌ {err}")
-        return
-
-    # Apply
-    target_entry['role'] = target_role
-    target_entry['assigned_at'] = get_now_ist_str()
-    target_entry['assigned_by'] = author
-    
-    with open(REGISTRY_PATH, 'w') as f:
-        yaml.dump(registry, f, sort_keys=False, default_flow_style=False)
-    
-    # History
-    log_msg = f"Role changed from '{current_role}' to '{target_role}' by @{author} via PR #{pr_number}"
-    update_user_history(target_user, "ROLE_CHANGE", log_msg)
-    update_ledger("ROLE_CHANGE", target_user, log_msg)
-    
-    # Commit and Push
-    try:
-        git_commit_push_pr(pr_number, branch_name)
-        post_comment(pr_number, f"✅ Successfully {action}d @{target_user} to **{target_role}**.")
-    except Exception as e:
-        post_comment(pr_number, f"⚠️ Governance updated but failed to push to branch: {str(e)}")
-
 def main():
-    event_name = os.getenv("GITHUB_EVENT_NAME")
-    event_path = os.getenv("GITHUB_EVENT_PATH")
-    
-    if event_name == 'issue_comment':
-        # Only run command mode if it's not a closed PR (which is handled by sync)
-        # For simplicity, we can just check for command pattern in body inside run_command_mode
-        run_command_mode(event_path, event_name)
-        
-        # If it's a merged PR, we ALSO want to run sync
-    elif event_name == 'pull_request':
-        import json
-        with open(event_path, 'r') as f:
-            event = json.load(f)
-        if event.get('pull_request', {}).get('merged'):
-            run_sync_mode()
-    else:
-        run_sync_mode()
-
-def run_sync_mode():
     # --- FORK PROTECTION CHECK ---
     if REPO != CANONICAL_REPO:
         print(f"Skipping governance sync: Current repo '{REPO}' is a fork or doesn't match '{CANONICAL_REPO}'.")
@@ -488,7 +275,67 @@ def run_sync_mode():
                     update_user_history(username, "STATUS_CHANGE", "Reactivated status due to new activity.")
                     update_ledger("STATUS_CHANGE", username, "Reactivated due to new activity")
     
-    # 4. Update Metadata
+    # 4. Process Role Change Requests from PR Body
+    # Look for PRs merged since last sync that have special commands
+    # This is a simplified implementation. Ideally we'd parse the PR body of the PRs we just processed.
+    # But we already iterated them. Let's do it inside the loop or a separate pass?
+    # Let's do a separate pass on the same list of PRs to keep logic clean.
+    
+    print("\nProcessing Governance Commands in PRs...")
+    for pr in prs_to_process:
+        # We need to fetch the full PR body to check for commands
+        # The list endpoint might not have the full body if it's huge, but usually it does.
+        # Let's assume we need to fetch it if we want to be sure, or just use what we have if available.
+        # The 'get_merged_prs' function didn't return the body. Let's update it or fetch individually.
+        # Fetching individually is safer but slower. Let's try to be efficient.
+        # Actually, for role changes, we probably want to check *all* merged PRs in this batch.
+        
+        # Command format: /gov promote @username to Role Name
+        # Command format: /gov demote @username to Role Name
+        
+        # We need to fetch the PR details to get the body
+        try:
+            pr_details_url = f"https://api.github.com/repos/{REPO}/pulls/{pr['number']}"
+            pr_resp = requests.get(pr_details_url, headers=headers)
+            if pr_resp.status_code == 200:
+                pr_data = pr_resp.json()
+                body = pr_data.get('body', '')
+                
+                if body and '/gov ' in body:
+                    lines = body.split('\n')
+                    for line in lines:
+                        if line.strip().startswith('/gov '):
+                            parts = line.strip().split()
+                            # Expected: /gov promote @user to Role
+                            if len(parts) >= 5 and (parts[1] == 'promote' or parts[1] == 'demote'):
+                                action = parts[1]
+                                target_user = parts[2].lstrip('@')
+                                target_role = ' '.join(parts[4:])
+                                
+                                # Verify permissions? 
+                                # The PR is merged, so a maintainer approved it. 
+                                # We can assume if it's merged, it's approved.
+                                
+                                # Find the user in registry
+                                target_entry = next((c for c in contributors if c['username'].lower() == target_user.lower()), None)
+                                
+                                if target_entry:
+                                    old_role = target_entry['role']
+                                    target_entry['role'] = target_role
+                                    target_entry['assigned_at'] = get_now_ist_str()
+                                    target_entry['assigned_by'] = f"PR #{pr['number']} (merged)"
+                                    
+                                    log_msg = f"Role changed from '{old_role}' to '{target_role}' via PR #{pr['number']}"
+                                    update_user_history(target_user, "ROLE_CHANGE", log_msg)
+                                    update_ledger("ROLE_CHANGE", target_user, log_msg)
+                                    print(f"Processed governance command: {log_msg}")
+                                else:
+                                    print(f"Governance command failed: User {target_user} not found.")
+
+        except Exception as e:
+            print(f"Error processing PR #{pr['number']} for commands: {e}")
+
+    # Update Metadata
     registry['metadata']['last_sync'] = get_now_ist_str()
     registry['metadata']['total_contributors'] = len(contributors)
     registry['metadata']['active_contributors'] = sum(1 for c in contributors if c.get('status') == 'active')

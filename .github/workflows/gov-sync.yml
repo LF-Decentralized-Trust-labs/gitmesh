@@ -13,8 +13,8 @@ on:
     - cron: '0 0 * * *' 
   pull_request:
     types: [closed]
-  issue_comment:
-    types: [created]
+    paths:
+      - 'governance/contributors.yaml'
   push:
     branches:
       - main
@@ -31,8 +31,7 @@ jobs:
       (github.event_name == 'schedule' || 
        github.event_name == 'workflow_dispatch' ||
        github.event_name == 'push' ||
-       github.event_name == 'issue_comment' ||
-       (github.event_name == 'pull_request')) &&
+       (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) &&
       (github.event.head_commit.author.email != '41898282+github-actions[bot]@users.noreply.github.com' || 
        github.event.head_commit.author.email == null) &&
       (github.event.pull_request.title != 'chore(gov): automated governance registry & history sync' ||
@@ -41,7 +40,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write 
-      issues: write
     
     steps:
       - name: Checkout Code
@@ -61,17 +59,10 @@ jobs:
       - name: Execute Governance Logic
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: python .github/scripts/governance_engine.py
 
       # Create a PR with updates instead of pushing directly to main
       - name: Commit and Create/Update PR
-        if: |
-          github.event_name == 'schedule' || 
-          github.event_name == 'workflow_dispatch' ||
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
         env:
           GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
         run: |
@@ -112,7 +103,7 @@ jobs:
           
           # Extract Code Owners from .github/CODEOWNERS for notification
           CODE_OWNERS=""
-          if [ "${{ github.repository }}" == "LF-Decentralized-Trust-labs/gitmesh" ] && [ -f ".github/CODEOWNERS" ]; then
+          if [ -f ".github/CODEOWNERS" ]; then
             # Find line matching governance/contributors.yaml and extract @usernames
             CODE_OWNERS=$(grep "governance/contributors.yaml" .github/CODEOWNERS | grep -o "@[a-zA-Z0-9-]*" | tr '\n' ' ')
           fi
