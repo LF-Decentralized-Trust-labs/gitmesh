@@ -174,3 +174,10 @@ events:
 - timestamp: '2026-01-23T07:43:58+05:30'
   type: PR_MERGED
   details: 'Merged PR #358: fix updates (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/358)'
+- timestamp: '2026-01-30T07:44:57+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #359: chore(gov): automated governance registry & history sync
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/359)'
+- timestamp: '2026-01-30T07:44:58+05:30'
+  type: ACTIVITY_UPDATE
+  details: Last activity updated to 2026-01-29

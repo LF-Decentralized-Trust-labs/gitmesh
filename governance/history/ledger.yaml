@@ -459,3 +459,11 @@ events:
   username: Sharkyii
   details: 'Role changed from ''Newbie Contributor'' to ''Active Contributor'' by
     @RAWx18 via PR #359'
+- timestamp: '2026-01-30T07:44:57+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #359: chore(gov): automated governance registry & history sync'
+- timestamp: '2026-01-30T07:44:57+05:30'
+  type: PR_MERGED
+  username: focuzd
+  details: 'PR #360: Fix inifite looping in steward bot'
