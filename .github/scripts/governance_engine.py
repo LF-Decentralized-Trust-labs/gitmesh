@@ -159,17 +159,31 @@ def get_merged_prs(since_date=None, per_page=100):
             
     return all_prs
 
-def get_last_activity_date(username):
-    """Queries GitHub Events API to find the user's latest public action."""
-    url = f"https://api.github.com/users/{username}/events/public"
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            events = response.json()
-            if events and isinstance(events, list):
-                return events[0]['created_at'].split('T')[0]
-    except Exception as e:
-        print(f"Error fetching activity for {username}: {e}")
+def get_last_activity_date(username, max_pages=3):
+    """Queries GitHub Events API to find the user's latest public action in the target repository."""
+    for page in range(1, max_pages + 1):
+        url = f"https://api.github.com/users/{username}/events/public?per_page=100&page={page}"
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                events = response.json()
+                if not events or not isinstance(events, list):
+                    break
+                
+                for event in events:
+                    repo_name = event.get('repo', {}).get('name')
+                    # event['repo']['name'] usually returns 'owner/repo' which matches the REPO format.
+                    if repo_name == REPO:
+                        return event['created_at'].split('T')[0]
+                
+                if len(events) < 100:
+                    break
+            else:
+                break
+        except Exception as e:
+            print(f"Error fetching activity for {username} on page {page}: {e}")
+            break
+            
     return None
 
 def update_user_history(username, event_type, details, is_bot=False):
