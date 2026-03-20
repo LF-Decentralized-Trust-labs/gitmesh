@@ -44,3 +44,24 @@ events:
 - timestamp: '2026-01-22T15:12:46+05:30'
   type: ACTIVITY_UPDATE
   details: Last activity updated to 2026-01-21
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #363: feat: run Ollama natively on host instead of Docker container
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/363)'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #365: chore: remove Kafka from Docker Compose and codebase (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/365)'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #366: chore: update tracing lockfile properly with --lockfile-only
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/366)'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #367: chore: remove OpenSearch integration and related configurations
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/367)'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #371: Revise README with updated GitMesh features (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/371)'
+- timestamp: '2026-03-20T07:44:43+05:30'
+  type: ACTIVITY_UPDATE
+  details: Last activity updated to 2026-03-17

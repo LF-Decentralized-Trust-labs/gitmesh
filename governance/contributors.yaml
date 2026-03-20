@@ -2,7 +2,7 @@ metadata:
   version: 1.0.0
   total_contributors: 12
   active_contributors: 7
-  last_sync: '2026-01-23T07:44:03+05:30'
+  last_sync: '2026-03-20T07:44:47+05:30'
 contributors:
 - username: rawx18
   role: CEO
@@ -10,7 +10,7 @@ contributors:
   status: active
   assigned_by: EE-board
   assigned_at: '2025-12-01T00:01:00'
-  last_activity: '2026-01-22'
+  last_activity: '2026-03-16'
   notes: Lab Leader CE, Final authority on enterprise decisions.
 - username: ronit-raj9
   role: Maintainer
@@ -18,7 +18,7 @@ contributors:
   status: Inactive
   assigned_by: rawx18
   assigned_at: '2025-12-01T00:01:00'
-  last_activity: '2026-01-21'
+  last_activity: '2026-03-17'
   notes: CE maintainer; own signals subsystem.
 - username: parvm1102
   role: Maintainer
@@ -26,7 +26,7 @@ contributors:
   status: active
   assigned_by: rawx18
   assigned_at: '2025-12-01T00:01:00'
-  last_activity: '2026-01-11'
+  last_activity: '2026-03-19'
   notes: CE maintainer; handles community PR triage.
 - username: ruriazz
   role: Newbie Contributor
@@ -50,7 +50,7 @@ contributors:
   status: active
   assigned_by: GitMesh-Steward-bot
   assigned_at: '2025-10-19T10:59:11Z'
-  last_activity: '2026-01-06'
+  last_activity: '2026-03-19'
   notes: Automatically onboarded after first merged PR.
 - username: focuzd
   role: Core Contributor
@@ -58,7 +58,7 @@ contributors:
   status: active
   assigned_by: RAWx18
   assigned_at: '2026-01-23T12:11:38+05:30'
-  last_activity: '2026-01-22'
+  last_activity: '2026-02-20'
   notes: Automatically onboarded after first merged PR.
 - username: SK8-infi
   role: Newbie Contributor
@@ -66,7 +66,7 @@ contributors:
   status: Inactive
   assigned_by: GitMesh-Steward-bot
   assigned_at: '2025-10-24T13:57:43Z'
-  last_activity: '2026-01-22'
+  last_activity: '2026-03-17'
   notes: Automatically onboarded after first merged PR.
 - username: berkaymuratt
   role: Newbie Contributor
@@ -74,7 +74,7 @@ contributors:
   status: Inactive
   assigned_by: GitMesh-Steward-bot
   assigned_at: '2025-10-25T16:08:25Z'
-  last_activity: '2025-12-06'
+  last_activity: '2026-03-18'
   notes: Automatically onboarded after first merged PR.
 - username: Sharkyii
   role: Active Contributor
@@ -82,15 +82,15 @@ contributors:
   status: active
   assigned_by: RAWx18
   assigned_at: '2026-01-23T12:14:31+05:30'
-  last_activity: '2026-01-22'
+  last_activity: '2026-03-19'
   notes: Automatically onboarded after first merged PR.
 - username: jason2000-cpu
   role: Newbie Contributor
   team: CE
-  status: Inactive
+  status: inactive
   assigned_by: GitMesh-Steward-bot
   assigned_at: '2025-11-05T09:08:14Z'
-  last_activity: '2025-11-29'
+  last_activity: '2025-07-15'
   notes: Automatically onboarded after first merged PR.
 - username: DarshanCode2005
   role: Newbie Contributor
@@ -98,5 +98,5 @@ contributors:
   status: active
   assigned_by: GitMesh-Steward-bot
   assigned_at: '2026-01-14T15:00:37Z'
-  last_activity: '2026-01-22'
+  last_activity: '2026-03-19'
   notes: Automatically onboarded after first merged PR.

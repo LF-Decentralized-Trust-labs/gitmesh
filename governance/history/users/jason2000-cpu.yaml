@@ -10,3 +10,9 @@ events:
 - timestamp: '2025-12-27T10:32:19+05:30'
   type: ACTIVITY_UPDATE
   details: Last activity updated to 2025-11-29
+- timestamp: '2026-03-20T07:44:46+05:30'
+  type: ACTIVITY_UPDATE
+  details: Last activity updated to 2025-07-15
+- timestamp: '2026-03-20T07:44:46+05:30'
+  type: STATUS_CHANGE
+  details: Flagged as inactive due to 90 days of no activity.

@@ -459,3 +459,35 @@ events:
   username: Sharkyii
   details: 'Role changed from ''Newbie Contributor'' to ''Active Contributor'' by
     @RAWx18 via PR #359'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #359: chore(gov): automated governance registry & history sync'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: focuzd
+  details: 'PR #360: Fix inifite looping in steward bot'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #363: feat: run Ollama natively on host instead of Docker container'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #365: chore: remove Kafka from Docker Compose and codebase'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #366: chore: update tracing lockfile properly with --lockfile-only'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #367: chore: remove OpenSearch integration and related configurations'
+- timestamp: '2026-03-20T07:44:41+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #371: Revise README with updated GitMesh features'
+- timestamp: '2026-03-20T07:44:46+05:30'
+  type: STATUS_CHANGE
+  username: jason2000-cpu
+  details: Marked as inactive (90+ days)
