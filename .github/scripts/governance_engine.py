@@ -160,17 +160,68 @@ def get_merged_prs(since_date=None, per_page=100):
     return all_prs
 
 def get_last_activity_date(username):
-    """Queries GitHub Events API to find the user's latest public action."""
-    url = f"https://api.github.com/users/{username}/events/public"
+    """Queries GitHub Search API to find the user's latest action in this repository."""
+    repo = REPO or CANONICAL_REPO
+    dates = []
+
+    # Commits authored in this repo
     try:
-        response = requests.get(url, headers=headers)
+        url = f"https://api.github.com/repos/{repo}/commits"
+        response = requests.get(url, headers=headers, params={"author": username, "per_page": 1})
         if response.status_code == 200:
-            events = response.json()
-            if events and isinstance(events, list):
-                return events[0]['created_at'].split('T')[0]
+            commits = response.json()
+            if commits and isinstance(commits, list):
+                date_str = commits[0].get("commit", {}).get("author", {}).get("date", "")
+                if date_str:
+                    dates.append(date_str.split("T")[0])
     except Exception as e:
-        print(f"Error fetching activity for {username}: {e}")
-    return None
+        print(f"Error fetching commits for {username}: {e}")
+
+    # Pull requests opened/merged in this repo
+    try:
+        url = f"https://api.github.com/repos/{repo}/pulls"
+        response = requests.get(url, headers=headers, params={"state": "all", "per_page": 100})
+        if response.status_code == 200:
+            prs = response.json()
+            if prs and isinstance(prs, list):
+                user_prs = [p for p in prs if p.get("user", {}).get("login", "").lower() == username.lower()]
+                if user_prs:
+                    latest = max(
+                        (p.get("updated_at") or p.get("created_at") for p in user_prs),
+                        default=None
+                    )
+                    if latest:
+                        dates.append(latest.split("T")[0])
+    except Exception as e:
+        print(f"Error fetching PRs for {username}: {e}")
+
+    # Issue/PR comments in this repo
+    try:
+        url = f"https://api.github.com/repos/{repo}/issues/comments"
+        response = requests.get(url, headers=headers, params={"per_page": 100, "sort": "updated", "direction": "desc"})
+        if response.status_code == 200:
+            comments = response.json()
+            if comments and isinstance(comments, list):
+                user_comments = [c for c in comments if c.get("user", {}).get("login", "").lower() == username.lower()]
+                if user_comments:
+                    dates.append(user_comments[0]["updated_at"].split("T")[0])
+    except Exception as e:
+        print(f"Error fetching comments for {username}: {e}")
+
+    # PR review comments in this repo
+    try:
+        url = f"https://api.github.com/repos/{repo}/pulls/comments"
+        response = requests.get(url, headers=headers, params={"per_page": 100, "sort": "updated", "direction": "desc"})
+        if response.status_code == 200:
+            review_comments = response.json()
+            if review_comments and isinstance(review_comments, list):
+                user_reviews = [c for c in review_comments if c.get("user", {}).get("login", "").lower() == username.lower()]
+                if user_reviews:
+                    dates.append(user_reviews[0]["updated_at"].split("T")[0])
+    except Exception as e:
+        print(f"Error fetching review comments for {username}: {e}")
+
+    return max(dates) if dates else None
 
 def update_user_history(username, event_type, details, is_bot=False):
     """Maintains an append-only audit log for each contributor."""
