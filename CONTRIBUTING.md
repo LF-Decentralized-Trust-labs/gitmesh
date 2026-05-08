@@ -35,8 +35,9 @@ Pull requests without valid sign-off will be rejected.
 
 ### Prerequisites
 
-* Node.js (LTS)
-* Docker + Docker Compose
+* Node.js 20+
+* pnpm 9+ (or Corepack-enabled Node)
+* Docker + Docker Compose (optional, for quickstart image or local Postgres)
 * Git
 
 ### Setup
@@ -44,34 +45,33 @@ Pull requests without valid sign-off will be rejected.
 ```bash
 git clone <your-fork-url>
 cd gitmesh
-cd scripts
-./cli clean-dev
+pnpm install --no-frozen-lockfile
+pnpm build
+pnpm dev
 ```
 
-### Environment files
-
-Both frontend and backend require the following environment configuration files:
-
-**Backend & Frontend `.env` files:**
-* `.env.dist.local` - Distribution template for local development
-* `.env.dist.composed` - Distribution template for Docker Compose
-* `.env.override.local` - Local overrides (for local development)
-* `.env.override.composed` - Overrides for Docker Compose
-
-The application runs at:
-
-```
-http://localhost:8081
-```
-
-### Running fewer services
-
-To reduce resource usage:
+Default local URL:
 
 ```bash
-./cli scaffold up
-DEV=1 ./cli service frontend up
-./cli service api up
+http://localhost:3100
+```
+
+Database mode notes:
+
+- Leave `DATABASE_URL` unset to use embedded PostgreSQL at `~/.gitmesh-agents/instances/default/db/`
+- Use `pnpm db:up` only if you want Docker Postgres (`localhost:5433`)
+
+### Docker quickstart (optional)
+
+```bash
+docker compose -f docker-compose.quickstart.yml up --build
+```
+
+If your build fails with `TS5023` filter-option errors, pull latest and rebuild:
+
+```bash
+docker compose -f docker-compose.quickstart.yml build --no-cache
+docker compose -f docker-compose.quickstart.yml up
 ```
 
 ---
@@ -126,6 +126,11 @@ Always review generated code carefully before committing.
 * Explain what changed and why
 * Include testing or reproduction steps when relevant
 * Avoid committing local configs, symlinks, or temp files
+* Before requesting review, run:
+  * `pnpm check:tokens`
+  * `pnpm -r typecheck`
+  * `pnpm test:run`
+  * `pnpm build`
 
 ---
 

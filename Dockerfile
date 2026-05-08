@@ -26,7 +26,7 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
 COPY . .
-RUN pnpm -r build --filter='...@gitmesh/server' --filter='...@gitmesh/agents-ui'
+RUN pnpm -r --filter='...@gitmesh/server' --filter='...@gitmesh/agents-ui' build
 COPY ui/dist server/dist/ui-dist
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
 

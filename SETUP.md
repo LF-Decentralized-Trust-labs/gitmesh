@@ -160,6 +160,12 @@ Recommended for one-command Docker deployment.
    ```
 
    First build takes ~2-3 minutes. Subsequent runs are faster.
+   If you previously saw `TS5023: Unknown compiler option '--filter=...@gitmesh/server'`,
+   update to the latest `Dockerfile` and rebuild with:
+   ```bash
+   docker compose -f docker-compose.quickstart.yml build --no-cache
+   docker compose -f docker-compose.quickstart.yml up
+   ```
 
 3. **Access the application:**
    - Open `http://localhost:3100` in your browser
@@ -341,6 +347,13 @@ Expected response (shape may include extra fields):
 
 - In **`local_trusted`** (default local dev), listing projects may succeed without credentials depending on middleware.
 - In **`authenticated`** / **`GITMESH_DEPLOYMENT_MODE=authenticated`** (Docker quickstart builds this pattern), **`/api/projects`** expects a session or bearer token — use the UI or **`pnpm gitmesh-agents project --help`** for client flows rather than naive `curl` alone.
+
+**Quickstart compose smoke check:**
+```bash
+docker compose -f docker-compose.quickstart.yml up --build -d
+curl http://localhost:3100/api/health
+docker compose -f docker-compose.quickstart.yml down
+```
 
 ---
 
