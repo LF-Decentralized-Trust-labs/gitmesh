@@ -54,3 +54,7 @@ events:
   type: PR_MERGED
   username: Copilot
   details: 'PR #209: fix: handle missing labels in governance sync workflow'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: dependabot[bot]
+  details: 'PR #379: Bump drizzle-orm from 0.38.4 to 0.45.2 in /server'

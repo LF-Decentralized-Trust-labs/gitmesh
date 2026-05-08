@@ -459,3 +459,55 @@ events:
   username: Sharkyii
   details: 'Role changed from ''Newbie Contributor'' to ''Active Contributor'' by
     @RAWx18 via PR #359'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #359: chore(gov): automated governance registry & history sync'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: focuzd
+  details: 'PR #360: Fix inifite looping in steward bot'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #363: feat: run Ollama natively on host instead of Docker container'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #365: chore: remove Kafka from Docker Compose and codebase'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #366: chore: update tracing lockfile properly with --lockfile-only'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #367: chore: remove OpenSearch integration and related configurations'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #371: Revise README with updated GitMesh features'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: RAWx18
+  details: 'PR #375: updated readme'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #377: chore!: pivot GitMesh codebase to LF-aligned monorepo layout'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #378: Update README.md'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #381: fix: track lib/data package and narrow data/ gitignore'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #382: docs: refresh setup guide and add governance/public assets'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: PR_MERGED
+  username: Ronit-Raj9
+  details: 'PR #383: docs: streamline .env.example for local dev'

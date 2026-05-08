@@ -44,3 +44,42 @@ events:
 - timestamp: '2026-01-22T15:12:46+05:30'
   type: ACTIVITY_UPDATE
   details: Last activity updated to 2026-01-21
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #363: feat: run Ollama natively on host instead of Docker container
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/363)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #365: chore: remove Kafka from Docker Compose and codebase (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/365)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #366: chore: update tracing lockfile properly with --lockfile-only
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/366)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #367: chore: remove OpenSearch integration and related configurations
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/367)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #371: Revise README with updated GitMesh features (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/371)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #377: chore!: pivot GitMesh codebase to LF-aligned monorepo
+    layout (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/377)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #378: Update README.md (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/378)'
+- timestamp: '2026-05-08T07:47:03+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #381: fix: track lib/data package and narrow data/ gitignore
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/381)'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #382: docs: refresh setup guide and add governance/public assets
+    (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/382)'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: PR_MERGED
+  details: 'Merged PR #383: docs: streamline .env.example for local dev (https://github.com/LF-Decentralized-Trust-labs/gitmesh/pull/383)'
+- timestamp: '2026-05-08T07:47:04+05:30'
+  type: ACTIVITY_UPDATE
+  details: Last activity updated to 2026-05-07
