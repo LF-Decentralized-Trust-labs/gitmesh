@@ -53,7 +53,7 @@ function resolveDbUrl(config: GitmeshConfig | null): string | null {
   }
   if (config?.database.mode === "embedded-postgres") {
     const port = config.database.embeddedPostgresPort ?? DEFAULT_EMBEDDED_PORT;
-    return `postgres://gitmesh:gitmesh@127.0.0.1:${port}/gitmesh-agents`;
+    return `postgres://gitmesh:gitmesh@127.0.0.1:${port}/gitmesh`;
   }
   return null;
 }

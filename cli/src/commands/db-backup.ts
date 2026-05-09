@@ -59,7 +59,7 @@ function resolveConnectionString(config: GitmeshConfig | null): ResolvedConnecti
 
   const port = config?.database.embeddedPostgresPort ?? DEFAULT_EMBEDDED_PORT;
   return {
-    value: `postgres://gitmesh:gitmesh@127.0.0.1:${port}/gitmesh-agents`,
+    value: `postgres://gitmesh:gitmesh@127.0.0.1:${port}/gitmesh`,
     source: `embedded-postgres@${port}`,
   };
 }
