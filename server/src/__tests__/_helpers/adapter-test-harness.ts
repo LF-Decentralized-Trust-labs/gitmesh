@@ -97,7 +97,7 @@ export function defineAdapterScenarios(
 // Adapter `testEnvironment` scenarios
 // ---------------------------------------------------------------------------
 
-export type EnvCheck = { code?: string; level?: string; hint?: string };
+export type EnvCheck = { code?: string; level?: string; hint?: string | null };
 export type EnvResult = { status: string; checks: EnvCheck[] };
 export type EnvironmentRunner = (config: unknown) => Promise<EnvResult>;
 

@@ -28,8 +28,12 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
 
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId,
-      previousSessionParams: makePreviousSession({ cwd: fallbackCwd }),
-      resolvedWorkspace: asResolved(makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" })),
+      previousSessionParams: makePreviousSession({
+        cwd: fallbackCwd,
+      }) as unknown as Record<string, unknown>,
+      resolvedWorkspace: asResolved(
+        makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" }),
+      ),
     });
 
     expect(result.sessionParams).toMatchObject({
@@ -44,8 +48,10 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
     const previous = makePreviousSession({ cwd: "/tmp/some-other-cwd" });
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId: "agent-123",
-      previousSessionParams: previous,
-      resolvedWorkspace: asResolved(makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" })),
+      previousSessionParams: previous as unknown as Record<string, unknown>,
+      resolvedWorkspace: asResolved(
+        makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" }),
+      ),
     });
 
     expect(result.sessionParams).toEqual(previous);
@@ -59,7 +65,7 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
 
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId,
-      previousSessionParams: previous,
+      previousSessionParams: previous as unknown as Record<string, unknown>,
       resolvedWorkspace: asResolved(
         makeResolvedWorkspace({
           cwd: "/tmp/new-project-cwd",

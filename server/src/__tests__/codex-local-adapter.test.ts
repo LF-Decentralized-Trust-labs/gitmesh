@@ -33,7 +33,7 @@ const serverScenarios: AdapterScenario[] = defineAdapterScenarios([
         error: { message: "model access denied" },
       }),
     ].join("\n"),
-    expect: (actual) => {
+    expect: (actual: unknown) => {
       const parsed = actual as ReturnType<typeof parseCodexJsonl>;
       expect(parsed.sessionId).toBe("thread-123");
       expect(parsed.summary).toBe("hello");
