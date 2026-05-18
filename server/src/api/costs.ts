@@ -100,10 +100,35 @@ export function costRoutes(db: Db) {
       return;
     }
 
+    // Gate 1: Enforce project boundary for ALL actor types (operator, agent, none).
+    // This is the primary cross-project isolation guard. Without it, an authenticated
+    // operator or agent from another project could freely mutate any agent's budget.
+    assertProjectAccess(req, agent.projectId);
+
+    // Gate 2: Spec §9.3 — "Set subordinate budget: yes (manager subtree only)" for agents.
+    // An agent actor may only set the budget of:
+    //   (a) itself, OR
+    //   (b) an agent it directly or transitively manages (is in the chain-of-command).
+    // Operators bypass this sub-check (Gate 1 is sufficient).
     if (req.actor.type === "agent") {
-      if (req.actor.agentId !== agentId) {
-        res.status(403).json({ error: "Agent can only change its own budget" });
+      const actorAgentId = req.actor.agentId;
+      if (!actorAgentId) {
+        res.status(403).json({ error: "Agent authentication required" });
         return;
+      }
+
+      const isSelf = actorAgentId === agentId;
+      if (!isSelf) {
+        // getChainOfCommand(targetId) walks UP from target → root manager.
+        // If actorAgentId appears in that chain, actor is a manager of target.
+        const chainOfCommand = await agents.getChainOfCommand(agentId);
+        const isManager = chainOfCommand.some((manager) => manager.id === actorAgentId);
+        if (!isManager) {
+          res.status(403).json({
+            error: "Agent can only set the budget of itself or agents in its subordinate subtree",
+          });
+          return;
+        }
       }
     }
 
