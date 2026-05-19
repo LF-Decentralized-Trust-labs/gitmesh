@@ -11,15 +11,17 @@ export const createApprovalSchema = z.object({
 export type CreateApproval = z.infer<typeof createApprovalSchema>;
 
 export const resolveApprovalSchema = z.object({
+  // decidedByUserId is intentionally absent — the server derives this from
+  // the authenticated session (req.actor.userId). Accepting it from the body
+  // would allow any operator to forge another user's identity in the audit trail.
   decisionNote: z.string().optional().nullable(),
-  decidedByUserId: z.string().optional().default("operator"),
 });
 
 export type ResolveApproval = z.infer<typeof resolveApprovalSchema>;
 
 export const requestApprovalRevisionSchema = z.object({
+  // Same as resolveApprovalSchema — decidedByUserId is server-derived.
   decisionNote: z.string().optional().nullable(),
-  decidedByUserId: z.string().optional().default("operator"),
 });
 
 export type RequestApprovalRevision = z.infer<typeof requestApprovalRevisionSchema>;

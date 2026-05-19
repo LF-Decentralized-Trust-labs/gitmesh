@@ -121,7 +121,11 @@ export function approvalRoutes(db: Db) {
   router.post("/approvals/:id/approve", validate(resolveApprovalSchema), async (req, res) => {
     assertBoard(req);
     const id = req.params.id as string;
-    const approval = await svc.approve(id, req.body.decidedByUserId ?? "operator", req.body.decisionNote);
+    // Always derive the decider from the authenticated session — never from the
+    // request body. Trusting the body here would let any operator record a
+    // fabricated userId in approvals.decided_by_user_id (the permanent audit record)
+    // while logActivity correctly records req.actor.userId, creating an inconsistency.
+    const approval = await svc.approve(id, req.actor.userId ?? "operator", req.body.decisionNote);
     const linkedIssues = await issueApprovalsSvc.listIssuesForApproval(approval.id);
     const linkedIssueIds = linkedIssues.map((issue) => issue.id);
     const primaryIssueId = linkedIssueIds[0] ?? null;
@@ -209,7 +213,7 @@ export function approvalRoutes(db: Db) {
   router.post("/approvals/:id/reject", validate(resolveApprovalSchema), async (req, res) => {
     assertBoard(req);
     const id = req.params.id as string;
-    const approval = await svc.reject(id, req.body.decidedByUserId ?? "operator", req.body.decisionNote);
+    const approval = await svc.reject(id, req.actor.userId ?? "operator", req.body.decisionNote);
 
     await logActivity(db, {
       projectId: approval.projectId,
@@ -232,7 +236,7 @@ export function approvalRoutes(db: Db) {
       const id = req.params.id as string;
       const approval = await svc.requestRevision(
         id,
-        req.body.decidedByUserId ?? "operator",
+        req.actor.userId ?? "operator",
         req.body.decisionNote,
       );
 

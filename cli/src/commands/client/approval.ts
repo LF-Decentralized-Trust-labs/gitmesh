@@ -38,7 +38,6 @@ interface ApprovalCreateOpts extends BaseClientOptions {
 
 interface ApprovalDecisionOpts extends BaseClientOptions {
   decisionNote?: string;
-  decidedByUserId?: string;
 }
 
 interface ApprovalResubmitOpts extends BaseClientOptions {
@@ -99,7 +98,6 @@ async function runDecision(
 ): Promise<void> {
   const payload = schema.parse({
     decisionNote: options.decisionNote,
-    decidedByUserId: options.decidedByUserId,
   });
   const updated = await ctx.api.post<Approval>(
     `/api/approvals/${approvalId}/${endpoint}`,
@@ -186,7 +184,6 @@ export function registerApprovalCommands(program: Command): void {
       positional: [{ name: "approvalId", desc: "Approval ID" }],
       options: [
         { flag: "--decision-note <text>", desc: "Decision note" },
-        { flag: "--decided-by-user-id <id>", desc: "Decision actor user ID" },
       ],
       async run(ctx, { positional, options }) {
         const [approvalId] = positional;
