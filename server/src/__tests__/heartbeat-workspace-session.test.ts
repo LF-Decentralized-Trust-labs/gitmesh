@@ -21,6 +21,12 @@ function asResolved(workspace: ReturnType<typeof makeResolvedWorkspace>): Resolv
   return workspace;
 }
 
+function toSessionParams(
+  session: ReturnType<typeof makePreviousSession>
+): Record<string, unknown> {
+  return session as unknown as Record<string, unknown>;
+}
+
 describe("resolveRuntimeSessionParamsForWorkspace", () => {
   it("migrates fallback workspace sessions to project workspace when project cwd becomes available", () => {
     const agentId = "agent-123";
@@ -28,9 +34,9 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
 
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId,
-      previousSessionParams: makePreviousSession({
-        cwd: fallbackCwd,
-      }) as unknown as Record<string, unknown>,
+      previousSessionParams: toSessionParams(
+        makePreviousSession({ cwd: fallbackCwd }),
+      ),
       resolvedWorkspace: asResolved(
         makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" }),
       ),

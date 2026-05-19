@@ -62,6 +62,7 @@
     "@types/express": "^5.0.0",
     "@types/express-serve-static-core": "^5.0.0",
     "@types/js-yaml": "^4.0.9",
+    "cross-env": "^7.0.3",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.6.0",
     "@types/supertest": "^6.0.2",
