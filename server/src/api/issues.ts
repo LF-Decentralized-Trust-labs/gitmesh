@@ -24,7 +24,7 @@ import {
 } from "../core/index.js";
 import { logger } from "../infra/middleware/logger.js";
 import { forbidden, HttpError, unauthorized } from "../errors.js";
-import { assertProjectAccess, getActorInfo } from "./authz.js";
+import { assertBoard, assertProjectAccess, getActorInfo } from "./authz.js";
 import { shouldWakeAssigneeOnCheckout } from "./issues-checkout-wakeup.js";
 
 const MAX_ATTACHMENT_BYTES = Number(process.env.GITMESH_ATTACHMENT_MAX_BYTES) || 10 * 1024 * 1024;
@@ -269,6 +269,7 @@ export function issueRoutes(db: Db, storage: StorageService) {
       res.status(404).json({ error: "Label not found" });
       return;
     }
+    assertBoard(req);
     assertProjectAccess(req, existing.projectId);
     const removed = await svc.deleteLabel(labelId);
     if (!removed) {
@@ -655,6 +656,7 @@ export function issueRoutes(db: Db, storage: StorageService) {
       res.status(404).json({ error: "Issue not found" });
       return;
     }
+    assertBoard(req);
     assertProjectAccess(req, existing.projectId);
     const attachments = await svc.listAttachments(id);
 
