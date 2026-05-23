@@ -4,6 +4,7 @@ import { createCostEventSchema, updateBudgetSchema } from "@gitmesh/core";
 import { validate } from "../infra/middleware/validate.js";
 import { costService, projectService, agentService, logActivity } from "../core/index.js";
 import { assertBoard, assertProjectAccess, getActorInfo } from "./authz.js";
+import { forbidden } from "../errors.js";
 
 export function costRoutes(db: Db) {
   const router = Router();
@@ -100,9 +101,11 @@ export function costRoutes(db: Db) {
       return;
     }
 
-    // Gate 1: Enforce project boundary for ALL actor types (operator, agent, none).
-    // This is the primary cross-project isolation guard. Without it, an authenticated
-    // operator or agent from another project could freely mutate any agent's budget.
+    // Gate 1: Enforce project boundary for all actor types.
+    // This is the primary cross-project isolation guard: without it, an authenticated
+    // operator (or any other actor with project-scoped access) could target agents in
+    // another project. For agent actors, this limits access to their own project; Gate 2
+    // further restricts them to themselves or agents in their subordinate subtree.
     assertProjectAccess(req, agent.projectId);
 
     // Gate 2: Spec §9.3 — "Set subordinate budget: yes (manager subtree only)" for agents.
@@ -111,23 +114,17 @@ export function costRoutes(db: Db) {
     //   (b) an agent it directly or transitively manages (is in the chain-of-command).
     // Operators bypass this sub-check (Gate 1 is sufficient).
     if (req.actor.type === "agent") {
-      const actorAgentId = req.actor.agentId;
-      if (!actorAgentId) {
-        res.status(403).json({ error: "Agent authentication required" });
-        return;
-      }
+      if (!req.actor.agentId) throw forbidden("Agent authentication required");
 
-      const isSelf = actorAgentId === agentId;
-      if (!isSelf) {
+      if (req.actor.agentId !== agentId) {
         // getChainOfCommand(targetId) walks UP from target → root manager.
         // If actorAgentId appears in that chain, actor is a manager of target.
         const chainOfCommand = await agents.getChainOfCommand(agentId);
-        const isManager = chainOfCommand.some((manager) => manager.id === actorAgentId);
+        const isManager = chainOfCommand.some((m) => m.id === req.actor.agentId);
         if (!isManager) {
-          res.status(403).json({
-            error: "Agent can only set the budget of itself or agents in its subordinate subtree",
-          });
-          return;
+          throw forbidden(
+            "Agent can only set the budget of itself or agents in its subordinate subtree",
+          );
         }
       }
     }
