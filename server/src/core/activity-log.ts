@@ -14,10 +14,14 @@ export interface LogActivityInput {
   agentId?: string | null;
   runId?: string | null;
   details?: Record<string, unknown> | null;
+  policyVersion?: number | null;
+  policyOutcome?: string | null;
 }
 
 export async function logActivity(db: Db, input: LogActivityInput) {
   const sanitizedDetails = input.details ? sanitizeRecord(input.details) : null;
+  const policyVersion = input.policyVersion ?? readPolicyVersion(sanitizedDetails);
+  const policyOutcome = input.policyOutcome ?? readPolicyOutcome(sanitizedDetails);
   const inserted = await db
     .insert(activityLog)
     .values({
@@ -30,6 +34,8 @@ export async function logActivity(db: Db, input: LogActivityInput) {
       agentId: input.agentId ?? null,
       runId: input.runId ?? null,
       details: sanitizedDetails,
+      policyVersion,
+      policyOutcome,
     })
     .returning({ id: activityLog.id });
 
@@ -66,6 +72,18 @@ export async function logActivity(db: Db, input: LogActivityInput) {
       agentId: input.agentId ?? null,
       runId: input.runId ?? null,
       details: sanitizedDetails,
+      policyVersion,
+      policyOutcome,
     },
   });
+}
+
+function readPolicyVersion(details: Record<string, unknown> | null): number | null {
+  const value = details?.policyVersion;
+  return typeof value === "number" && Number.isInteger(value) ? value : null;
+}
+
+function readPolicyOutcome(details: Record<string, unknown> | null): string | null {
+  const value = details?.policyOutcome;
+  return typeof value === "string" && value.length > 0 ? value : null;
 }

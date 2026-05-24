@@ -14,13 +14,14 @@
 
 import { eq, and, asc } from "@gitmesh/data";
 import type { Db } from "@gitmesh/data";
-import { agentPolicies, activityLog, agents } from "@gitmesh/data";
+import { agentPolicies, agents } from "@gitmesh/data";
 import {
   DEFAULT_POLICY_TEMPLATES,
   type PolicyEffect,
   type PolicyTemplate,
 } from "./policy-default-templates.js";
 import { getDefaultEnabledTemplates } from "./policy-templates-loader.js";
+import { logActivity } from "./activity-log.js";
 
 export { DEFAULT_POLICY_TEMPLATES };
 export type { PolicyEffect, PolicyTemplate };
@@ -372,7 +373,7 @@ async function logPolicyEvaluation(
   input: PolicyEvaluationInput,
   result: PolicyEvaluationResult,
 ): Promise<void> {
-  await db.insert(activityLog).values({
+  await logActivity(db, {
     projectId: input.projectId,
     actorType: "agent",
     actorId: input.agentId,
