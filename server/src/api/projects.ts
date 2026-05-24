@@ -23,19 +23,21 @@ export function projectRoutes(db: Db) {
   router.get("/", async (req, res) => {
     assertBoard(req);
     const result = await svc.list();
-    if (req.actor.source === "local_implicit" || req.actor.isInstanceAdmin) {
+    if (req.actor.source === "local_implicit" || (req.actor.type === "operator" && req.actor.isInstanceAdmin)) {
       res.json(result);
       return;
     }
-    const allowed = new Set(req.actor.projectIds ?? []);
+    const allowed = req.actor.type === "operator" ? new Set(req.actor.projectIds ?? []) : new Set(req.actor.projectId ? [req.actor.projectId] : []);
     res.json(result.filter((project) => allowed.has(project.id)));
   });
 
   router.get("/stats", async (req, res) => {
     assertBoard(req);
-    const allowed = req.actor.source === "local_implicit" || req.actor.isInstanceAdmin
+    const allowed = req.actor.source === "local_implicit" || (req.actor.type === "operator" && req.actor.isInstanceAdmin)
       ? null
-      : new Set(req.actor.projectIds ?? []);
+      : req.actor.type === "operator"
+        ? new Set(req.actor.projectIds ?? [])
+        : new Set(req.actor.projectId ? [req.actor.projectId] : []);
     const stats = await svc.stats();
     if (!allowed) {
       res.json(stats);
@@ -110,7 +112,7 @@ export function projectRoutes(db: Db) {
 
   router.post("/", validate(createProjectSchema), async (req, res) => {
     assertBoard(req);
-    if (!(req.actor.source === "local_implicit" || req.actor.isInstanceAdmin)) {
+    if (!(req.actor.source === "local_implicit" || (req.actor.type === "operator" && req.actor.isInstanceAdmin))) {
       throw forbidden("Instance admin required");
     }
     const project = await svc.create(req.body);
