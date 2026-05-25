@@ -114,13 +114,14 @@ export function costRoutes(db: Db) {
     //   (b) an agent it directly or transitively manages (is in the chain-of-command).
     // Operators bypass this sub-check (Gate 1 is sufficient).
     if (req.actor.type === "agent") {
-      if (!req.actor.agentId) throw forbidden("Agent authentication required");
+      const actorAgentId = req.actor.agentId;
+      if (!actorAgentId) throw forbidden("Agent authentication required");
 
-      if (req.actor.agentId !== agentId) {
+      if (actorAgentId !== agentId) {
         // getChainOfCommand(targetId) walks UP from target → root manager.
         // If actorAgentId appears in that chain, actor is a manager of target.
         const chainOfCommand = await agents.getChainOfCommand(agentId);
-        const isManager = chainOfCommand.some((m) => m.id === req.actor.agentId);
+        const isManager = chainOfCommand.some((m) => m.id === actorAgentId);
         if (!isManager) {
           throw forbidden(
             "Agent can only set the budget of itself or agents in its subordinate subtree",
