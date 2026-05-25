@@ -79,3 +79,22 @@ export interface InstanceUserRoleGrant {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type Actor =
+  | {
+      type: "operator";
+      userId: string;
+      projectIds?: string[];
+      isInstanceAdmin: boolean;
+      runId?: string;
+      source: "local_implicit" | "session";
+    }
+  | {
+      type: "agent";
+      agentId: string;
+      projectId: string;
+      keyId?: string;
+      runId?: string;
+      source: "agent_jwt" | "agent_key";
+    }
+  | { type: "none"; source: "none"; runId?: string };

@@ -50,6 +50,7 @@ export type {
   Invite,
   JoinRequest,
   InstanceUserRoleGrant,
+  Actor,
 } from "./access.js";
 export type {
   ProjectPortabilityInclude,
