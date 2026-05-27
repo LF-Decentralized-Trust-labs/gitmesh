@@ -40,7 +40,7 @@ const parserScenarios: AdapterScenario[] = defineAdapterScenarios([
       }),
       JSON.stringify({ type: "error", message: "model access denied" }),
     ].join("\n"),
-    expect: (actual) => {
+    expect: (actual: unknown) => {
       const parsed = actual as ReturnType<typeof parseOpenCodeJsonl>;
       expect(parsed.sessionId).toBe("ses_123");
       expect(parsed.summary).toBe("hello");

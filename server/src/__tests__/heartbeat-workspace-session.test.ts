@@ -21,6 +21,12 @@ function asResolved(workspace: ReturnType<typeof makeResolvedWorkspace>): Resolv
   return workspace;
 }
 
+function toSessionParams(
+  session: ReturnType<typeof makePreviousSession>
+): Record<string, unknown> {
+  return session as unknown as Record<string, unknown>;
+}
+
 describe("resolveRuntimeSessionParamsForWorkspace", () => {
   it("migrates fallback workspace sessions to project workspace when project cwd becomes available", () => {
     const agentId = "agent-123";
@@ -28,8 +34,12 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
 
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId,
-      previousSessionParams: makePreviousSession({ cwd: fallbackCwd }),
-      resolvedWorkspace: asResolved(makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" })),
+      previousSessionParams: toSessionParams(
+        makePreviousSession({ cwd: fallbackCwd }),
+      ),
+      resolvedWorkspace: asResolved(
+        makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" }),
+      ),
     });
 
     expect(result.sessionParams).toMatchObject({
@@ -44,8 +54,10 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
     const previous = makePreviousSession({ cwd: "/tmp/some-other-cwd" });
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId: "agent-123",
-      previousSessionParams: previous,
-      resolvedWorkspace: asResolved(makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" })),
+      previousSessionParams: previous as unknown as Record<string, unknown>,
+      resolvedWorkspace: asResolved(
+        makeResolvedWorkspace({ cwd: "/tmp/new-project-cwd" }),
+      ),
     });
 
     expect(result.sessionParams).toEqual(previous);
@@ -59,7 +71,7 @@ describe("resolveRuntimeSessionParamsForWorkspace", () => {
 
     const result = resolveRuntimeSessionParamsForWorkspace({
       agentId,
-      previousSessionParams: previous,
+      previousSessionParams: previous as unknown as Record<string, unknown>,
       resolvedWorkspace: asResolved(
         makeResolvedWorkspace({
           cwd: "/tmp/new-project-cwd",

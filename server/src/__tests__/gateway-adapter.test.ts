@@ -24,6 +24,7 @@ function buildContext(
       id: "agent-123",
       projectId: "project-123",
       name: "Gateway Gateway Agent",
+      role: null,
       adapterType: "gateway",
       adapterConfig: {},
     },

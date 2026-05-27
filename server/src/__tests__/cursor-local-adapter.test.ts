@@ -37,7 +37,7 @@ const serverScenarios: AdapterScenario[] = defineAdapterScenarios([
       }),
       JSON.stringify({ type: "error", message: "model access denied" }),
     ].join("\n"),
-    expect: (actual) => {
+    expect: (actual: unknown) => {
       const parsed = actual as ReturnType<typeof parseCursorJsonl>;
       expect(parsed.sessionId).toBe("chat_123");
       expect(parsed.summary).toBe("hello");
@@ -59,7 +59,7 @@ const serverScenarios: AdapterScenario[] = defineAdapterScenarios([
       'stdout{"type":"assistant","message":{"content":[{"type":"output_text","text":"prefixed hello"}]}}',
       'stdout{"type":"result","subtype":"success","usage":{"input_tokens":3,"output_tokens":2,"cached_input_tokens":1},"total_cost_usd":0.0001}',
     ].join("\n"),
-    expect: (actual) => {
+    expect: (actual: unknown) => {
       const parsed = actual as ReturnType<typeof parseCursorJsonl>;
       expect(parsed.sessionId).toBe("chat_prefixed");
       expect(parsed.summary).toBe("prefixed hello");
