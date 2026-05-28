@@ -962,45 +962,62 @@ export function heartbeatService(db: Db) {
     const additionalCostCents = Math.max(0, Math.round((result.costUsd ?? 0) * 100));
     const hasTokenUsage = inputTokens > 0 || outputTokens > 0 || cachedInputTokens > 0;
 
-    await db
-      .update(agentRuntimeState)
-      .set({
-        adapterType: agent.adapterType,
-        sessionId: session.legacySessionId,
-        lastRunId: run.id,
-        lastRunStatus: run.status,
-        lastError: result.errorMessage ?? null,
-        totalInputTokens: sql`${agentRuntimeState.totalInputTokens} + ${inputTokens}`,
-        totalOutputTokens: sql`${agentRuntimeState.totalOutputTokens} + ${outputTokens}`,
-        totalCachedInputTokens: sql`${agentRuntimeState.totalCachedInputTokens} + ${cachedInputTokens}`,
-        totalCostCents: sql`${agentRuntimeState.totalCostCents} + ${additionalCostCents}`,
-        updatedAt: new Date(),
-      })
-      .where(eq(agentRuntimeState.agentId, agent.id));
 
-    if (additionalCostCents > 0 || hasTokenUsage) {
-      await db.insert(costEvents).values({
-        projectId: agent.projectId,
-        agentId: agent.id,
-        provider: result.provider ?? "unknown",
-        model: result.model ?? "unknown",
-        inputTokens,
-        outputTokens,
-        costCents: additionalCostCents,
-        occurredAt: new Date(),
-      });
-    }
+const now = new Date();
 
-    if (additionalCostCents > 0) {
-      await db
-        .update(agents)
-        .set({
-          spentMonthlyCents: sql`${agents.spentMonthlyCents} + ${additionalCostCents}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(agents.id, agent.id));
-    }
+await db.transaction(async (tx) => {
+  await tx
+    .update(agentRuntimeState)
+    .set({
+      adapterType: agent.adapterType,
+      sessionId: session.legacySessionId,
+      lastRunId: run.id,
+      lastRunStatus: run.status,
+      lastError: result.errorMessage ?? null,
+
+      totalInputTokens: sql`${agentRuntimeState.totalInputTokens} + ${inputTokens}`,
+
+      totalOutputTokens: sql`${agentRuntimeState.totalOutputTokens} + ${outputTokens}`,
+
+      totalCachedInputTokens: sql`${agentRuntimeState.totalCachedInputTokens} + ${cachedInputTokens}`,
+
+      totalCostCents: sql`${agentRuntimeState.totalCostCents} + ${additionalCostCents}`,
+
+      updatedAt: now,
+    })
+    .where(eq(agentRuntimeState.agentId, agent.id));
+
+  if (additionalCostCents > 0 || hasTokenUsage) {
+    await tx.insert(costEvents).values({
+      projectId: agent.projectId,
+      agentId: agent.id,
+
+      provider: result.provider ?? "unknown",
+      model: result.model ?? "unknown",
+
+      inputTokens,
+      outputTokens,
+
+      costCents: additionalCostCents,
+
+      occurredAt: now,
+    });
   }
+
+  if (additionalCostCents > 0) {
+    await tx
+      .update(agents)
+      .set({
+        spentMonthlyCents: sql`${agents.spentMonthlyCents} + ${additionalCostCents}`,
+
+        updatedAt: now,
+      })
+      .where(eq(agents.id, agent.id));
+  }
+});
+
+  }
+
 
   async function startNextQueuedRunForAgent(agentId: string) {
     return withAgentStartLock(agentId, async () => {
