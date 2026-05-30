@@ -4,40 +4,64 @@ import os from "node:os";
 import path from "node:path";
 import { execute } from "@gitmesh/adapter-cursor-local/server";
 
-async function writeFakeCursorCommand(commandPath: string): Promise<void> {
-  const script = `#!/usr/bin/env node
+async function writeFakeCursorCommand(
+  commandPath: string,
+  capturePath: string,
+): Promise<void> {
+  const nodeScript = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.GITMESH_TEST_CAPTURE_PATH;
-const payload = {
-  argv: process.argv.slice(2),
-  prompt: fs.readFileSync(0, "utf8"),
-  gitmeshAgentsEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("GITMESH_"))
-    .sort(),
-};
-if (capturePath) {
-  fs.writeFileSync(capturePath, JSON.stringify(payload), "utf8");
-}
-console.log(JSON.stringify({
-  type: "system",
-  subtype: "init",
-  session_id: "cursor-session-1",
-  model: "auto",
-}));
-console.log(JSON.stringify({
-  type: "assistant",
-  message: { content: [{ type: "output_text", text: "hello" }] },
-}));
-console.log(JSON.stringify({
-  type: "result",
-  subtype: "success",
-  session_id: "cursor-session-1",
-  result: "ok",
-}));
+let stdin = "";
+process.stdin.on("data", (chunk) => {
+  stdin += chunk;
+});
+
+process.stdin.on("end", () => {
+  const capturePath = process.env.GITMESH_TEST_CAPTURE_PATH;
+  const payload = {
+    argv: process.argv.slice(2),
+    prompt: stdin,
+    gitmeshAgentsEnvKeys: Object.keys(process.env)
+      .filter((key) => key.startsWith("GITMESH_"))
+      .sort(),
+  };
+  if (capturePath) {
+    fs.writeFileSync(capturePath, JSON.stringify(payload, null, 2), "utf8");
+  }
+  console.log(JSON.stringify({
+    type: "system",
+    subtype: "init",
+    session_id: "cursor-session-1",
+    model: "auto",
+  }));
+  console.log(JSON.stringify({
+    type: "assistant",
+    message: { content: [{ type: "output_text", text: "hello" }] },
+  }));
+  console.log(JSON.stringify({
+    type: "result",
+    subtype: "success",
+    session_id: "cursor-session-1",
+    result: "ok",
+  }));
+});
 `;
-  await fs.writeFile(commandPath, script, "utf8");
-  await fs.chmod(commandPath, 0o755);
+
+  if (process.platform === "win32") {
+    const dir = path.dirname(commandPath);
+    const scriptPath = path.join(dir, "agent");
+    await fs.writeFile(scriptPath, nodeScript, "utf8");
+    await fs.writeFile(
+      commandPath,
+      `@echo off
+set "GITMESH_TEST_CAPTURE_PATH=${capturePath}"
+node "%~dp0agent" %*
+`,
+      "utf8",
+    );
+  } else {
+    await fs.writeFile(commandPath, nodeScript, { encoding: "utf8", mode: 0o755 });
+  }
 }
 
 type CapturePayload = {
@@ -50,10 +74,13 @@ describe("cursor execute", () => {
   it("injects gitmesh-agents env vars and prompt note by default", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "gitmesh-agents-cursor-execute-"));
     const workspace = path.join(root, "workspace");
-    const commandPath = path.join(root, "agent");
+    const commandPath = path.join(
+      root,
+      process.platform === "win32" ? "agent.cmd" : "agent",
+    );
     const capturePath = path.join(root, "capture.json");
     await fs.mkdir(workspace, { recursive: true });
-    await writeFakeCursorCommand(commandPath);
+    await writeFakeCursorCommand(commandPath, capturePath);
 
     const previousHome = process.env.HOME;
     process.env.HOME = root;
@@ -126,10 +153,13 @@ describe("cursor execute", () => {
   it("passes --mode when explicitly configured", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "gitmesh-agents-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
-    const commandPath = path.join(root, "agent");
+    const commandPath = path.join(
+      root,
+      process.platform === "win32" ? "agent.cmd" : "agent",
+    );
     const capturePath = path.join(root, "capture.json");
     await fs.mkdir(workspace, { recursive: true });
-    await writeFakeCursorCommand(commandPath);
+    await writeFakeCursorCommand(commandPath, capturePath);
 
     const previousHome = process.env.HOME;
     process.env.HOME = root;
