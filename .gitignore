@@ -5,8 +5,6 @@ dist/
 drizzle/meta/
 .vite/
 coverage/
-playwright-report/
-test-results/
 .DS_Store
 # Runtime / Docker volume dir at repo root only (do not use `data/` — that ignores `lib/data/`)
 /data/

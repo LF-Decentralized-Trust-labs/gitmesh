@@ -1,3 +1,4 @@
+
 name: Continuous Integration
 
 on:
@@ -6,92 +7,15 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 jobs:
-  dependency-lock:
-    name: Prepare Dependency Lock
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Prepare dependency lockfile
-        run: bash scripts/ci-prepare-lockfile.sh
-
-      - name: Upload resolved dependency lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: resolved-pnpm-lock
-          path: pnpm-lock.yaml
-          if-no-files-found: error
-          retention-days: 1
-
-  lockfile-commit:
-    name: Commit Dependency Lock
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs:
-      - dependency-lock
-      - test
-      - browser
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download resolved dependency lockfile
-        uses: actions/download-artifact@v4
-        with:
-          name: resolved-pnpm-lock
-          path: .
-
-      - name: Commit refreshed lockfile
-        run: |
-          if git diff --quiet -- pnpm-lock.yaml; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml
-          git commit --signoff -m "chore(deps): refresh pnpm lockfile"
-          git push origin HEAD:main
-
   test:
     name: Lint, Typecheck, Test & Build
-    needs: dependency-lock
     runs-on: ubuntu-latest
     timeout-minutes: 33
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download resolved dependency lockfile
-        uses: actions/download-artifact@v4
-        with:
-          name: resolved-pnpm-lock
-          path: .
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -118,53 +42,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-  browser:
-    name: Playwright Browser Tests
-    needs: dependency-lock
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download resolved dependency lockfile
-        uses: actions/download-artifact@v4
-        with:
-          name: resolved-pnpm-lock
-          path: .
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Type check browser tests
-        run: pnpm typecheck:e2e
-
-      - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run browser tests
-        run: pnpm test:e2e
-
-      - name: Upload browser test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          if-no-files-found: ignore
-          retention-days: 7

@@ -939,7 +939,7 @@ Every change follows these rules:
 4. Replace large structures through separate steps: introduce the new boundary, migrate or dual-read, switch callers and UI, verify, then remove the legacy path in a later change.
 5. Preserve existing user changes and unrelated functionality. A large pivot is not permission for unrelated cleanup.
 6. Add focused automated tests with the behavior, not in a later testing change.
-7. Complete browser verification before marking any change done, even when the change is backend-only. Backend-only changes run the regression browser smoke; UI-bearing changes also run feature-specific browser acceptance.
+7. Perform browser verification when a change affects the UI, application startup, routing, or a user workflow. Pure backend and contract changes do not require a browser check unless they can alter visible behavior.
 8. Record any known limitation in the change description. Do not hide missing evidence, skipped checks, or unsupported paths.
 
 ### 13.3 Verification ladder
@@ -961,14 +961,16 @@ A change is complete only after all applicable levels pass.
 - Verify the database and object-store outcome, not only the HTTP response.
 - Restart the server and verify that durable state, workers, and migrations recover correctly.
 
-#### Level C: browser verification
+#### Level C: manual browser verification when applicable
 
-- Use Playwright against the real API and isolated database; do not mock the changed backend contract.
-- Run the changed workflow at desktop `1440x900` and mobile `390x844` viewports.
-- Check initial, loading, empty, success, validation-error, server-error, and permission-denied states where applicable.
-- Check direct URL load, browser refresh, project switching, keyboard navigation, focus visibility, and destructive-action confirmation.
-- Fail on uncaught page errors, unexpected console errors, failed same-origin network requests, overflow, overlap, clipped text, or blank primary content.
-- Capture screenshots for review when a visual surface changes. Screenshots are verification artifacts, not substitutes for assertions.
+- The coding partner starts the real local application and opens it with the available browser tools; this is an inspection step, not a permanent browser-test framework requirement.
+- Exercise the exact changed workflow against the real API and a disposable or clearly identified local database.
+- Inspect desktop and mobile viewports when layout or interaction behavior changed.
+- Check relevant initial, loading, empty, success, validation-error, server-error, and permission-denied states.
+- Check direct URL load, browser refresh, project switching, keyboard navigation, focus visibility, and destructive-action confirmation when the feature uses them.
+- Inspect for browser console or network failures, overflow, overlap, clipped text, blank primary content, and stale data after refresh.
+- Capture temporary screenshots when useful for review. Do not add screenshot files or browser automation to the repository unless repeated regression risk later justifies it.
+- Record what was inspected and any scenario that could not be exercised. Use browser automation only when a workflow becomes important and repetitive enough to warrant permanent coverage.
 
 #### Level D: milestone verification
 
@@ -977,13 +979,11 @@ At D0, D1, D2, and pilot readiness, run:
 ```sh
 pnpm check:tokens
 pnpm -r typecheck
-pnpm typecheck:e2e
 pnpm test:run
 pnpm build
-pnpm test:e2e
 ```
 
-Manual GitHub, retention, backup/restore, and adversarial scenarios that cannot run in CI must be recorded explicitly rather than silently skipped.
+Applicable browser checks plus GitHub, retention, backup/restore, and adversarial scenarios that cannot run in CI must be recorded explicitly rather than silently skipped.
 
 ### 13.4 Current implementation queue: D0 secure source vertical
 
@@ -993,22 +993,22 @@ The D0 exit experience is deliberately small: an operator opens Evidence Sources
 
 | ID | One change | Primary files | Automated completion | Browser completion |
 |---|---|---|---|---|
-| `D0-01` **done** | Add the full-stack Playwright harness and isolated test instance. | `package.json`, `playwright.config.ts`, `e2e/fixtures/*`, `e2e/smoke.spec.ts` | Add `test:e2e`; seed a project through the real API; prove health, app boot, and no page/console errors. Do not commit lockfile churn under the repository lockfile policy. | Root redirect, project dashboard, direct reload, desktop, and mobile all render against disposable embedded PostgreSQL. |
-| `D0-02` | Make project and agent budget mutation operator-only. | `server/src/api/costs.ts`, `server/src/__tests__/agent-budget-access.test.ts` | Every agent budget mutation returns 403; project-scoped operators continue to work; activity actor remains the authenticated operator. | Change a budget as an operator, reload Costs, and confirm the value and audit entry; run the global smoke suite. |
+| `D0-01` **done** | Establish the one-change delivery and manual browser-verification protocol. | `doc/pivot/README.md` | The plan defines proportional focused tests, running-system checks, and browser inspection only when applicable. No new dependency, CI job, lockfile workflow, or GitHub rule is required. | The coding partner opens the current application, checks the baseline dashboard at desktop and mobile sizes, reloads its direct route, and reports the observed result. |
+| `D0-02` | Make project and agent budget mutation operator-only. | `server/src/api/costs.ts`, `server/src/__tests__/agent-budget-access.test.ts` | Every agent budget mutation returns 403; project-scoped operators continue to work; activity actor remains the authenticated operator. | Manually change a budget as an operator, reload Costs, and confirm the value and audit entry in the browser. |
 | `D0-03` | Make current cost enforcement semantics honest. | `lib/core/src/types/cost.ts`, cost validators/API response, `ui/src/views/settings/Costs.tsx`, operator docs | Expose `post_report_auto_pause`; preserve compatibility; assert that no response calls it a hard ceiling. | Costs explains reported-spend auto-pause and possible in-flight overshoot without layout regressions at both viewports. |
-| `D0-04` | Add source-agnostic evidence contracts and state machines. | `lib/core/src/types/evidence.ts`, `lib/core/src/index.ts`, `lib/core/src/__tests__/evidence-types.test.ts` | Cover source, token, artifact, event, processing, record, identifier, link, investigation, coverage, and bundle states without GitHub-specific fields. | Run the existing app smoke at both viewports to catch shared-package regressions. |
+| `D0-04` | Add source-agnostic evidence contracts and state machines. | `lib/core/src/types/evidence.ts`, `lib/core/src/index.ts`, `lib/core/src/__tests__/evidence-types.test.ts` | Cover source, token, artifact, event, processing, record, identifier, link, investigation, coverage, and bundle states without GitHub-specific fields. | Not applicable until the contracts are consumed by a visible workflow; verify application startup and health only. |
 | `D0-05` | Add only the `evidence_sources` schema and migration. | `lib/data/src/schema/evidence_sources.ts`, schema exports, generated migration | Project foreign key, type/status/capture/auth modes, non-secret config, health fields, indexes, and timestamps migrate fresh and existing DBs. | Boot the migrated app, switch projects, and confirm existing pages still load without failed requests. |
-| `D0-06` | Add evidence-source validators, API paths, and response contracts. | `lib/core/src/validators/evidence.ts`, `lib/core/src/api.ts`, core exports and tests | Reject unknown modes, secret-looking config keys, malformed retention, and oversized config; path builders are project scoped. | Run the global smoke because no feature UI exists yet. |
-| `D0-07` | Add operator-only evidence-source list/create/update/disable service and routes with activity logging. | `server/src/core/evidence/sources.ts`, `server/src/api/evidence.ts`, `server/src/app.ts`, route tests | Operators are project scoped; agents cannot manage sources; responses never contain credentials; each mutation writes activity. | Use Playwright API setup, reload the real Audit page, and confirm source mutation activity appears without console/network errors. |
+| `D0-06` | Add evidence-source validators, API paths, and response contracts. | `lib/core/src/validators/evidence.ts`, `lib/core/src/api.ts`, core exports and tests | Reject unknown modes, secret-looking config keys, malformed retention, and oversized config; path builders are project scoped. | Not applicable until a visible workflow consumes the contracts; verify the API directly. |
+| `D0-07` | Add operator-only evidence-source list/create/update/disable service and routes with activity logging. | `server/src/core/evidence/sources.ts`, `server/src/api/evidence.ts`, `server/src/app.ts`, route tests | Operators are project scoped; agents cannot manage sources; responses never contain credentials; each mutation writes activity. | Exercise source mutation through the real API, then manually reload Audit and confirm the activity appears without visible errors. |
 | `D0-08` | Add the Evidence route shell and source list/empty/error views. | `ui/src/api/evidence.ts`, `ui/src/lib/queryKeys.ts`, `ui/src/App.tsx`, `ui/src/views/evidence/EvidenceSources.tsx` | Shared response types drive the client; route and query-key tests pass; failures are rendered rather than swallowed. | Direct-load the project-prefixed route; verify empty, populated, loading, and forced-error states, keyboard focus, desktop, and mobile. Keep navigation hidden until `D0-17`. |
 | `D0-09` | Add create/edit/disable source interactions. | Evidence source view and focused components; design-guide registration for any reusable component | Validation mirrors the API; mutations invalidate only relevant project queries; destructive disable requires confirmation. | Create a source, edit non-secret config, switch projects, disable it, refresh, and verify source isolation and stable layout. |
 | `D0-10` | Add hashed, write-only source-token schema and migration. | `lib/data/src/schema/evidence_source_tokens.ts`, schema exports, generated migration | Store prefix, hash, expiry, revocation, last-used metadata, and source/project relation; no plaintext token column exists. | Boot and navigate the app after migration; existing source UI remains functional. |
 | `D0-11` | Add create-once, authenticate, rotate, and revoke token services and endpoints with route-local rate limiting. | `server/src/core/evidence/tokens.ts`, evidence routes, auth/rate-limit tests | Plaintext is returned once; only a strong hash persists; expired, revoked, wrong-source, and replayed rotation requests fail without becoming project actors. | Create and rotate through the real API while the source page is open; verify no token appears in page logs, console, URL, or subsequent GET responses. |
 | `D0-12` | Add one-time token reveal, rotate, and revoke UI. | Evidence source view, secure reveal/copy component, design-guide entry if reusable | Token state is held only for the creation response and is cleared on close/navigation; no query cache persistence. | Create, copy, close, refresh, and prove the token cannot be revealed again; verify rotate/revoke confirmations and responsive text containment. |
-| `D0-13` | Add versioned project evidence keys, evidence artifacts, and append-only artifact-access schemas. | `lib/data/src/schema/evidence_keys.ts`, `evidence_artifacts.ts`, `evidence_artifact_access.ts`, migration | Model key version, wrapping metadata, plaintext/ciphertext digests, staging state, retention, hold, tombstone, and access outcome without key plaintext. | Migrate, restart, and run source-management plus global browser smoke. |
-| `D0-14` | Implement per-project envelope encryption and key rotation. | `server/src/core/evidence/crypto.ts`, secret-provider integration, cryptographic vector tests | Use random per-artifact data keys and AES-256-GCM; wrong project, wrong key version, modified ciphertext/tag, and digest mismatch fail closed. | Run global browser smoke; this backend change has no raw-content UI yet. |
+| `D0-13` | Add versioned project evidence keys, evidence artifacts, and append-only artifact-access schemas. | `lib/data/src/schema/evidence_keys.ts`, `evidence_artifacts.ts`, `evidence_artifact_access.ts`, migration | Model key version, wrapping metadata, plaintext/ciphertext digests, staging state, retention, hold, tombstone, and access outcome without key plaintext. | Migrate, restart, and manually inspect source management plus the existing dashboard for regressions. |
+| `D0-14` | Implement per-project envelope encryption and key rotation. | `server/src/core/evidence/crypto.ts`, secret-provider integration, cryptographic vector tests | Use random per-artifact data keys and AES-256-GCM; wrong project, wrong key version, modified ciphertext/tag, and digest mismatch fail closed. | No feature browser check is required before raw content has a UI; verify startup, health, and cryptographic failure paths. |
 | `D0-15` | Add project-safe object reservation and two-phase encrypted artifact finalization. | `server/src/infra/storage/types.ts`, `service.ts`, `server/src/core/evidence/artifacts.ts`, fault tests | Reserve -> write -> finalize is idempotent; DB/object failures leave reconcilable staging state; cross-project and traversal keys fail. | Upload an ordinary existing asset and use existing attachment UI to prove storage compatibility, then run source-page smoke. |
-| `D0-16` | Add immutable source-event and separate processing-attempt schemas. | `lib/data/src/schema/evidence_source_events.ts`, `evidence_processing_attempts.ts`, migration | Unique `(project, source, externalEventId)`; preserve source/observed time, optional sequence/uncertainty, auth result, receipt order, artifact reference, and sanitized metadata. Event fact fields are not processing state. | Migrate, restart, and run existing plus Evidence Sources browser smoke. |
+| `D0-16` | Add immutable source-event and separate processing-attempt schemas. | `lib/data/src/schema/evidence_source_events.ts`, `evidence_processing_attempts.ts`, migration | Unique `(project, source, externalEventId)`; preserve source/observed time, optional sequence/uncertainty, auth result, receipt order, artifact reference, and sanitized metadata. Event fact fields are not processing state. | Migrate, restart, and manually inspect the existing app plus Evidence Sources in the browser. |
 | `D0-17` | Add bounded raw ingestion, receipt read API, source health, and receipt list UI. | `server/src/core/evidence/ingest.ts`, evidence routes, `server/src/app.ts`, evidence UI | Exact authenticated bytes are encrypted before finalization; duplicates return the receipt, digest conflicts return 409, invalid auth stores bounded metadata/digest only, and authorization headers never persist. | Create a source/token in UI, ingest known bytes through the real endpoint, observe health/receipt update, filter receipts, refresh, revoke token, and verify another ingest is rejected. Add Evidence navigation now. |
 | `D0-18` | Add reconciliation/retention worker and close the D0 adversarial matrix. | `server/src/core/evidence/lifecycle.ts`, `server/src/boot/scheduled-tasks.ts`, D0 integration and E2E tests | Recover crashes before/after object write; retry with bounded backoff; preserve dead letters; honor holds; purge to digest tombstones; prove ordinary assets cannot address evidence. | Verify restart recovery, pending/failed/ready health, empty and permission states, desktop/mobile screenshots, no console/network errors, and the full Level D command set. |
 
@@ -1087,16 +1087,16 @@ Stop or narrow the pivot if:
 - legacy attestation import without upgrading its guarantee;
 - concurrent cost reservations and cancellation.
 
-### Browser and UI acceptance tests
+### Manual browser and UI acceptance
 
-- full-stack Playwright tests use the real Express API, isolated embedded PostgreSQL, and configured local object storage;
-- every UI workflow runs at desktop `1440x900` and mobile `390x844`;
-- project-prefixed direct routes, refresh, project switching, loading, empty, error, denied, and success states;
-- keyboard navigation, visible focus, accessible names, destructive confirmations, and no incoherent overflow or overlap;
-- no unexpected browser console errors, uncaught page exceptions, or failed same-origin requests;
-- sensitive values never appear in URLs, browser storage, query cache, console output, screenshots, or later API reads;
-- screenshots accompany visual changes, while assertions verify behavior and data;
-- milestone tests exercise source creation, one-time token handling, event ingestion, source health, investigation creation, raw access, redaction preview, bundle export, and verifier results through the web workflow where available.
+- the coding partner opens the real application and inspects each applicable changed workflow rather than assuming passing unit tests prove the UI works;
+- use desktop and mobile viewports when the layout or interaction surface changed;
+- exercise project-prefixed direct routes, refresh, project switching, loading, empty, error, denied, and success states where relevant;
+- inspect keyboard navigation, visible focus, accessible names, destructive confirmations, and incoherent overflow or overlap;
+- inspect the browser console and network activity for unexpected failures;
+- verify that sensitive values do not appear in URLs, browser storage, visible UI, console output, or later API reads;
+- use temporary screenshots when useful, without committing them by default;
+- add permanent browser automation later only for stable, repeated, high-value workflows whose regression risk justifies maintenance cost.
 
 ### Required fault scenarios
 

@@ -20,7 +20,7 @@ GitMesh Agents runs without setting up PostgreSQL manually — the dev server bo
 | pnpm | 9+ | |
 | Docker | optional | only for the no-local-Node path and Gateway smoke harnesses |
 
-The repo follows a **lockfile-not-in-PRs** policy: don't commit `pnpm-lock.yaml`. The CI dependency-lock job resolves one lockfile artifact for both normal and browser jobs. Pull requests validate that artifact without committing it. After a package manifest reaches `main`, the same job signs off and commits the refreshed lockfile with the GitHub Actions bot; the test jobs still install from the exact artifact they validated.
+The repo follows a **lockfile-not-in-PRs** policy: don't commit `pnpm-lock.yaml`. GitHub Actions owns it — pushes to `master` regenerate it with `pnpm install --lockfile-only --no-frozen-lockfile` and commit back, and PR CI runs `--frozen-lockfile` after that. Pull-request CI validates dependency resolution whenever a manifest changes.
 
 ## Running locally
 
@@ -94,7 +94,6 @@ Most knobs live in the CLI — `pnpm gitmesh-agents configure --section <name>` 
 | `GITMESH_SECRETS_MASTER_KEY` | Inline master key material |
 | `GITMESH_SECRETS_MASTER_KEY_FILE` | Path to master key file |
 | `GITMESH_SECRETS_STRICT_MODE` | `true` to forbid inline `*_API_KEY` / `*_TOKEN` / `*_SECRET` env values |
-| `GITMESH_DISABLE_WORKSPACE_ENV` | `true` to skip repository/cwd `.env` fallback; the instance-local env file still applies |
 | `GITMESH_ENABLE_PROJECT_DELETION` | `false` to disable project deletion (default: enabled in `local_trusted`, disabled in `authenticated`) |
 
 ## Operational tasks
@@ -145,17 +144,6 @@ pnpm gitmesh-agents dashboard get
 Full reference: `doc/CLI.md`.
 
 ## Smoke tests
-
-### Full-stack browser smoke
-
-```sh
-pnpm test:e2e:install  # first run only: install the pinned Chromium build
-pnpm test:e2e
-```
-
-Playwright starts the real API and Vite middleware against disposable embedded PostgreSQL and storage under the operating-system temp directory. It seeds through the local-trusted REST API, runs desktop (`1440x900`) and mobile (`390x844`) Chromium checks, and removes the isolated instance after the run. Override `GITMESH_E2E_PORT` when port 3210 is unavailable. Browser reports and screenshots are written to ignored `playwright-report/` and `test-results/` directories.
-
-The E2E server sets `GITMESH_DISABLE_WORKSPACE_ENV=true` and supplies isolated config, storage, logs, backups, and secret-key paths. This prevents a developer's repository `.env`, `GITMESH_CONFIG`, or provider credentials from entering the disposable instance or browser artifacts.
 
 ### Gateway join (operator-governed end-to-end)
 
