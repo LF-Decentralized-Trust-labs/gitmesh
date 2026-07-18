@@ -2,10 +2,11 @@ import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { shouldLoadWorkspaceEnv } from "./src/lib/workspace-env";
 
 export default defineConfig(({ mode }) => {
   const rootDir = path.resolve(__dirname, "..");
-  const rootEnv = loadEnv(mode, rootDir, "");
+  const rootEnv = shouldLoadWorkspaceEnv(process.env) ? loadEnv(mode, rootDir, "") : {};
   const apiPortRaw = rootEnv.PORT || process.env.PORT || "3100";
   const apiPort = Math.min(65535, Math.max(1, Number(apiPortRaw) || 3100));
 

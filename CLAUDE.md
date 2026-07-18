@@ -39,7 +39,7 @@ pnpm gitmesh-agents <subcommand>   # operator CLI (issues, dashboard, configure,
 
 Single test file: `pnpm vitest run path/to/file.test.ts` (or `pnpm --filter @gitmesh/server test:run -- path`).
 
-There is **no `pnpm lint`** script despite `CONTRIBUTING.md` mentioning one. CI verification = `check:tokens` + `pnpm -r typecheck` + `pnpm test:run` + `pnpm build` (see `.github/workflows/pr-verify.yml`). Run all four before claiming done.
+There is **no `pnpm lint`** script despite `CONTRIBUTING.md` mentioning one. CI verification = `pnpm check:tokens` + `pnpm -r typecheck` + `pnpm typecheck:e2e` + `pnpm test:run` + `pnpm build` + `pnpm test:e2e` (see `.github/workflows/ci.yml`). Run all six before claiming done.
 
 ## Dev Environment
 
@@ -50,7 +50,7 @@ There is **no `pnpm lint`** script despite `CONTRIBUTING.md` mentioning one. CI 
 
 ## Lockfile Policy
 
-**Do not commit `pnpm-lock.yaml` in pull requests.** GitHub Actions owns the lockfile — pushes to `master` regenerate and commit it. Use `pnpm install --no-frozen-lockfile` locally; CI re-verifies with `--frozen-lockfile`.
+**Do not commit `pnpm-lock.yaml` in pull requests.** GitHub Actions owns the lockfile. The CI dependency-lock job generates one ephemeral lockfile consumed by both normal and browser jobs; after a manifest change reaches `main`, it signs off and commits that same resolved lockfile. Use `pnpm install --no-frozen-lockfile` locally.
 
 ## Monorepo Layout
 

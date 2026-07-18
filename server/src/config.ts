@@ -23,6 +23,7 @@ import {
   resolveDefaultStorageDir,
   resolveHomeAwarePath,
 } from "./home-paths.js";
+import { shouldLoadWorkspaceEnv } from "./config-env.js";
 
 const GITMESH_ENV_FILE_PATH = resolveGitmeshAgentsEnvPath();
 if (existsSync(GITMESH_ENV_FILE_PATH)) {
@@ -34,10 +35,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workspaceEnvPath = path.resolve(__dirname, "../../.env");
 const cwdEnvPath = path.resolve(process.cwd(), ".env");
 
-if (existsSync(workspaceEnvPath)) {
-  loadDotenv({ path: workspaceEnvPath, override: false, quiet: true });
-} else if (existsSync(cwdEnvPath)) {
-  loadDotenv({ path: cwdEnvPath, override: false, quiet: true });
+if (shouldLoadWorkspaceEnv()) {
+  if (existsSync(workspaceEnvPath)) {
+    loadDotenv({ path: workspaceEnvPath, override: false, quiet: true });
+  } else if (existsSync(cwdEnvPath)) {
+    loadDotenv({ path: cwdEnvPath, override: false, quiet: true });
+  }
 }
 
 type DatabaseMode = "embedded-postgres" | "postgres";
