@@ -5,6 +5,7 @@ export default defineConfig({
     projects: [
       "lib/data",
       "lib/workspace-core",
+      "lib/workspace-adapters",
       "lib/adapters/opencode",
       "server",
       "ui",
