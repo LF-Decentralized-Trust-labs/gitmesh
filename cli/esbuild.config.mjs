@@ -55,12 +55,13 @@ for (const name of externalWorkspacePackages) {
 
 /** @type {import('esbuild').BuildOptions} */
 export default {
-  entryPoints: ["src/index.ts"],
+  entryPoints: ["src/index.ts", "src/gitmesh.ts"],
   bundle: true,
   platform: "node",
   target: "node20",
   format: "esm",
-  outfile: "dist/index.js",
+  outdir: "dist",
+  splitting: true,
   banner: { js: "#!/usr/bin/env node" },
   external: [...externals].sort(),
   treeShaking: true,

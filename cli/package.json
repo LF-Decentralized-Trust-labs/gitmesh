@@ -4,6 +4,7 @@
   "description": "GitMesh Agents CLI — orchestrate AI agent teams to run a business",
   "type": "module",
   "bin": {
+    "gitmesh": "./dist/gitmesh.js",
     "gitmesh-agents": "./dist/index.js"
   },
   "keywords": [
@@ -28,7 +29,8 @@
   },
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "node --input-type=module -e \"import esbuild from 'esbuild'; import config from './esbuild.config.mjs'; await esbuild.build(config);\" && chmod +x dist/index.js",
+    "dev:gitmesh": "tsx src/gitmesh.ts",
+    "build": "node --input-type=module -e \"import esbuild from 'esbuild'; import config from './esbuild.config.mjs'; await esbuild.build(config);\" && chmod +x dist/index.js dist/gitmesh.js",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },

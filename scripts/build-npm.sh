@@ -47,11 +47,12 @@ import config from './esbuild.config.mjs';
 await esbuild.build(config);
 "
 
-chmod +x dist/index.js
+chmod +x dist/index.js dist/gitmesh.js
 
 # ── Step 4: Validate bundled entrypoint syntax ─────────────────────────────────
 echo "  [4/6] Verifying bundled entrypoint syntax..."
 node --check "$DIST_DIR/index.js"
+node --check "$DIST_DIR/gitmesh.js"
 
 # ── Step 5: Back up dev package.json, generate publishable one ─────────────────
 echo "  [5/6] Generating publishable package.json..."

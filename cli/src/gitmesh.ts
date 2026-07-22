@@ -1,3 +1,3 @@
 import { runCli } from "./program.js";
 
-runCli("gitmesh-agents");
+runCli("gitmesh");

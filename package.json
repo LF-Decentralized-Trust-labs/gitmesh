@@ -24,6 +24,7 @@
     "claude:proxy:start": "node scripts/claude-anthropic-proxy.mjs",
     "claude:official": "./scripts/claude-mode-official.sh",
     "claude:proxy": "./scripts/claude-mode-proxy.sh",
+    "gitmesh": "node cli/node_modules/tsx/dist/cli.mjs cli/src/gitmesh.ts",
     "gitmesh-agents": "node cli/node_modules/tsx/dist/cli.mjs cli/src/index.ts",
     "build:npm": "./scripts/build-npm.sh",
     "release": "./scripts/release.sh",
