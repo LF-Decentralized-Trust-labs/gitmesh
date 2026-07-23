@@ -38,6 +38,10 @@ describe("listGoldenCases", () => {
   it("discovers adapter/case pairs sorted deterministically", () => {
     const cases = listGoldenCases(fixturesRoot);
     expect(cases.map((c) => `${c.adapter}/${c.name}`)).toEqual([
+      "claude-code/full-surface",
+      "claude-code/no-artifacts",
+      "claude-code/scoped-and-managed",
+      "claude-code/user-scope-not-requested",
       "dummy/copy-through",
       "dummy/rejects-drift",
     ]);
@@ -55,7 +59,9 @@ describe("listGoldenCases", () => {
 
 describe("runGoldenCase", () => {
   it("passes the dummy copy-through fixture (T0.5 acceptance)", async () => {
-    const [copyThrough] = listGoldenCases(fixturesRoot);
+    const copyThrough = listGoldenCases(fixturesRoot).find(
+      (c) => c.adapter === "dummy" && c.name === "copy-through",
+    )!;
     const result = await runGoldenCase(copyThrough, identityRunner);
     expect(result.differences).toEqual([]);
     expect(result.ok).toBe(true);
@@ -147,7 +153,9 @@ describe("runGoldenCase", () => {
 
 describe("assertGoldenCase", () => {
   it("resolves on a passing case", async () => {
-    const [copyThrough] = listGoldenCases(fixturesRoot);
+    const copyThrough = listGoldenCases(fixturesRoot).find(
+      (c) => c.adapter === "dummy" && c.name === "copy-through",
+    )!;
     await expect(assertGoldenCase(copyThrough, identityRunner)).resolves.toBeUndefined();
   });
 

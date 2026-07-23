@@ -4,11 +4,19 @@ import type { AgentAdapter } from "./types.js";
 export type AdapterLoader = () => Promise<AgentAdapter>;
 
 /**
- * Built-in adapter loaders keyed by adapter name.
- * Empty until the first adapters land (E1 detectors, E4 emitters).
+ * Built-in adapter loaders keyed by adapter name. Loaders are lazy: an
+ * adapter module is imported only when first requested, so listing adapters
+ * never pays for loading them all.
  */
-export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> =
-  new Map();
+export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map<
+  string,
+  AdapterLoader
+>([
+  [
+    "claude-code",
+    async () => (await import("./claude-code/index.js")).claudeCodeAdapter,
+  ],
+]);
 
 export interface AdapterRegistry {
   /** Registered adapter names, sorted for deterministic output. */

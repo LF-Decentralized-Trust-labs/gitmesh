@@ -1,4 +1,8 @@
 node_modules/
+# Golden fixtures model user repos; their node_modules decoys are test data
+# (pivot hard rule 4), not dependencies.
+!lib/workspace-adapters/fixtures/**/node_modules/
+!lib/workspace-adapters/fixtures/**/node_modules/**
 dist/
 .env
 *.tsbuildinfo

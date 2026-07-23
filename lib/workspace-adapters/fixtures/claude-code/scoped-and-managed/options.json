@@ -1,0 +1,5 @@
+{
+  "userScope": true,
+  "homeDir": "user-home",
+  "managedSettingsPaths": ["managed/managed-settings.json", "managed/managed-settings.d"]
+}

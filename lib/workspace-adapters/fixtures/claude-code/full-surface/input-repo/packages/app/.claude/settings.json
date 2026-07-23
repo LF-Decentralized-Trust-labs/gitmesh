@@ -1,0 +1,6 @@
+{
+  "_comment": "Decoy: settings resolve from the git root only (v2.1.211+).",
+  "permissions": {
+    "allow": []
+  }
+}

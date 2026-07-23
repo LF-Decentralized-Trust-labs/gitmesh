@@ -1,0 +1,27 @@
+[
+  {
+    "path": "CLAUDE.local.md",
+    "kind": "instructions",
+    "scope": "local"
+  },
+  {
+    "path": "CLAUDE.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "managed-settings.d",
+    "kind": "settings",
+    "scope": "managed"
+  },
+  {
+    "path": "managed-settings.json",
+    "kind": "settings",
+    "scope": "managed"
+  },
+  {
+    "path": "~/.claude/CLAUDE.md",
+    "kind": "instructions",
+    "scope": "user"
+  }
+]

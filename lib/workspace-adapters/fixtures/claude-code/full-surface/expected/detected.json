@@ -1,0 +1,77 @@
+[
+  {
+    "path": ".claude-plugin/marketplace.json",
+    "kind": "marketplace",
+    "scope": "project"
+  },
+  {
+    "path": ".claude-plugin/plugin.json",
+    "kind": "plugin-manifest",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/agents/reviewer.md",
+    "kind": "subagent",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/commands/frontend/component.md",
+    "kind": "command",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/commands/test.md",
+    "kind": "command",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/rules/backend/database.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/rules/style.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/settings.json",
+    "kind": "settings",
+    "scope": "project"
+  },
+  {
+    "path": ".claude/settings.local.json",
+    "kind": "settings",
+    "scope": "local"
+  },
+  {
+    "path": ".claude/skills/deploy/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": "CLAUDE.local.md",
+    "kind": "instructions",
+    "scope": "local"
+  },
+  {
+    "path": "CLAUDE.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/CLAUDE.local.md",
+    "kind": "instructions",
+    "scope": "local"
+  },
+  {
+    "path": "packages/app/CLAUDE.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

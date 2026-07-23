@@ -1,0 +1,1 @@
+Decoy: rules are markdown files; this is not inventoried.

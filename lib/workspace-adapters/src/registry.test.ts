@@ -15,13 +15,26 @@ function dummyAdapter(name: string): AgentAdapter {
 }
 
 describe("createAdapterRegistry", () => {
-  it("lists 0 adapters by default", () => {
+  it("lists the built-in adapters by default", () => {
     const registry = createAdapterRegistry();
+    expect(registry.list()).toEqual(["claude-code"]);
+  });
+
+  it("lists 0 adapters for an empty loader map", () => {
+    const registry = createAdapterRegistry(new Map());
     expect(registry.list()).toEqual([]);
   });
 
-  it("lists registered adapters sorted by name", () => {
+  it("lazily loads the built-in claude-code adapter", async () => {
     const registry = createAdapterRegistry();
+    const adapter = await registry.load("claude-code");
+    expect(adapter.name).toBe("claude-code");
+    expect(typeof adapter.detect).toBe("function");
+    await expect(registry.load("claude-code")).resolves.toBe(adapter);
+  });
+
+  it("lists registered adapters sorted by name", () => {
+    const registry = createAdapterRegistry(new Map());
     registry.register("codex", async () => dummyAdapter("codex"));
     registry.register("claude-code", async () => dummyAdapter("claude-code"));
     expect(registry.list()).toEqual(["claude-code", "codex"]);
@@ -30,7 +43,7 @@ describe("createAdapterRegistry", () => {
   });
 
   it("loads lazily and invokes the loader at most once", async () => {
-    const registry = createAdapterRegistry();
+    const registry = createAdapterRegistry(new Map());
     const loader = vi.fn(async () => dummyAdapter("claude-code"));
     registry.register("claude-code", loader);
     expect(loader).not.toHaveBeenCalled();
@@ -43,7 +56,7 @@ describe("createAdapterRegistry", () => {
   });
 
   it("retries after a failed load instead of caching the rejection", async () => {
-    const registry = createAdapterRegistry();
+    const registry = createAdapterRegistry(new Map());
     let attempts = 0;
     registry.register("claude-code", async () => {
       attempts += 1;
