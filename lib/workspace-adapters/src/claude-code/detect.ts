@@ -5,6 +5,7 @@ import {
   realpathSync,
   statSync,
   type Dirent,
+  type Stats,
 } from "node:fs";
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
@@ -18,7 +19,10 @@ import type { DetectedArtifact, RepoContext } from "../types.js";
  * output (sorted, no wallclock, no absolute paths in results). Symlink-aware:
  * symlinked artifacts are inventoried with their literal target — a symlinked
  * CLAUDE.md is a healthy pattern (§10.4), never resolved away — symlinked
- * directories are traversed, and traversal is cycle-safe.
+ * directories are traversed, and traversal is cycle-safe. Filesystem errors on
+ * individual entries — an unreadable directory, a symlink cycle — are
+ * contained: the entry is skipped or flagged `broken`, never fatal, so a
+ * doctor scan survives any repository.
  */
 
 /** Artifact kinds this detector reports. */
@@ -103,7 +107,7 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   // 5. Managed-settings presence probe: report presence only — never the
   //    location (machine-specific) and never the content.
   for (const probe of repo.managedSettingsPaths ?? defaultManagedSettingsPaths()) {
-    if (statSync(probe, { throwIfNoEntry: false }) !== undefined) {
+    if (safeStat(probe) !== undefined) {
       artifacts.push(makeArtifact(lastSegment(probe), "settings", "managed"));
     }
   }
@@ -148,12 +152,35 @@ function addFile(
 }
 
 /**
+ * `stat` (follows symlinks) that never throws: `undefined` for any unreachable
+ * path — missing (`ENOENT`), a symlink cycle (`ELOOP`), or one we lack
+ * permission to resolve (`EACCES`). `throwIfNoEntry` suppresses only `ENOENT`,
+ * so the `try` covers the rest; a doctor scan must not abort on one bad entry.
+ */
+function safeStat(absPath: string): Stats | undefined {
+  try {
+    return statSync(absPath, { throwIfNoEntry: false });
+  } catch {
+    return undefined;
+  }
+}
+
+/** `lstat` (does not follow symlinks) that never throws; see {@link safeStat}. */
+function safeLstat(absPath: string): Stats | undefined {
+  try {
+    return lstatSync(absPath, { throwIfNoEntry: false });
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Inspects one path expected to hold a regular file. Returns `null` when it
  * does not exist or is a directory; symlinks are reported with their literal
  * target, flagged broken when they do not resolve to a file.
  */
 function inspectFile(absPath: string): FileInfo | null {
-  const stats = lstatSync(absPath, { throwIfNoEntry: false });
+  const stats = safeLstat(absPath);
   if (stats === undefined) {
     return null;
   }
@@ -172,8 +199,15 @@ function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | null {
 }
 
 function symlinkInfo(absPath: string): FileInfo {
-  const symlinkTarget = readlinkSync(absPath).replaceAll("\\", "/");
-  const resolved = statSync(absPath, { throwIfNoEntry: false });
+  let symlinkTarget: string;
+  try {
+    symlinkTarget = readlinkSync(absPath).replaceAll("\\", "/");
+  } catch {
+    // A symlink we cannot even read (e.g. permission denied): flag it broken
+    // rather than aborting the scan.
+    return { broken: true };
+  }
+  const resolved = safeStat(absPath);
   return resolved?.isFile() ? { symlinkTarget } : { symlinkTarget, broken: true };
 }
 
@@ -185,7 +219,7 @@ function isTraversableDir(entry: Dirent, absPath: string): boolean {
   if (!entry.isSymbolicLink()) {
     return false;
   }
-  return statSync(absPath, { throwIfNoEntry: false })?.isDirectory() ?? false;
+  return safeStat(absPath)?.isDirectory() ?? false;
 }
 
 /**
@@ -208,9 +242,15 @@ function markVisited(absDir: string, visited: Set<string>): boolean {
 }
 
 function sortedEntries(absDir: string): Dirent[] {
-  return readdirSync(absDir, { withFileTypes: true }).sort((a, b) =>
-    a.name < b.name ? -1 : a.name > b.name ? 1 : 0,
-  );
+  let entries: Dirent[];
+  try {
+    entries = readdirSync(absDir, { withFileTypes: true });
+  } catch {
+    // Unreadable directory (permissions, a race, a special file): contribute
+    // nothing rather than aborting the whole inventory.
+    return [];
+  }
+  return entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 }
 
 /** Walks the repo for CLAUDE.md (project) and CLAUDE.local.md (local) files. */
@@ -299,7 +339,7 @@ function collectSkills(root: string, out: ClaudeCodeArtifact[]): void {
 }
 
 function isDirectory(absPath: string): boolean {
-  return statSync(absPath, { throwIfNoEntry: false })?.isDirectory() ?? false;
+  return safeStat(absPath)?.isDirectory() ?? false;
 }
 
 /** Final path segment, tolerant of either separator (managed probe display). */

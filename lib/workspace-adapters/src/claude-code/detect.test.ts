@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -257,6 +258,26 @@ describe("claude-code detect()", () => {
     ]);
   });
 
+  it.skipIf(!symlinkSupport.file)(
+    "flags a looping symlink as broken instead of throwing ELOOP",
+    () => {
+      const { root, repo } = makeRepo({});
+      // CLAUDE.md -> loopA -> loopB -> loopA: resolving the target raises ELOOP.
+      symlinkSync("loopB", join(root, "loopA"));
+      symlinkSync("loopA", join(root, "loopB"));
+      symlinkSync("loopA", join(root, "CLAUDE.md"));
+      expect(detect(repo)).toEqual([
+        {
+          path: "CLAUDE.md",
+          kind: "instructions",
+          scope: "project",
+          symlinkTarget: "loopA",
+          broken: true,
+        },
+      ]);
+    },
+  );
+
   it.skipIf(!symlinkSupport.directory)(
     "follows a symlinked .claude/skills directory",
     () => {
@@ -279,6 +300,28 @@ describe("claude-code detect()", () => {
       expect(detect(repo)).toEqual([
         { path: "CLAUDE.md", kind: "instructions", scope: "project" },
       ]);
+    },
+  );
+
+  // POSIX-only: Windows ignores chmod bits and root bypasses them — either
+  // would let the "unreadable" directory be read, defeating the test.
+  it.skipIf(process.platform === "win32" || (process.getuid?.() ?? 0) === 0)(
+    "skips an unreadable directory instead of throwing EACCES",
+    () => {
+      const { root, repo } = makeRepo({
+        "CLAUDE.md": "root\n",
+        "locked/CLAUDE.md": "hidden\n",
+      });
+      const locked = join(root, "locked");
+      chmodSync(locked, 0o000);
+      try {
+        expect(detect(repo)).toEqual([
+          { path: "CLAUDE.md", kind: "instructions", scope: "project" },
+        ]);
+      } finally {
+        // Restore perms so afterEach cleanup can recurse into the directory.
+        chmodSync(locked, 0o755);
+      }
     },
   );
 });
