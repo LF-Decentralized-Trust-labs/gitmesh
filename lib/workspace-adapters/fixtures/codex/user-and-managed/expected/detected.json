@@ -1,0 +1,17 @@
+[
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "requirements.toml",
+    "kind": "requirements",
+    "scope": "managed"
+  },
+  {
+    "path": "~/.codex/config.toml",
+    "kind": "config",
+    "scope": "user"
+  }
+]

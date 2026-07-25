@@ -1,0 +1,12 @@
+[
+  {
+    "path": "$CODEX_HOME/config.toml",
+    "kind": "config",
+    "scope": "user"
+  },
+  {
+    "path": "CODEX_HOME",
+    "kind": "env-hint",
+    "scope": "user"
+  }
+]

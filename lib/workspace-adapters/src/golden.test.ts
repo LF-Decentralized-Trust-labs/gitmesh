@@ -42,6 +42,10 @@ describe("listGoldenCases", () => {
       "claude-code/no-artifacts",
       "claude-code/scoped-and-managed",
       "claude-code/user-scope-not-requested",
+      "codex/codex-home-hint",
+      "codex/full-surface",
+      "codex/no-artifacts",
+      "codex/user-and-managed",
       "dummy/copy-through",
       "dummy/rejects-drift",
     ]);

@@ -263,9 +263,10 @@ describe("claude-code detect()", () => {
     () => {
       const { root, repo } = makeRepo({});
       // CLAUDE.md -> loopA -> loopB -> loopA: resolving the target raises ELOOP.
-      symlinkSync("loopB", join(root, "loopA"));
-      symlinkSync("loopA", join(root, "loopB"));
-      symlinkSync("loopA", join(root, "CLAUDE.md"));
+      // Explicit "file" type: Windows otherwise stats the cycle and throws here.
+      symlinkSync("loopB", join(root, "loopA"), "file");
+      symlinkSync("loopA", join(root, "loopB"), "file");
+      symlinkSync("loopA", join(root, "CLAUDE.md"), "file");
       expect(detect(repo)).toEqual([
         {
           path: "CLAUDE.md",

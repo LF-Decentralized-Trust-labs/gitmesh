@@ -1,0 +1,1 @@
+Skill resource, not inventoried.

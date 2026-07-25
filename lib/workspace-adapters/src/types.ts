@@ -24,6 +24,17 @@ export interface RepoContext {
    * these at fixture paths. An empty array disables the probe.
    */
   managedSettingsPaths?: readonly string[];
+  /**
+   * Absolute paths probed — for presence only — for the Codex org-managed
+   * `requirements.toml`. Defaults to the per-OS locations; tests point these
+   * at fixture paths. An empty array disables the probe.
+   */
+  requirementsTomlPaths?: readonly string[];
+  /**
+   * Environment consulted for machine-scoped hints (e.g. `CODEX_HOME`).
+   * Defaults to `process.env`; tests inject a fixed map.
+   */
+  env?: Readonly<Record<string, string | undefined>>;
 }
 
 /** Configuration tier an artifact belongs to. */

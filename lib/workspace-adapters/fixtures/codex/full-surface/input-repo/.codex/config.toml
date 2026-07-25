@@ -1,0 +1,2 @@
+[profiles.default]
+approval_policy = "on-request"

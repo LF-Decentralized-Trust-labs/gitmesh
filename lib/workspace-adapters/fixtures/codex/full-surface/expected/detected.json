@@ -1,0 +1,37 @@
+[
+  {
+    "path": ".agents/skills/deploy/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".codex/agents/reviewer.toml",
+    "kind": "subagent",
+    "scope": "project"
+  },
+  {
+    "path": ".codex/config.toml",
+    "kind": "config",
+    "scope": "project"
+  },
+  {
+    "path": ".codex/policies/exec.rules",
+    "kind": "execpolicy",
+    "scope": "project"
+  },
+  {
+    "path": ".codex/root.rules",
+    "kind": "execpolicy",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]
