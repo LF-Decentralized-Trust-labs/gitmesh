@@ -1,14 +1,16 @@
-import {
-  lstatSync,
-  readdirSync,
-  readlinkSync,
-  realpathSync,
-  statSync,
-  type Dirent,
-  type Stats,
-} from "node:fs";
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
+import {
+  compareArtifacts,
+  fileInfoFromEntry,
+  inspectFile,
+  isTraversableDir,
+  lastSegment,
+  makeArtifact,
+  safeStat,
+  sortedEntries,
+  walk,
+} from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
 
 /**
@@ -133,7 +135,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   const seen = new Set<string>();
   for (const probe of repo.requirementsTomlPaths ??
     defaultRequirementsTomlPaths(process.platform, env)) {
-    const name = win32.basename(probe);
+    const name = lastSegment(probe);
     if (!seen.has(name) && safeStat(probe) !== undefined) {
       seen.add(name);
       out.push(makeArtifact(name, "requirements", "managed"));
@@ -141,128 +143,4 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   }
 
   return out.sort(compareArtifacts);
-}
-
-interface FileInfo {
-  symlinkTarget?: string;
-  broken?: boolean;
-}
-
-function makeArtifact(
-  path: string,
-  kind: CodexArtifactKind,
-  scope: CodexArtifact["scope"],
-  info: FileInfo = {},
-): CodexArtifact {
-  const artifact: CodexArtifact = { path, kind, scope };
-  if (info.symlinkTarget !== undefined) {
-    artifact.symlinkTarget = info.symlinkTarget;
-  }
-  if (info.broken) {
-    artifact.broken = true;
-  }
-  return artifact;
-}
-
-function safeStat(absPath: string): Stats | undefined {
-  try {
-    return statSync(absPath, { throwIfNoEntry: false });
-  } catch {
-    return undefined;
-  }
-}
-
-function inspectFile(absPath: string): FileInfo | null {
-  let stats: Stats | undefined;
-  try {
-    stats = lstatSync(absPath, { throwIfNoEntry: false });
-  } catch {
-    return null;
-  }
-  if (stats === undefined) {
-    return null;
-  }
-  if (stats.isSymbolicLink()) {
-    return symlinkInfo(absPath);
-  }
-  return stats.isFile() ? {} : null;
-}
-
-function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | null {
-  if (entry.isSymbolicLink()) {
-    return symlinkInfo(absPath);
-  }
-  return entry.isFile() ? {} : null;
-}
-
-function symlinkInfo(absPath: string): FileInfo {
-  let symlinkTarget: string;
-  try {
-    symlinkTarget = readlinkSync(absPath).replaceAll("\\", "/");
-  } catch {
-    return { broken: true };
-  }
-  return safeStat(absPath)?.isFile() ? { symlinkTarget } : { symlinkTarget, broken: true };
-}
-
-function isTraversableDir(entry: Dirent, absPath: string): boolean {
-  if (entry.isDirectory()) {
-    return true;
-  }
-  return entry.isSymbolicLink() && (safeStat(absPath)?.isDirectory() ?? false);
-}
-
-/** Sorted listing; an unreadable or missing directory contributes nothing. */
-function sortedEntries(absDir: string): Dirent[] {
-  let entries: Dirent[];
-  try {
-    entries = readdirSync(absDir, { withFileTypes: true });
-  } catch {
-    return [];
-  }
-  return entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-}
-
-/** Cycle-safe recursive walk (visited real paths); `recurse` gates descent. */
-function walk(
-  absDir: string,
-  relDir: string,
-  visited: Set<string>,
-  recurse: (dirName: string) => boolean,
-  onFile: (name: string, rel: string, info: FileInfo) => void,
-): void {
-  let real: string;
-  try {
-    real = realpathSync(absDir);
-  } catch {
-    return;
-  }
-  if (visited.has(real)) {
-    return;
-  }
-  visited.add(real);
-  for (const entry of sortedEntries(absDir)) {
-    const abs = join(absDir, entry.name);
-    const rel = relDir === "" ? entry.name : `${relDir}/${entry.name}`;
-    if (isTraversableDir(entry, abs)) {
-      if (recurse(entry.name)) {
-        walk(abs, rel, visited, recurse, onFile);
-      }
-    } else {
-      const info = fileInfoFromEntry(entry, abs);
-      if (info) {
-        onFile(entry.name, rel, info);
-      }
-    }
-  }
-}
-
-function compareArtifacts(a: DetectedArtifact, b: DetectedArtifact): number {
-  if (a.path !== b.path) {
-    return a.path < b.path ? -1 : 1;
-  }
-  if (a.kind !== b.kind) {
-    return a.kind < b.kind ? -1 : 1;
-  }
-  return a.scope < b.scope ? -1 : a.scope > b.scope ? 1 : 0;
 }

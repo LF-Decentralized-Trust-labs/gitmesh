@@ -1,26 +1,14 @@
+import { symlinkSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
-import { assertGoldenCase, listGoldenCases } from "../golden.js";
+  describeDetectorGoldens,
+  loadCaseOptions,
+  symlinkSupport,
+  useTempDirs,
+} from "../detect-test-utils.js";
 import type { RepoContext } from "../types.js";
-import {
-  codexAdapter,
-  defaultRequirementsTomlPaths,
-  detect,
-  type CodexArtifact,
-} from "./index.js";
-
-const fixturesRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../fixtures");
+import { codexAdapter, defaultRequirementsTomlPaths, detect } from "./index.js";
 
 /**
  * Per-case options in `<case>/options.json` (sibling of `input-repo/`).
@@ -35,11 +23,8 @@ interface CaseOptions {
   requirementsTomlPaths?: string[];
 }
 
-function contextFor(caseDir: string, inputRepoDir: string): RepoContext {
-  const optionsPath = join(caseDir, "options.json");
-  const options: CaseOptions = existsSync(optionsPath)
-    ? (JSON.parse(readFileSync(optionsPath, "utf8")) as CaseOptions)
-    : {};
+describeDetectorGoldens(codexAdapter, "T1.2", (caseDir, inputRepoDir) => {
+  const options = loadCaseOptions<CaseOptions>(caseDir);
   return {
     rootDir: inputRepoDir,
     userScope: options.userScope ?? false,
@@ -52,69 +37,15 @@ function contextFor(caseDir: string, inputRepoDir: string): RepoContext {
       join(caseDir, p),
     ),
   };
-}
-
-function serialize(artifacts: readonly CodexArtifact[]): string {
-  return `${JSON.stringify(artifacts, null, 2)}\n`;
-}
-
-describe("codex golden fixtures", () => {
-  const goldenCases = listGoldenCases(fixturesRoot).filter((c) => c.adapter === "codex");
-
-  it("ships at least 3 cases including the negative one (T1.2 AC)", () => {
-    expect(goldenCases.length).toBeGreaterThanOrEqual(3);
-    expect(goldenCases.map((c) => c.name)).toContain("no-artifacts");
-    expect(codexAdapter.fixtures.map((f) => f.name)).toEqual(
-      goldenCases.map((c) => c.name),
-    );
-  });
-
-  for (const goldenCase of listGoldenCases(fixturesRoot).filter(
-    (c) => c.adapter === "codex",
-  )) {
-    it(`matches ${goldenCase.name} byte-exactly`, async () => {
-      await assertGoldenCase(goldenCase, (inputRepoDir) => [
-        {
-          path: "detected.json",
-          content: serialize(detect(contextFor(goldenCase.dir, inputRepoDir))),
-        },
-      ]);
-    });
-  }
 });
 
-const tempDirs: string[] = [];
-
-afterEach(() => {
-  while (tempDirs.length > 0) {
-    rmSync(tempDirs.pop()!, { recursive: true, force: true });
-  }
-});
+const temp = useTempDirs();
 
 /** Creates a temp repo from `files` and returns a probe-free context for it. */
 function makeRepo(files: Record<string, string>): { root: string; repo: RepoContext } {
-  const root = mkdtempSync(join(tmpdir(), "gitmesh-codex-detect-"));
-  tempDirs.push(root);
-  for (const [path, content] of Object.entries(files)) {
-    mkdirSync(join(root, dirname(path)), { recursive: true });
-    writeFileSync(join(root, path), content);
-  }
+  const root = temp.makeRepo("gitmesh-codex-detect-", files);
   return { root, repo: { rootDir: root, env: {}, requirementsTomlPaths: [] } };
 }
-
-/** File symlinks need Developer Mode/admin on Windows; probe and skip if absent. */
-const fileSymlinkSupport = (() => {
-  const dir = mkdtempSync(join(tmpdir(), "gitmesh-symlink-probe-"));
-  try {
-    writeFileSync(join(dir, "target.txt"), "x");
-    symlinkSync("target.txt", join(dir, "file-link"));
-    return true;
-  } catch {
-    return false;
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-})();
 
 describe("codex detect()", () => {
   it("reports a CODEX_HOME hint when set — presence only, never the value", () => {
@@ -141,7 +72,7 @@ describe("codex detect()", () => {
     ]);
   });
 
-  it.skipIf(!fileSymlinkSupport)(
+  it.skipIf(!symlinkSupport.file)(
     "inventories a symlinked AGENTS.md with its literal target",
     () => {
       const { root, repo } = makeRepo({ "CLAUDE.md": "shared\n" });
@@ -157,7 +88,7 @@ describe("codex detect()", () => {
     },
   );
 
-  it.skipIf(!fileSymlinkSupport)("flags a dangling symlink as broken", () => {
+  it.skipIf(!symlinkSupport.file)("flags a dangling symlink as broken", () => {
     const { root, repo } = makeRepo({});
     symlinkSync("missing.md", join(root, "AGENTS.md"), "file");
     expect(detect(repo)).toEqual([

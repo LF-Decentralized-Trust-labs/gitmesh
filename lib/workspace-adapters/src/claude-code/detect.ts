@@ -1,14 +1,15 @@
-import {
-  lstatSync,
-  readdirSync,
-  readlinkSync,
-  realpathSync,
-  statSync,
-  type Dirent,
-  type Stats,
-} from "node:fs";
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
+import {
+  compareArtifacts,
+  inspectFile,
+  isTraversableDir,
+  lastSegment,
+  makeArtifact,
+  safeStat,
+  sortedEntries,
+  walk,
+} from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
 
 /**
@@ -78,7 +79,18 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   const artifacts: ClaudeCodeArtifact[] = [];
 
   // 1. CLAUDE.md / CLAUDE.local.md hierarchy: repo root + every subdirectory.
-  collectInstructions(root, "", artifacts, new Set());
+  walk(
+    root,
+    "",
+    new Set(),
+    (name) => !INSTRUCTION_WALK_EXCLUDES.has(name),
+    (name, rel, info) => {
+      if (name === "CLAUDE.md" || name === "CLAUDE.local.md") {
+        const scope = name === "CLAUDE.md" ? "project" : "local";
+        artifacts.push(makeArtifact(rel, "instructions", scope, info));
+      }
+    },
+  );
 
   // 2. `.claude/` surface. Settings are resolved from the git root only
   //    (Claude Code v2.1.211+ semantics; callers pass that root as rootDir),
@@ -115,28 +127,6 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   return dedupe(artifacts).sort(compareArtifacts);
 }
 
-/** Symlink details of an inventoried file; empty for a regular file. */
-interface FileInfo {
-  symlinkTarget?: string;
-  broken?: boolean;
-}
-
-function makeArtifact(
-  path: string,
-  kind: ClaudeCodeArtifactKind,
-  scope: ClaudeCodeArtifact["scope"],
-  info: FileInfo = {},
-): ClaudeCodeArtifact {
-  const artifact: ClaudeCodeArtifact = { path, kind, scope };
-  if (info.symlinkTarget !== undefined) {
-    artifact.symlinkTarget = info.symlinkTarget;
-  }
-  if (info.broken) {
-    artifact.broken = true;
-  }
-  return artifact;
-}
-
 /** Inventories `relPath` under `root` when it holds a file (or file symlink). */
 function addFile(
   out: ClaudeCodeArtifact[],
@@ -151,135 +141,6 @@ function addFile(
   }
 }
 
-/**
- * `stat` (follows symlinks) that never throws: `undefined` for any unreachable
- * path — missing (`ENOENT`), a symlink cycle (`ELOOP`), or one we lack
- * permission to resolve (`EACCES`). `throwIfNoEntry` suppresses only `ENOENT`,
- * so the `try` covers the rest; a doctor scan must not abort on one bad entry.
- */
-function safeStat(absPath: string): Stats | undefined {
-  try {
-    return statSync(absPath, { throwIfNoEntry: false });
-  } catch {
-    return undefined;
-  }
-}
-
-/** `lstat` (does not follow symlinks) that never throws; see {@link safeStat}. */
-function safeLstat(absPath: string): Stats | undefined {
-  try {
-    return lstatSync(absPath, { throwIfNoEntry: false });
-  } catch {
-    return undefined;
-  }
-}
-
-/**
- * Inspects one path expected to hold a regular file. Returns `null` when it
- * does not exist or is a directory; symlinks are reported with their literal
- * target, flagged broken when they do not resolve to a file.
- */
-function inspectFile(absPath: string): FileInfo | null {
-  const stats = safeLstat(absPath);
-  if (stats === undefined) {
-    return null;
-  }
-  if (stats.isSymbolicLink()) {
-    return symlinkInfo(absPath);
-  }
-  return stats.isFile() ? {} : null;
-}
-
-/** Like {@link inspectFile}, reusing the `Dirent` from a directory listing. */
-function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | null {
-  if (entry.isSymbolicLink()) {
-    return symlinkInfo(absPath);
-  }
-  return entry.isFile() ? {} : null;
-}
-
-function symlinkInfo(absPath: string): FileInfo {
-  let symlinkTarget: string;
-  try {
-    symlinkTarget = readlinkSync(absPath).replaceAll("\\", "/");
-  } catch {
-    // A symlink we cannot even read (e.g. permission denied): flag it broken
-    // rather than aborting the scan.
-    return { broken: true };
-  }
-  const resolved = safeStat(absPath);
-  return resolved?.isFile() ? { symlinkTarget } : { symlinkTarget, broken: true };
-}
-
-/** True for directories, including symlinks that resolve to directories. */
-function isTraversableDir(entry: Dirent, absPath: string): boolean {
-  if (entry.isDirectory()) {
-    return true;
-  }
-  if (!entry.isSymbolicLink()) {
-    return false;
-  }
-  return safeStat(absPath)?.isDirectory() ?? false;
-}
-
-/**
- * Marks a directory as visited by real path; returns false when it was seen
- * before (symlink cycle or an aliased tree) so walks terminate and each real
- * directory is inventoried exactly once.
- */
-function markVisited(absDir: string, visited: Set<string>): boolean {
-  let real: string;
-  try {
-    real = realpathSync(absDir);
-  } catch {
-    return false;
-  }
-  if (visited.has(real)) {
-    return false;
-  }
-  visited.add(real);
-  return true;
-}
-
-function sortedEntries(absDir: string): Dirent[] {
-  let entries: Dirent[];
-  try {
-    entries = readdirSync(absDir, { withFileTypes: true });
-  } catch {
-    // Unreadable directory (permissions, a race, a special file): contribute
-    // nothing rather than aborting the whole inventory.
-    return [];
-  }
-  return entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-}
-
-/** Walks the repo for CLAUDE.md (project) and CLAUDE.local.md (local) files. */
-function collectInstructions(
-  absDir: string,
-  relDir: string,
-  out: ClaudeCodeArtifact[],
-  visited: Set<string>,
-): void {
-  if (!markVisited(absDir, visited)) {
-    return;
-  }
-  for (const entry of sortedEntries(absDir)) {
-    const abs = join(absDir, entry.name);
-    const rel = relDir === "" ? entry.name : `${relDir}/${entry.name}`;
-    if (isTraversableDir(entry, abs)) {
-      if (!INSTRUCTION_WALK_EXCLUDES.has(entry.name)) {
-        collectInstructions(abs, rel, out, visited);
-      }
-    } else if (entry.name === "CLAUDE.md" || entry.name === "CLAUDE.local.md") {
-      const info = fileInfoFromEntry(entry, abs);
-      if (info) {
-        const scope = entry.name === "CLAUDE.md" ? "project" : "local";
-        out.push(makeArtifact(rel, "instructions", scope, info));
-      }
-    }
-  }
-}
-
 /** Recursively inventories every `*.md` file under `root`/`relBase`. */
 function collectMarkdownTree(
   root: string,
@@ -287,34 +148,11 @@ function collectMarkdownTree(
   kind: ClaudeCodeArtifactKind,
   out: ClaudeCodeArtifact[],
 ): void {
-  if (!isDirectory(join(root, relBase))) {
-    return;
-  }
-  walkMarkdown(join(root, relBase), relBase, kind, out, new Set());
-}
-
-function walkMarkdown(
-  absDir: string,
-  relDir: string,
-  kind: ClaudeCodeArtifactKind,
-  out: ClaudeCodeArtifact[],
-  visited: Set<string>,
-): void {
-  if (!markVisited(absDir, visited)) {
-    return;
-  }
-  for (const entry of sortedEntries(absDir)) {
-    const abs = join(absDir, entry.name);
-    const rel = `${relDir}/${entry.name}`;
-    if (isTraversableDir(entry, abs)) {
-      walkMarkdown(abs, rel, kind, out, visited);
-    } else if (entry.name.endsWith(".md")) {
-      const info = fileInfoFromEntry(entry, abs);
-      if (info) {
-        out.push(makeArtifact(rel, kind, "project", info));
-      }
+  walk(join(root, relBase), relBase, new Set(), () => true, (name, rel, info) => {
+    if (name.endsWith(".md")) {
+      out.push(makeArtifact(rel, kind, "project", info));
     }
-  }
+  });
 }
 
 /**
@@ -323,9 +161,6 @@ function walkMarkdown(
  */
 function collectSkills(root: string, out: ClaudeCodeArtifact[]): void {
   const base = join(root, ".claude", "skills");
-  if (!isDirectory(base)) {
-    return;
-  }
   for (const entry of sortedEntries(base)) {
     if (!isTraversableDir(entry, join(base, entry.name))) {
       continue;
@@ -336,16 +171,6 @@ function collectSkills(root: string, out: ClaudeCodeArtifact[]): void {
       out.push(makeArtifact(rel, "skill", "project", info));
     }
   }
-}
-
-function isDirectory(absPath: string): boolean {
-  return safeStat(absPath)?.isDirectory() ?? false;
-}
-
-/** Final path segment, tolerant of either separator (managed probe display). */
-function lastSegment(path: string): string {
-  const segments = path.split(/[\\/]/).filter((segment) => segment !== "");
-  return segments[segments.length - 1] ?? path;
 }
 
 /** Managed probes may alias; everything else is unique by construction. */
@@ -359,15 +184,4 @@ function dedupe(artifacts: ClaudeCodeArtifact[]): ClaudeCodeArtifact[] {
     seen.add(key);
     return true;
   });
-}
-
-/** Deterministic code-unit ordering by path, then kind, then scope. */
-function compareArtifacts(a: DetectedArtifact, b: DetectedArtifact): number {
-  if (a.path !== b.path) {
-    return a.path < b.path ? -1 : 1;
-  }
-  if (a.kind !== b.kind) {
-    return a.kind < b.kind ? -1 : 1;
-  }
-  return a.scope < b.scope ? -1 : a.scope > b.scope ? 1 : 0;
 }

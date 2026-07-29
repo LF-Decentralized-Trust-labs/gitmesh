@@ -1,6 +1,15 @@
 import type { WorkspaceIR } from "@gitmesh/workspace-core";
 
-/** Repository context passed to adapter operations. */
+/**
+ * Repository context passed to adapter operations.
+ *
+ * Probe-path overrides (`managedSettingsPaths`, `requirementsTomlPaths`, …)
+ * stay one named optional field per adapter rather than a generic probe map
+ * (decision, 2026-07-29, ahead of T1.3): the E1 backlog adds only a handful
+ * of detectors, and a named field keeps each override typed and documented
+ * where a string-keyed map could not. Revisit only if the field list
+ * outgrows the backlog.
+ */
 export interface RepoContext {
   /**
    * Absolute path to the repository root. Callers resolve the git root and
@@ -32,7 +41,11 @@ export interface RepoContext {
   requirementsTomlPaths?: readonly string[];
   /**
    * Environment consulted for machine-scoped hints (e.g. `CODEX_HOME`).
-   * Defaults to `process.env`; tests inject a fixed map.
+   * Defaults to `process.env`; tests inject a fixed map. Read only by the
+   * codex detector today; the claude-code detector's default
+   * managed-settings paths still read `process.env` directly (rewiring them
+   * through here would be a behavior change, so it rides with a future
+   * behavior task, not a refactor).
    */
   env?: Readonly<Record<string, string | undefined>>;
 }

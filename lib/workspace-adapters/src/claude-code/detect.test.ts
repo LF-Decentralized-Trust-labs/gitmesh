@@ -1,31 +1,17 @@
+import { chmodSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 import {
-  chmodSync,
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
-import { assertGoldenCase, listGoldenCases } from "../golden.js";
+  describeDetectorGoldens,
+  loadCaseOptions,
+  symlinkSupport,
+  useTempDirs,
+} from "../detect-test-utils.js";
 import type { RepoContext } from "../types.js";
-import {
-  claudeCodeAdapter,
-  defaultManagedSettingsPaths,
-  detect,
-  type ClaudeCodeArtifact,
-} from "./index.js";
-
-const fixturesRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../fixtures");
+import { claudeCodeAdapter, defaultManagedSettingsPaths, detect } from "./index.js";
 
 /**
- * Per-case detector options stored in `<case>/options.json` (sibling of
- * `input-repo/`, so it is never part of the scanned tree). Relative paths
+ * Per-case detector options stored in `<case>/options.json`. Relative paths
  * resolve against the case directory.
  */
 interface CaseOptions {
@@ -34,11 +20,8 @@ interface CaseOptions {
   managedSettingsPaths?: string[];
 }
 
-function contextFor(caseDir: string, inputRepoDir: string): RepoContext {
-  const optionsPath = join(caseDir, "options.json");
-  const options: CaseOptions = existsSync(optionsPath)
-    ? (JSON.parse(readFileSync(optionsPath, "utf8")) as CaseOptions)
-    : {};
+describeDetectorGoldens(claudeCodeAdapter, "T1.1", (caseDir, inputRepoDir) => {
+  const options = loadCaseOptions<CaseOptions>(caseDir);
   return {
     rootDir: inputRepoDir,
     userScope: options.userScope ?? false,
@@ -48,90 +31,15 @@ function contextFor(caseDir: string, inputRepoDir: string): RepoContext {
       join(caseDir, p),
     ),
   };
-}
-
-function serialize(artifacts: readonly ClaudeCodeArtifact[]): string {
-  return `${JSON.stringify(artifacts, null, 2)}\n`;
-}
-
-describe("claude-code golden fixtures", () => {
-  const goldenCases = listGoldenCases(fixturesRoot).filter(
-    (c) => c.adapter === "claude-code",
-  );
-
-  it("ships at least 3 cases including the negative one (T1.1 AC)", () => {
-    expect(goldenCases.length).toBeGreaterThanOrEqual(3);
-    expect(goldenCases.map((c) => c.name)).toContain("no-artifacts");
-  });
-
-  it("declares its fixtures on the adapter, matching the on-disk cases", () => {
-    expect(claudeCodeAdapter.fixtures.map((f) => f.name)).toEqual(
-      goldenCases.map((c) => c.name),
-    );
-  });
-
-  for (const goldenCase of listGoldenCases(fixturesRoot).filter(
-    (c) => c.adapter === "claude-code",
-  )) {
-    it(`matches ${goldenCase.name} byte-exactly`, async () => {
-      await assertGoldenCase(goldenCase, (inputRepoDir) => [
-        {
-          path: "detected.json",
-          content: serialize(detect(contextFor(goldenCase.dir, inputRepoDir))),
-        },
-      ]);
-    });
-  }
 });
 
-const tempDirs: string[] = [];
-
-afterEach(() => {
-  while (tempDirs.length > 0) {
-    rmSync(tempDirs.pop()!, { recursive: true, force: true });
-  }
-});
+const temp = useTempDirs();
 
 /** Creates a temp repo from `files` and returns a probe-free context for it. */
 function makeRepo(files: Record<string, string>): { root: string; repo: RepoContext } {
-  const root = mkdtempSync(join(tmpdir(), "gitmesh-claude-detect-"));
-  tempDirs.push(root);
-  for (const [path, content] of Object.entries(files)) {
-    mkdirSync(join(root, dirname(path)), { recursive: true });
-    writeFileSync(join(root, path), content);
-  }
+  const root = temp.makeRepo("gitmesh-claude-detect-", files);
   return { root, repo: { rootDir: root, managedSettingsPaths: [] } };
 }
-
-/**
- * File symlinks need Developer Mode or admin rights on Windows; directory
- * links are created as junctions, which work unprivileged. Probe once and
- * skip symlink tests where the platform cannot create them.
- */
-const symlinkSupport = (() => {
-  const dir = mkdtempSync(join(tmpdir(), "gitmesh-symlink-probe-"));
-  let file = false;
-  let directory = false;
-  try {
-    writeFileSync(join(dir, "target.txt"), "x");
-    try {
-      symlinkSync("target.txt", join(dir, "file-link"));
-      file = true;
-    } catch {
-      /* unsupported */
-    }
-    mkdirSync(join(dir, "target-dir"));
-    try {
-      symlinkSync(join(dir, "target-dir"), join(dir, "dir-link"), "junction");
-      directory = true;
-    } catch {
-      /* unsupported */
-    }
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-  return { file, directory };
-})();
 
 /** Creates a directory symlink portably (junction on Windows, symlink elsewhere). */
 function symlinkDir(target: string, linkPath: string): void {
@@ -169,8 +77,7 @@ describe("claude-code detect()", () => {
   });
 
   it("reports user-scope memory only when userScope is set", () => {
-    const home = mkdtempSync(join(tmpdir(), "gitmesh-claude-home-"));
-    tempDirs.push(home);
+    const home = temp.makeDir("gitmesh-claude-home-");
     mkdirSync(join(home, ".claude"), { recursive: true });
     writeFileSync(join(home, ".claude", "CLAUDE.md"), "# personal\n");
     const { root } = makeRepo({ "CLAUDE.md": "repo\n" });
@@ -192,8 +99,7 @@ describe("claude-code detect()", () => {
   });
 
   it("probes managed settings by presence only, reporting basenames", () => {
-    const managed = mkdtempSync(join(tmpdir(), "gitmesh-claude-managed-"));
-    tempDirs.push(managed);
+    const managed = temp.makeDir("gitmesh-claude-managed-");
     writeFileSync(join(managed, "managed-settings.json"), "{}\n");
     mkdirSync(join(managed, "managed-settings.d"));
     writeFileSync(join(managed, "managed-settings.d", "00.json"), "{}\n");
