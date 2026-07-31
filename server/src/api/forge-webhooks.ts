@@ -1,8 +1,15 @@
 /**
  * Forge Webhook Routes
  *
- * Handles incoming webhook events from forge providers (GitHub, GitLab, Forgejo)
- * and management of webhook registrations.
+ * Split into two routers so inbound webhook callbacks from forge providers
+ * (GitHub, GitLab, Forgejo) are mounted at the correct path that matches the
+ * callback URL registered with the forge, while management endpoints remain
+ * project-scoped.
+ *
+ * - forgeWebhookManagementRoutes: mounted under /api/projects — CRUD for
+ *   webhook registrations (list, register, rotate, deactivate, test).
+ * - forgeWebhookInboundRoutes: mounted at /api — stateless entry points that
+ *   forge providers POST to (e.g. POST /api/forge/webhook/github).
  */
 
 import { Router, type Request } from "express";
@@ -14,7 +21,7 @@ import { forgeSyncService, startPeriodicSync, type ForgeEvent, type ForgeEventTy
 import { assertBoard, assertProjectAccess, getActorInfo } from "./authz.js";
 import { logActivity, secretService } from "../core/index.js";
 
-export function forgeWebhookRoutes(db: Db) {
+export function forgeWebhookManagementRoutes(db: Db) {
   const router = Router();
   const forgeSync = forgeSyncService(db);
 
@@ -244,7 +251,20 @@ export function forgeWebhookRoutes(db: Db) {
     res.json({ ok: true });
   });
 
-  // ── Incoming Webhook Endpoints ───────────────────────────────────────
+  return router;
+}
+
+// ── Inbound Webhook Handlers ────────────────────────────────────────────
+// These are stateless entry points that forge providers call.  They MUST be
+// mounted at /api (not /api/projects) so the resolved path matches the
+// callback URL registered with GitHub/GitLab/Forgejo:
+//   POST /api/forge/webhook/github
+//   POST /api/forge/webhook/gitlab
+//   POST /api/forge/webhook/forgejo
+
+export function forgeWebhookInboundRoutes(db: Db) {
+  const router = Router();
+  const forgeSync = forgeSyncService(db);
 
   /**
    * POST /api/forge/webhook/github

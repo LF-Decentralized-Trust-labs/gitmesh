@@ -1,6 +1,6 @@
 export { healthRoutes } from "./health.js";
 export { projectRoutes } from "./projects.js";
-export { forgeWebhookRoutes } from "./forge-webhooks.js";
+export { forgeWebhookManagementRoutes, forgeWebhookInboundRoutes } from "./forge-webhooks.js";
 export { policyRoutes } from "./policies.js";
 export { agentRoutes } from "./agents.js";
 export { issueRoutes } from "./issues.js";

@@ -11,7 +11,7 @@ import { operatorMutationGuard } from "./infra/middleware/operator-mutation-guar
 import { privateHostnameGuard, resolvePrivateHostnameAllowSet } from "./infra/middleware/private-hostname-guard.js";
 import { healthRoutes } from "./api/health.js";
 import { projectRoutes } from "./api/projects.js";
-import { forgeWebhookRoutes } from "./api/forge-webhooks.js";
+import { forgeWebhookManagementRoutes, forgeWebhookInboundRoutes } from "./api/forge-webhooks.js";
 import { policyRoutes } from "./api/policies.js";
 import { policyTemplateRoutes } from "./api/policy-templates.js";
 import { agentRoutes } from "./api/agents.js";
@@ -134,7 +134,12 @@ export async function createApp(
     }),
   );
   api.use("/projects", projectRoutes(db));
-  api.use("/projects", forgeWebhookRoutes(db));
+  api.use("/projects", forgeWebhookManagementRoutes(db));
+  // Inbound forge webhook handlers are stateless entry points that forge
+  // providers (GitHub, GitLab, Forgejo) POST to.  They MUST resolve to
+  // /api/forge/webhook/<provider> — the same callback URL registered with
+  // the forge — so they are mounted at the api root, not under /projects.
+  api.use(forgeWebhookInboundRoutes(db));
   api.use("/projects", policyRoutes(db));
   // policyTemplateRoutes mixes top-level (`/policy-templates`) and project-scoped
   // (`/projects/:projectId/policies/install-template`) paths in one router.
