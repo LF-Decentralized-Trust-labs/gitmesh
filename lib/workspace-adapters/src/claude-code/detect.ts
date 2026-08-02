@@ -84,11 +84,10 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
     "",
     new Set(),
     (name) => !INSTRUCTION_WALK_EXCLUDES.has(name),
+    (name) => name === "CLAUDE.md" || name === "CLAUDE.local.md",
     (name, rel, info) => {
-      if (name === "CLAUDE.md" || name === "CLAUDE.local.md") {
-        const scope = name === "CLAUDE.md" ? "project" : "local";
-        artifacts.push(makeArtifact(rel, "instructions", scope, info));
-      }
+      const scope = name === "CLAUDE.md" ? "project" : "local";
+      artifacts.push(makeArtifact(rel, "instructions", scope, info));
     },
   );
 
@@ -148,11 +147,16 @@ function collectMarkdownTree(
   kind: ClaudeCodeArtifactKind,
   out: ClaudeCodeArtifact[],
 ): void {
-  walk(join(root, relBase), relBase, new Set(), () => true, (name, rel, info) => {
-    if (name.endsWith(".md")) {
+  walk(
+    join(root, relBase),
+    relBase,
+    new Set(),
+    () => true,
+    (name) => name.endsWith(".md"),
+    (name, rel, info) => {
       out.push(makeArtifact(rel, kind, "project", info));
-    }
-  });
+    },
+  );
 }
 
 /**

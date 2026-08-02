@@ -126,14 +126,17 @@ export function sortedEntries(absDir: string): Dirent[] {
  * Cycle-safe recursive walk. Directories are marked visited by real path, so
  * symlink cycles and aliased trees terminate and each real directory is
  * inventoried exactly once; `recurse` gates descent by directory name;
- * `onFile` receives each file (or file symlink) with its POSIX-style path
- * relative to the walk root.
+ * `fileFilter` gates which file names are inspected at all — inspecting a
+ * symlink costs `readlink` + `stat`, so filtering happens before inspection,
+ * not in `onFile`; `onFile` receives each matching file (or file symlink)
+ * with its POSIX-style path relative to the walk root.
  */
 export function walk(
   absDir: string,
   relDir: string,
   visited: Set<string>,
   recurse: (dirName: string) => boolean,
+  fileFilter: (name: string) => boolean,
   onFile: (name: string, rel: string, info: FileInfo) => void,
 ): void {
   let real: string;
@@ -151,9 +154,9 @@ export function walk(
     const rel = relDir === "" ? entry.name : `${relDir}/${entry.name}`;
     if (isTraversableDir(entry, abs)) {
       if (recurse(entry.name)) {
-        walk(abs, rel, visited, recurse, onFile);
+        walk(abs, rel, visited, recurse, fileFilter, onFile);
       }
-    } else {
+    } else if (fileFilter(entry.name)) {
       const info = fileInfoFromEntry(entry, abs);
       if (info) {
         onFile(entry.name, rel, info);

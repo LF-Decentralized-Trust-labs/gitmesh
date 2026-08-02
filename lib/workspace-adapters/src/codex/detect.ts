@@ -70,11 +70,16 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   const env = repo.env ?? process.env;
   const out: CodexArtifact[] = [];
 
-  walk(root, "", new Set(), (dir) => !WALK_EXCLUDES.has(dir), (name, rel, info) => {
-    if (name === "AGENTS.md") {
+  walk(
+    root,
+    "",
+    new Set(),
+    (dir) => !WALK_EXCLUDES.has(dir),
+    (name) => name === "AGENTS.md",
+    (name, rel, info) => {
       out.push(makeArtifact(rel, "instructions", "project", info));
-    }
-  });
+    },
+  );
 
   const configInfo = inspectFile(join(root, ".codex", "config.toml"));
   if (configInfo) {
@@ -96,11 +101,16 @@ export function detect(repo: RepoContext): CodexArtifact[] {
 
   // Execpolicy `.rules`: §4.3 fixes no location, so scan `.codex/` only —
   // a repo-wide sweep would false-positive on unrelated `.rules` files.
-  walk(join(root, ".codex"), ".codex", new Set(), () => true, (name, rel, info) => {
-    if (name.endsWith(".rules")) {
+  walk(
+    join(root, ".codex"),
+    ".codex",
+    new Set(),
+    () => true,
+    (name) => name.endsWith(".rules"),
+    (name, rel, info) => {
       out.push(makeArtifact(rel, "execpolicy", "project", info));
-    }
-  });
+    },
+  );
 
   // Skills: one `.agents/skills/<name>/SKILL.md` manifest per skill.
   const skillsBase = join(root, ".agents", "skills");
