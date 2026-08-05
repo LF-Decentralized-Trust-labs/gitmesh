@@ -1,0 +1,6 @@
+---
+description: Full frontmatter rule
+globs: "**/*.tsx"
+alwaysApply: true
+---
+A rule with all frontmatter fields.

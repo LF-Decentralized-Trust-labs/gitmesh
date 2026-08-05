@@ -1,0 +1,17 @@
+[
+  {
+    "path": ".cursor/mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": ".cursorrules",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "path": ".cursor/agents/reviewer.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
+    "path": ".cursor/hooks.json",
+    "kind": "hooks",
+    "scope": "project"
+  },
+  {
+    "path": ".cursor/mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": ".cursor/rules/backend/database.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "description": "Backend database rules",
+      "globs": "src/db/**/*.ts",
+      "alwaysApply": false
+    }
+  },
+  {
+    "path": ".cursor/rules/style.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "description": "General coding style",
+      "globs": "**/*.ts",
+      "alwaysApply": true
+    }
+  },
+  {
+    "path": ".cursorrules",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

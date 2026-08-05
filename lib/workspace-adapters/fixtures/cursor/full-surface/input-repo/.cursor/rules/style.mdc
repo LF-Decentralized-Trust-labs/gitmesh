@@ -1,0 +1,6 @@
+---
+description: General coding style
+globs: "**/*.ts"
+alwaysApply: true
+---
+Follow consistent coding style.

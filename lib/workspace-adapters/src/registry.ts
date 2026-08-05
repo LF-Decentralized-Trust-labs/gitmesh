@@ -17,6 +17,7 @@ export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map
     async () => (await import("./claude-code/index.js")).claudeCodeAdapter,
   ],
   ["codex", async () => (await import("./codex/index.js")).codexAdapter],
+  ["cursor", async () => (await import("./cursor/index.js")).cursorAdapter],
 ]);
 
 export interface AdapterRegistry {

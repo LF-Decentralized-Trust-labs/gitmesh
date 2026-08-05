@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "node hooks/check.js",
+        "description": "Pre-tool validation"
+      }
+    ]
+  }
+}

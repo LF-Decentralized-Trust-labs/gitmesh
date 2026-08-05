@@ -17,7 +17,7 @@ function dummyAdapter(name: string): AgentAdapter {
 describe("createAdapterRegistry", () => {
   it("lists the built-in adapters by default", () => {
     const registry = createAdapterRegistry();
-    expect(registry.list()).toEqual(["claude-code", "codex"]);
+    expect(registry.list()).toEqual(["claude-code", "codex", "cursor"]);
   });
 
   it("lists 0 adapters for an empty loader map", () => {
@@ -83,9 +83,9 @@ describe("createAdapterRegistry", () => {
 
   it("rejects duplicate registration", () => {
     const registry = createAdapterRegistry();
-    registry.register("cursor", async () => dummyAdapter("cursor"));
+    registry.register("copilot", async () => dummyAdapter("copilot"));
     expect(() =>
-      registry.register("cursor", async () => dummyAdapter("cursor")),
-    ).toThrow("Adapter already registered: cursor");
+      registry.register("copilot", async () => dummyAdapter("copilot")),
+    ).toThrow("Adapter already registered: copilot");
   });
 });

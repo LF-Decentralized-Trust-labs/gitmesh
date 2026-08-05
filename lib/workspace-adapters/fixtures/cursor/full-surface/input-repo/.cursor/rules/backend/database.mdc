@@ -1,0 +1,6 @@
+---
+description: Backend database rules
+globs: "src/db/**/*.ts"
+alwaysApply: false
+---
+Use parameterized queries.

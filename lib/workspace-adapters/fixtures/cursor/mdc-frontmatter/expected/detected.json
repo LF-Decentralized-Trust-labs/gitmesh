@@ -1,0 +1,31 @@
+[
+  {
+    "path": ".cursor/rules/complete.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "description": "Full frontmatter rule",
+      "globs": "**/*.tsx",
+      "alwaysApply": true
+    }
+  },
+  {
+    "path": ".cursor/rules/empty-frontmatter.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {}
+  },
+  {
+    "path": ".cursor/rules/no-frontmatter.mdc",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".cursor/rules/partial.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "alwaysApply": false
+    }
+  }
+]

@@ -46,6 +46,10 @@ describe("listGoldenCases", () => {
       "codex/full-surface",
       "codex/no-artifacts",
       "codex/user-and-managed",
+      "cursor/full-surface",
+      "cursor/legacy-cursorrules",
+      "cursor/mdc-frontmatter",
+      "cursor/no-artifacts",
       "dummy/copy-through",
       "dummy/rejects-drift",
     ]);
