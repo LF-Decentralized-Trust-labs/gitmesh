@@ -1,0 +1,32 @@
+[
+  {
+    "path": ".github/instructions/array.instructions.md",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "applyTo": [
+        "**/*.js",
+        "**/*.jsx"
+      ]
+    }
+  },
+  {
+    "path": ".github/instructions/empty.instructions.md",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {}
+  },
+  {
+    "path": ".github/instructions/none.instructions.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".github/instructions/string.instructions.md",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "applyTo": "**/*.ts"
+    }
+  }
+]

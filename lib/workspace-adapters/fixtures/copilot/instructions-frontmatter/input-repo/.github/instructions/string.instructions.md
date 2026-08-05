@@ -1,0 +1,4 @@
+---
+applyTo: "**/*.ts"
+---
+Rule string

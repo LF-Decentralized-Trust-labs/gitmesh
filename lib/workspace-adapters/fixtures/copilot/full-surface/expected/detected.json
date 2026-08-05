@@ -1,0 +1,35 @@
+[
+  {
+    "path": ".github/agents/sub.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
+    "path": ".github/copilot-instructions.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": ".github/instructions/test.instructions.md",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "applyTo": "**/*.ts"
+    }
+  },
+  {
+    "path": ".vscode/mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": ".vscode/settings.json",
+    "kind": "settings",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]
