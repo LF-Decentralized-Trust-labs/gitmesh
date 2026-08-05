@@ -54,6 +54,8 @@ __pycache__/
 # Editor / tool temp files
 *.tmp
 .vscode/
+!lib/workspace-adapters/fixtures/**/.vscode/
+!lib/workspace-adapters/fixtures/**/.vscode/**
 .claude/settings.local.json
 .claude/worktrees/
 .gitmesh-local/
