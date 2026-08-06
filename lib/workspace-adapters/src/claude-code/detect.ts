@@ -1,6 +1,8 @@
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
 import {
+  addFile,
+  collectMarkdownTree,
   compareArtifacts,
   inspectFile,
   isTraversableDir,
@@ -94,17 +96,17 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   // 2. `.claude/` surface. Settings are resolved from the git root only
   //    (Claude Code v2.1.211+ semantics; callers pass that root as rootDir),
   //    so nested `.claude/` directories are deliberately not scanned.
-  addFile(artifacts, root, ".claude/settings.json", "settings", "project");
-  addFile(artifacts, root, ".claude/settings.local.json", "settings", "local");
+  addFile(root, ".claude/settings.json", "settings", "project", artifacts);
+  addFile(root, ".claude/settings.local.json", "settings", "local", artifacts);
   collectMarkdownTree(root, ".claude/rules", "rule", artifacts);
   collectMarkdownTree(root, ".claude/commands", "command", artifacts);
   collectMarkdownTree(root, ".claude/agents", "subagent", artifacts);
   collectSkills(root, artifacts);
 
   // 3. Repo-root singletons: MCP config and plugin/marketplace manifests.
-  addFile(artifacts, root, ".mcp.json", "mcp-config", "project");
-  addFile(artifacts, root, ".claude-plugin/plugin.json", "plugin-manifest", "project");
-  addFile(artifacts, root, ".claude-plugin/marketplace.json", "marketplace", "project");
+  addFile(root, ".mcp.json", "mcp-config", "project", artifacts);
+  addFile(root, ".claude-plugin/plugin.json", "plugin-manifest", "project", artifacts);
+  addFile(root, ".claude-plugin/marketplace.json", "marketplace", "project", artifacts);
 
   // 4. User scope, only when requested (`doctor --user`; §10.1 trust boundary).
   if (repo.userScope) {
@@ -124,39 +126,6 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   }
 
   return dedupe(artifacts).sort(compareArtifacts);
-}
-
-/** Inventories `relPath` under `root` when it holds a file (or file symlink). */
-function addFile(
-  out: ClaudeCodeArtifact[],
-  root: string,
-  relPath: string,
-  kind: ClaudeCodeArtifactKind,
-  scope: ClaudeCodeArtifact["scope"],
-): void {
-  const info = inspectFile(join(root, relPath));
-  if (info) {
-    out.push(makeArtifact(relPath, kind, scope, info));
-  }
-}
-
-/** Recursively inventories every `*.md` file under `root`/`relBase`. */
-function collectMarkdownTree(
-  root: string,
-  relBase: string,
-  kind: ClaudeCodeArtifactKind,
-  out: ClaudeCodeArtifact[],
-): void {
-  walk(
-    join(root, relBase),
-    relBase,
-    new Set(),
-    () => true,
-    (name) => name.endsWith(".md"),
-    (name, rel, info) => {
-      out.push(makeArtifact(rel, kind, "project", info));
-    },
-  );
 }
 
 /**

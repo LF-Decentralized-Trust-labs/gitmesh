@@ -1,0 +1,6 @@
+---
+description: App subproject rules
+globs: "packages/app/src/**/*.ts"
+alwaysApply: false
+---
+Nested subproject rule (Cursor v0.50+ nested .cursor/rules).

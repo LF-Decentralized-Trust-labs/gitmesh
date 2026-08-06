@@ -1,0 +1,8 @@
+---
+description: List globs rule
+globs:
+  - "src/**/*.ts"
+  - lib/**/*.ts
+alwaysApply: true
+---
+A rule whose globs are a YAML block list.

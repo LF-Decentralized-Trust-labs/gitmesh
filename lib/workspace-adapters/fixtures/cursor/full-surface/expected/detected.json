@@ -45,6 +45,16 @@
     "scope": "project"
   },
   {
+    "path": "packages/app/.cursor/rules/app.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "description": "App subproject rules",
+      "globs": "packages/app/src/**/*.ts",
+      "alwaysApply": false
+    }
+  },
+  {
     "path": "packages/app/AGENTS.md",
     "kind": "instructions",
     "scope": "project"

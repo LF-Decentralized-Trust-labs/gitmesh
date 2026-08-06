@@ -1,5 +1,13 @@
 [
   {
+    "path": ".cursor/rules/bare-keys.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "alwaysApply": false
+    }
+  },
+  {
     "path": ".cursor/rules/complete.mdc",
     "kind": "rule",
     "scope": "project",
@@ -14,6 +22,16 @@
     "kind": "rule",
     "scope": "project",
     "frontmatter": {}
+  },
+  {
+    "path": ".cursor/rules/list-globs.mdc",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "description": "List globs rule",
+      "globs": "src/**/*.ts,lib/**/*.ts",
+      "alwaysApply": true
+    }
   },
   {
     "path": ".cursor/rules/no-frontmatter.mdc",

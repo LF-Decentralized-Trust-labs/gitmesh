@@ -1,8 +1,9 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import {
+  addFile,
+  collectMarkdownTree,
   compareArtifacts,
-  inspectFile,
   makeArtifact,
   walk,
   type FileInfo,
@@ -15,18 +16,23 @@ import type { DetectedArtifact, RepoContext } from "../types.js";
  *
  * Artifacts detected:
  * - `AGENTS.md` at any depth (Cursor reads AGENTS.md natively)
- * - `.cursor/rules/*.mdc` with parsed YAML frontmatter
+ * - `.cursor/rules/*.mdc` with parsed YAML frontmatter, at the root and in
+ *   nested `.cursor` directories (monorepo subproject rules, Cursor v0.50+)
  * - Legacy `.cursorrules` (root-only)
- * - `.cursor/mcp.json`
- * - `.cursor/agents/` (recursive `*.md`)
- * - `.cursor/hooks.json` (v1.7+ hooks config)
+ * - `.cursor/mcp.json` (root-only)
+ * - `.cursor/agents/` (recursive `*.md`, root-only)
+ * - `.cursor/hooks.json` (v1.7+ hooks config, root-only)
  *
  * Same guarantees as the claude-code and codex detectors: pure, read-only,
  * deterministic sorted output, symlink-aware (literal targets, never
  * resolved away), cycle-safe, and fs errors contained - never fatal.
  */
 
-/** Parsed YAML-like frontmatter from a `.mdc` file. */
+/**
+ * Parsed YAML-like frontmatter from a `.mdc` file. `globs` is normalized to
+ * Cursor's canonical comma-separated form (YAML block and flow lists are
+ * flattened); a key whose value is null or empty is omitted entirely.
+ */
 export interface MdcFrontmatter {
   description?: string;
   globs?: string;
@@ -36,7 +42,7 @@ export interface MdcFrontmatter {
 /** Artifact kinds this detector reports. */
 export type CursorArtifactKind =
   | "instructions" // AGENTS.md hierarchy, legacy .cursorrules
-  | "rule" // .cursor/rules/*.mdc
+  | "rule" // .cursor/rules/*.mdc (root and nested)
   | "mcp-config" // .cursor/mcp.json
   | "agent" // .cursor/agents/**/*.md
   | "hooks"; // .cursor/hooks.json (v1.7+)
@@ -47,105 +53,71 @@ export interface CursorArtifact extends DetectedArtifact {
   frontmatter?: MdcFrontmatter;
 }
 
-/**
- * The AGENTS.md walk skips these; `.cursor` holds config, not instructions.
- */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([
-  ".git",
-  "node_modules",
-  ".cursor",
-]);
+/** The repo walk never enters these. */
+const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules"]);
 
 export function detect(repo: RepoContext): CursorArtifact[] {
   const root = repo.rootDir;
   const out: CursorArtifact[] = [];
 
-  // 1. AGENTS.md at any depth (Cursor reads it natively per §4.3).
+  // 1. One repo-wide walk covers both families that may live at any depth:
+  //    AGENTS.md (Cursor reads it natively per §4.3) and `.cursor/rules/*.mdc`
+  //    (nested `.cursor` dirs carry subproject rules since Cursor v0.50).
+  //    Routing by path keeps it a single traversal; an AGENTS.md inside a
+  //    `.cursor` dir is config housekeeping, not instructions.
   walk(
     root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
-    (name) => name === "AGENTS.md",
-    (_name, rel, info) => {
-      out.push(makeArtifact(rel, "instructions", "project", info));
+    (name) => name === "AGENTS.md" || name.endsWith(".mdc"),
+    (name, rel, info) => {
+      const segments = rel.split("/");
+      if (name === "AGENTS.md") {
+        if (!segments.includes(".cursor")) {
+          out.push(makeArtifact(rel, "instructions", "project", info));
+        }
+      } else if (underCursorRules(segments)) {
+        out.push(mdcRuleArtifact(root, rel, info));
+      }
     },
   );
 
   // 2. Legacy `.cursorrules` (root-only, single file).
-  addFile(out, root, ".cursorrules", "instructions", "project");
+  addFile(root, ".cursorrules", "instructions", "project", out);
 
-  // 3. `.cursor/rules/*.mdc` — recursive walk, parse frontmatter.
-  collectMdcRules(root, out);
+  // 3. `.cursor/mcp.json` - MCP server configuration.
+  addFile(root, ".cursor/mcp.json", "mcp-config", "project", out);
 
-  // 4. `.cursor/mcp.json` — MCP server configuration.
-  addFile(out, root, ".cursor/mcp.json", "mcp-config", "project");
-
-  // 5. `.cursor/agents/` — recursive `*.md` agent definitions.
+  // 4. `.cursor/agents/` - recursive `*.md` agent definitions.
   collectMarkdownTree(root, ".cursor/agents", "agent", out);
 
-  // 6. `.cursor/hooks.json` — v1.7+ hooks config.
-  addFile(out, root, ".cursor/hooks.json", "hooks", "project");
+  // 5. `.cursor/hooks.json` - v1.7+ hooks config.
+  addFile(root, ".cursor/hooks.json", "hooks", "project", out);
 
-  return out.sort(compareCursorArtifacts);
+  return out.sort(compareArtifacts);
 }
 
-/** Inventories `relPath` under `root` when it holds a file (or file symlink). */
-function addFile(
-  out: CursorArtifact[],
-  root: string,
-  relPath: string,
-  kind: CursorArtifactKind,
-  scope: CursorArtifact["scope"],
-): void {
-  const info = inspectFile(join(root, relPath));
-  if (info) {
-    out.push(makeArtifact(relPath, kind, scope, info));
+/** True when `segments` places a file below any `.cursor/rules/` directory. */
+function underCursorRules(segments: string[]): boolean {
+  for (let i = 0; i + 2 < segments.length; i++) {
+    if (segments[i] === ".cursor" && segments[i + 1] === "rules") {
+      return true;
+    }
   }
+  return false;
 }
 
-/** Recursively inventories every `*.md` file under `root`/`relBase`. */
-function collectMarkdownTree(
-  root: string,
-  relBase: string,
-  kind: CursorArtifactKind,
-  out: CursorArtifact[],
-): void {
-  walk(
-    join(root, relBase),
-    relBase,
-    new Set(),
-    () => true,
-    (name) => name.endsWith(".md"),
-    (_name, rel, info) => {
-      out.push(makeArtifact(rel, kind, "project", info));
-    },
-  );
-}
-
-/**
- * Recursively inventories `.cursor/rules/*.mdc` files, parsing their YAML
- * frontmatter to extract `description`, `globs`, and `alwaysApply`.
- */
-function collectMdcRules(root: string, out: CursorArtifact[]): void {
-  walk(
-    join(root, ".cursor", "rules"),
-    ".cursor/rules",
-    new Set(),
-    () => true,
-    (name) => name.endsWith(".mdc"),
-    (_name, rel, info) => {
-      const artifact = makeArtifact(rel, "rule" as const, "project", info) as CursorArtifact;
-      // Only parse frontmatter for non-broken files.
-      if (!info.broken) {
-        const fm = parseMdcFrontmatter(join(root, rel));
-        if (fm) {
-          artifact.frontmatter = fm;
-        }
-      }
-      out.push(artifact);
-    },
-  );
+/** Builds a `rule` artifact, parsing frontmatter for non-broken files. */
+function mdcRuleArtifact(root: string, rel: string, info: FileInfo): CursorArtifact {
+  const artifact: CursorArtifact = makeArtifact(rel, "rule", "project", info);
+  if (!info.broken) {
+    const fm = parseMdcFrontmatter(join(root, rel));
+    if (fm) {
+      artifact.frontmatter = fm;
+    }
+  }
+  return artifact;
 }
 
 /**
@@ -203,12 +175,28 @@ export function extractFrontmatter(content: string): MdcFrontmatter | undefined 
     const rawValue = line.slice(colonIdx + 1).trim();
 
     switch (key) {
-      case "description":
-        fm.description = unquote(rawValue);
+      case "description": {
+        const value = unquote(rawValue);
+        if (value !== "") {
+          fm.description = value;
+        }
         break;
-      case "globs":
-        fm.globs = unquote(rawValue);
+      }
+      case "globs": {
+        let value: string;
+        if (rawValue === "") {
+          // Bare key: a YAML block list (`- pattern` lines) or null.
+          const list = readBlockList(lines, i + 1, endIndex);
+          value = list.items.join(",");
+          i = list.end - 1;
+        } else {
+          value = normalizeGlobs(rawValue);
+        }
+        if (value !== "") {
+          fm.globs = value;
+        }
         break;
+      }
       case "alwaysApply": {
         const lower = rawValue.toLowerCase();
         if (lower === "true") {
@@ -225,6 +213,64 @@ export function extractFrontmatter(content: string): MdcFrontmatter | undefined 
   return fm;
 }
 
+/** Reads consecutive `- item` lines from `start`; items are trimmed and unquoted. */
+function readBlockList(
+  lines: string[],
+  start: number,
+  endIndex: number,
+): { items: string[]; end: number } {
+  const items: string[] = [];
+  let i = start;
+  for (; i < endIndex; i++) {
+    const match = /^\s*-\s*(.*)$/.exec(lines[i]!);
+    if (!match) {
+      break;
+    }
+    const item = unquote(match[1]!.trim());
+    if (item !== "") {
+      items.push(item);
+    }
+  }
+  return { items, end: i };
+}
+
+/**
+ * Normalizes a scalar `globs` value to Cursor's canonical comma-separated
+ * form: a flow list (`["a", "b"]`) is flattened, a plain scalar passes
+ * through unquoted.
+ */
+function normalizeGlobs(rawValue: string): string {
+  if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
+    return splitFlowItems(rawValue.slice(1, -1)).join(",");
+  }
+  return unquote(rawValue);
+}
+
+/** Splits flow-list items on commas outside quotes; items are trimmed and unquoted. */
+function splitFlowItems(inner: string): string[] {
+  const items: string[] = [];
+  let current = "";
+  let quote: '"' | "'" | undefined;
+  for (const ch of inner) {
+    if (quote !== undefined) {
+      if (ch === quote) {
+        quote = undefined;
+      }
+      current += ch;
+    } else if (ch === '"' || ch === "'") {
+      quote = ch;
+      current += ch;
+    } else if (ch === ",") {
+      items.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  items.push(current);
+  return items.map((item) => unquote(item.trim())).filter((item) => item !== "");
+}
+
 /** Strips surrounding quotes (single or double) from a string value. */
 function unquote(s: string): string {
   if (s.length >= 2) {
@@ -235,13 +281,4 @@ function unquote(s: string): string {
     }
   }
   return s;
-}
-
-/**
- * Deterministic ordering for cursor artifacts. Extends the base ordering
- * to also sort by frontmatter presence (artifacts without frontmatter sort
- * before those with), ensuring byte-identical output.
- */
-function compareCursorArtifacts(a: CursorArtifact, b: CursorArtifact): number {
-  return compareArtifacts(a, b);
 }

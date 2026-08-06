@@ -165,6 +165,39 @@ export function walk(
   }
 }
 
+/** Inventories `relPath` under `root` when it holds a file (or file symlink). */
+export function addFile<K extends string>(
+  root: string,
+  relPath: string,
+  kind: K,
+  scope: ArtifactScope,
+  out: Array<DetectedArtifact & { kind: K }>,
+): void {
+  const info = inspectFile(join(root, relPath));
+  if (info) {
+    out.push(makeArtifact(relPath, kind, scope, info));
+  }
+}
+
+/** Recursively inventories every `*.md` file under `root`/`relBase` at project scope. */
+export function collectMarkdownTree<K extends string>(
+  root: string,
+  relBase: string,
+  kind: K,
+  out: Array<DetectedArtifact & { kind: K }>,
+): void {
+  walk(
+    join(root, relBase),
+    relBase,
+    new Set(),
+    () => true,
+    (name) => name.endsWith(".md"),
+    (_name, rel, info) => {
+      out.push(makeArtifact(rel, kind, "project", info));
+    },
+  );
+}
+
 /**
  * Final path segment, used as the machine-independent display name of probe
  * paths. `win32.basename` handles both separators (POSIX `basename` would
