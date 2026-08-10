@@ -1,3 +1,3 @@
 {
-  "github.copilot.chat.autoApprove": true
+  "chat.tools.global.autoApprove": true
 }

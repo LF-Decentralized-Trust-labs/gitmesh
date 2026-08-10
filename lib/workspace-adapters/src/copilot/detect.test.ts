@@ -1,4 +1,4 @@
-import { symlinkSync, writeFileSync } from "node:fs";
+import { symlinkSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
@@ -48,12 +48,21 @@ describe("copilot detect()", () => {
     ]);
   });
 
+  it("detects AGENTS.md inside .github/", () => {
+    const { repo } = makeRepo({
+      ".github/AGENTS.md": "copilot reads this\n",
+    });
+    expect(detect(repo)).toEqual([
+      { path: ".github/AGENTS.md", kind: "instructions", scope: "project" },
+    ]);
+  });
+
   it("detects all copilot config artifacts", () => {
     const { repo } = makeRepo({
       ".github/copilot-instructions.md": "root\n",
       ".vscode/mcp.json": "{}\n",
       ".github/agents/review.md": "# Review\n",
-      ".vscode/settings.json": "{}\n",
+      ".vscode/settings.json": '{ "chat.tools.global.autoApprove": true }\n',
       ".github/instructions/test.instructions.md": "---\napplyTo: test\n---\ncontent\n",
     });
     const artifacts = detect(repo);
@@ -63,6 +72,33 @@ describe("copilot detect()", () => {
     expect(kinds).toContain("settings");
     expect(kinds).toContain("rule");
     expect(kinds).toContain("instructions");
+  });
+
+  it("does NOT emit settings artifact when no auto-approve key is present", () => {
+    const { repo } = makeRepo({
+      ".vscode/settings.json": '{ "editor.tabSize": 2 }\n',
+    });
+    expect(detect(repo)).toEqual([]);
+  });
+
+  it("emits settings artifact for chat.tools.terminal.autoApprove", () => {
+    const { repo } = makeRepo({
+      ".vscode/settings.json": '{ "chat.tools.terminal.autoApprove": false }\n',
+    });
+    const artifacts = detect(repo);
+    expect(artifacts).toEqual([
+      { path: ".vscode/settings.json", kind: "settings", scope: "project" },
+    ]);
+  });
+
+  it("emits settings artifact for chat.tools.urls.autoApprove", () => {
+    const { repo } = makeRepo({
+      ".vscode/settings.json": '{ "chat.tools.urls.autoApprove": true }\n',
+    });
+    const artifacts = detect(repo);
+    expect(artifacts).toEqual([
+      { path: ".vscode/settings.json", kind: "settings", scope: "project" },
+    ]);
   });
 
   it.skipIf(!symlinkSupport.file)(
@@ -111,11 +147,45 @@ describe("extractFrontmatter", () => {
     });
   });
 
+  it("parses inline array with brace glob containing comma (quote-aware split)", () => {
+    const content = '---\napplyTo: ["**/{ts,tsx}"]\n---\nbody\n';
+    expect(extractFrontmatter(content)).toEqual({
+      applyTo: ["**/{ts,tsx}"],
+    });
+  });
+
+  it("parses empty inline array applyTo: []", () => {
+    const content = "---\napplyTo: []\n---\nbody\n";
+    expect(extractFrontmatter(content)).toEqual({
+      applyTo: [],
+    });
+  });
+
   it("parses multiline array applyTo", () => {
     const content = '---\napplyTo:\n  - "**/*.ts"\n  - "**/*.tsx"\n---\nbody\n';
     expect(extractFrontmatter(content)).toEqual({
       applyTo: ["**/*.ts", "**/*.tsx"],
     });
+  });
+
+  it("strips trailing YAML comment from scalar value", () => {
+    const content = '---\napplyTo: "**/*.ts" # apply to TypeScript\n---\nbody\n';
+    expect(extractFrontmatter(content)).toEqual({
+      applyTo: "**/*.ts",
+    });
+  });
+
+  it("does not strip # inside a quoted value", () => {
+    const content = '---\napplyTo: "**/#test*.ts"\n---\nbody\n';
+    expect(extractFrontmatter(content)).toEqual({
+      applyTo: "**/#test*.ts",
+    });
+  });
+
+  it("ignores indented keys (not column-0)", () => {
+    // An indented `applyTo:` inside a nested mapping must NOT be parsed.
+    const content = "---\nscope:\n  applyTo: nested\n---\nbody\n";
+    expect(extractFrontmatter(content)).toEqual({});
   });
 
   it("returns undefined when no frontmatter present", () => {
