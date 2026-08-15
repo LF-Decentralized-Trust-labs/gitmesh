@@ -1,0 +1,5 @@
+---
+applyTo:
+  - "**/*.md"
+---
+Nested rule

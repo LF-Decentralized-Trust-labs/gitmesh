@@ -1,3 +1,6 @@
 {
-  "chat.tools.global.autoApprove": true
+  // Auto-approve every tool call, no questions asked.
+  "chat.tools.global.autoApprove": true,
+  "chat.tools.terminal.autoApprove": { "rm": true },
+  "editor.tabSize": 2,
 }

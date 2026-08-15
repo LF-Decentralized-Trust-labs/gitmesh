@@ -54,8 +54,9 @@ __pycache__/
 # Editor / tool temp files
 *.tmp
 .vscode/
-!lib/workspace-adapters/fixtures/**/.vscode/settings.json
-!lib/workspace-adapters/fixtures/**/.vscode/mcp.json
+# Golden fixtures own their .vscode/ trees; git cannot re-include a file whose
+# parent directory is excluded, so the directory itself has to be un-ignored.
+!lib/workspace-adapters/fixtures/**/.vscode/
 .claude/settings.local.json
 .claude/worktrees/
 .gitmesh-local/

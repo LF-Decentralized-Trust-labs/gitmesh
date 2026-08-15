@@ -12,6 +12,7 @@ import {
   stripYamlComment,
   walk,
   yamlUnquote,
+  type FileInfo,
 } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
 
@@ -22,146 +23,214 @@ import type { DetectedArtifact, RepoContext } from "../types.js";
  * Artifacts detected:
  * - `AGENTS.md` at any depth (Copilot reads AGENTS.md natively)
  * - `.github/copilot-instructions.md`
- * - `.github/instructions/**.instructions.md` with parsed YAML frontmatter (`applyTo`)
- * - `.vscode/mcp.json`
+ * - `.github/instructions/` (recursive `*.instructions.md`) with parsed
+ *   `applyTo` frontmatter
  * - `.github/agents/` (recursive `*.md`)
- * - `.vscode/settings.json` only when it contains a recognized auto-approve key
+ * - `.vscode/mcp.json`
+ * - `.vscode/settings.json`, only when it sets an auto-approve key, and only
+ *   naming the keys it sets - never a settings value
  *
- * Pure, read-only, deterministic sorted output, symlink-aware, cycle-safe.
+ * Same guarantees as the claude-code, codex and cursor detectors: pure,
+ * read-only, deterministic sorted output, symlink-aware (literal targets,
+ * never resolved away), cycle-safe, and fs errors contained - never fatal.
  */
 
+/** Parsed `.instructions.md` frontmatter; only `applyTo` is meaningful. */
 export interface CopilotFrontmatter {
   applyTo?: string | string[];
 }
 
+/** Artifact kinds this detector reports. */
 export type CopilotArtifactKind =
-  | "instructions"
-  | "rule"
-  | "mcp-config"
-  | "agent"
-  | "settings";
+  | "instructions" // AGENTS.md hierarchy, .github/copilot-instructions.md
+  | "rule" // .github/instructions/**/*.instructions.md
+  | "mcp-config" // .vscode/mcp.json
+  | "agent" // .github/agents/**/*.md
+  | "settings"; // .vscode/settings.json (auto-approve keys only)
 
 export interface CopilotArtifact extends DetectedArtifact {
   kind: CopilotArtifactKind;
+  /** Parsed frontmatter; present only for `rule` artifacts. */
   frontmatter?: CopilotFrontmatter;
+  /** Auto-approve keys the file sets; present only for `settings` artifacts. */
+  autoApprove?: string[];
 }
 
 /**
- * Real VS Code settings keys Copilot uses for auto-approve. Only flag the
- * file if at least one of these is present so we don't annotate unrelated
- * settings files.
+ * The VS Code settings keys that hand Copilot blanket approval (§4.3). Kept
+ * in sorted order: the detector filters this list, so it is the output order.
  */
-const AUTO_APPROVE_KEYS = new Set([
+const AUTO_APPROVE_KEYS = [
   "chat.tools.global.autoApprove",
   "chat.tools.terminal.autoApprove",
   "chat.tools.urls.autoApprove",
-]);
+] as const;
 
-/**
- * Directories the unified walk never descends into.
- * Note: `.github` is NOT excluded — `.github/AGENTS.md` must be detected.
- */
+const INSTRUCTIONS_DIR = ".github/instructions";
+const AGENTS_DIR = ".github/agents";
+
+/** The repo-wide AGENTS.md walk never enters these. */
 const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules"]);
 
 export function detect(repo: RepoContext): CopilotArtifact[] {
   const root = repo.rootDir;
   const out: CopilotArtifact[] = [];
 
-  // Single unified traversal: collects AGENTS.md everywhere, routes
-  // .github/copilot-instructions.md, .github/instructions/*.instructions.md,
-  // and .github/agents/*.md by path segment.
+  // 1. AGENTS.md at any depth - the only family that can live anywhere, so
+  //    the only one needing a repo-wide walk. One under `.github/agents/` is
+  //    an agent definition, not instructions; step 4 inventories it as such.
   walk(
     root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
-    (name) =>
-      name === "AGENTS.md" ||
-      name === "copilot-instructions.md" ||
-      name.endsWith(".instructions.md") ||
-      name.endsWith(".md"),
-    (name, rel, info) => {
-      const segments = rel.split("/");
-
-      if (name === "AGENTS.md") {
+    (name) => name === "AGENTS.md",
+    (_name, rel, info) => {
+      if (!rel.startsWith(`${AGENTS_DIR}/`)) {
         out.push(makeArtifact(rel, "instructions", "project", info));
-        return;
-      }
-
-      // .github/copilot-instructions.md
-      if (
-        name === "copilot-instructions.md" &&
-        segments.length === 2 &&
-        segments[0] === ".github"
-      ) {
-        out.push(makeArtifact(rel, "instructions", "project", info));
-        return;
-      }
-
-      // .github/instructions/**/*.instructions.md
-      if (name.endsWith(".instructions.md") && segments[0] === ".github" && segments[1] === "instructions") {
-        const artifact: CopilotArtifact = makeArtifact(rel, "rule", "project", info);
-        if (!info.broken) {
-          const fm = parseCopilotFrontmatter(join(root, rel));
-          if (fm) {
-            artifact.frontmatter = fm;
-          }
-        }
-        out.push(artifact);
-        return;
-      }
-
-      // .github/agents/**/*.md
-      if (
-        name.endsWith(".md") &&
-        segments[0] === ".github" &&
-        segments[1] === "agents"
-      ) {
-        out.push(makeArtifact(rel, "agent", "project", info));
-        return;
       }
     },
   );
 
-  // .vscode/mcp.json — singleton, no content inspection needed.
+  // 2. `.github/copilot-instructions.md` - repo-wide instructions.
+  addFile(root, ".github/copilot-instructions.md", "instructions", "project", out);
+
+  // 3. `.github/instructions/` - searched recursively (VS Code docs).
+  walk(
+    join(root, INSTRUCTIONS_DIR),
+    INSTRUCTIONS_DIR,
+    new Set(),
+    () => true,
+    (name) => name.endsWith(".instructions.md"),
+    (_name, rel, info) => {
+      out.push(instructionsRuleArtifact(root, rel, info));
+    },
+  );
+
+  // 4. `.github/agents/` - recursive `*.md` agent definitions.
+  collectMarkdownTree(root, AGENTS_DIR, "agent", out);
+
+  // 5. `.vscode/mcp.json` - MCP server configuration.
   addFile(root, ".vscode/mcp.json", "mcp-config", "project", out);
 
-  // .vscode/settings.json — only emit if it contains a real auto-approve key.
-  addSettingsIfAutoApprove(root, out);
+  // 6. `.vscode/settings.json` - auto-approve keys only.
+  addAutoApproveSettings(root, out);
 
   return out.sort(compareArtifacts);
 }
 
-/** Emits the `.vscode/settings.json` artifact only when an auto-approve key is present. */
-function addSettingsIfAutoApprove(root: string, out: CopilotArtifact[]): void {
+/** Builds a `rule` artifact, parsing frontmatter for non-broken files. */
+function instructionsRuleArtifact(
+  root: string,
+  rel: string,
+  info: FileInfo,
+): CopilotArtifact {
+  const artifact: CopilotArtifact = makeArtifact(rel, "rule", "project", info);
+  if (!info.broken) {
+    const fm = parseCopilotFrontmatter(join(root, rel));
+    if (fm) {
+      artifact.frontmatter = fm;
+    }
+  }
+  return artifact;
+}
+
+/**
+ * Inventories `.vscode/settings.json` only when it sets an auto-approve key,
+ * reporting which keys are set and never a settings value (T1.4). A broken
+ * symlink is reported on presence alone - there is nothing to read, and a
+ * dangling settings link is worth surfacing by itself.
+ */
+function addAutoApproveSettings(root: string, out: CopilotArtifact[]): void {
   const rel = ".vscode/settings.json";
   const abs = join(root, rel);
   const info = inspectFile(abs);
   if (!info) {
     return;
   }
-  // Symlinked-but-broken: report presence without parsing.
   if (info.broken) {
     out.push(makeArtifact(rel, "settings", "project", info));
     return;
   }
-  let raw: string;
+  const keys = autoApproveKeys(abs);
+  if (keys.length > 0) {
+    const artifact: CopilotArtifact = makeArtifact(rel, "settings", "project", info);
+    artifact.autoApprove = keys;
+    out.push(artifact);
+  }
+}
+
+/**
+ * The auto-approve keys set by the settings file at `absPath`. Empty when the
+ * file is unreadable, is not JSON, or is not a JSON object: a settings file
+ * we cannot read is reported as nothing rather than guessed at.
+ */
+function autoApproveKeys(absPath: string): string[] {
+  let parsed: unknown;
   try {
-    raw = readFileSync(abs, "utf8");
+    parsed = JSON.parse(stripJsonc(readFileSync(absPath, "utf8")));
   } catch {
-    return;
+    return [];
   }
-  let parsed: Record<string, unknown>;
-  try {
-    parsed = JSON.parse(raw) as Record<string, unknown>;
-  } catch {
-    return;
+  if (typeof parsed !== "object" || parsed === null) {
+    return [];
   }
-  const hasAutoApprove = AUTO_APPROVE_KEYS.size > 0 &&
-    [...AUTO_APPROVE_KEYS].some((k) => k in parsed);
-  if (hasAutoApprove) {
-    out.push(makeArtifact(rel, "settings", "project", info));
+  return AUTO_APPROVE_KEYS.filter((key) => key in parsed);
+}
+
+/**
+ * Turns JSONC - the dialect VS Code writes `settings.json` in - into JSON
+ * `JSON.parse` accepts: `//` and block comments are dropped and trailing
+ * commas removed. String literals are copied through untouched, so no
+ * comment marker or comma inside a value is mistaken for syntax.
+ */
+function stripJsonc(text: string): string {
+  let out = "";
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i]!;
+    if (ch === '"') {
+      const end = endOfString(text, i);
+      out += text.slice(i, end);
+      i = end;
+    } else if (ch === "/" && text[i + 1] === "/") {
+      while (i < text.length && text[i] !== "\n") {
+        i++;
+      }
+    } else if (ch === "/" && text[i + 1] === "*") {
+      const end = text.indexOf("*/", i + 2);
+      i = end === -1 ? text.length : end + 2;
+    } else {
+      if (ch === "}" || ch === "]") {
+        out = dropTrailingComma(out);
+      }
+      out += ch;
+      i++;
+    }
   }
+  return out;
+}
+
+/**
+ * Drops the comma dangling at the end of `out`, if any. Only structural
+ * commas can be last: a comma inside a string is followed by its closing
+ * quote, which is copied through with it.
+ */
+function dropTrailingComma(out: string): string {
+  const trimmed = out.trimEnd();
+  return trimmed.endsWith(",") ? trimmed.slice(0, -1) : out;
+}
+
+/** Index one past the JSON string literal starting at `start`. */
+function endOfString(text: string, start: number): number {
+  for (let i = start + 1; i < text.length; i++) {
+    if (text[i] === "\\") {
+      i++;
+    } else if (text[i] === '"') {
+      return i + 1;
+    }
+  }
+  return text.length;
 }
 
 export function parseCopilotFrontmatter(absPath: string): CopilotFrontmatter | undefined {
@@ -195,36 +264,25 @@ export function extractFrontmatter(content: string): CopilotFrontmatter | undefi
   }
 
   const fm: CopilotFrontmatter = {};
-  let i = 0;
-
-  while (i < fmLines.length) {
-    const line = fmLines[i]!;
-
+  for (let i = 0; i < fmLines.length; i++) {
     // Require the key to start at column 0 (no indented keys).
-    if (!line.startsWith("applyTo:")) {
-      i++;
+    if (!fmLines[i]!.startsWith("applyTo:")) {
       continue;
     }
-
-    const rawVal = stripYamlComment(line.slice("applyTo:".length).trim());
+    const rawVal = stripYamlComment(fmLines[i]!.slice("applyTo:".length).trim());
 
     if (rawVal.startsWith("[") && rawVal.endsWith("]")) {
-      // Inline flow array: `applyTo: ["a", "b"]` or `applyTo: []`
-      const inner = rawVal.slice(1, -1);
-      fm.applyTo = splitFlowItems(inner); // returns [] for empty inner
-      break;
-    }
-
-    if (rawVal !== "") {
-      // Scalar: `applyTo: "glob"` or `applyTo: glob`
+      // Inline flow array: `applyTo: ["a", "b"]` or `applyTo: []`.
+      fm.applyTo = splitFlowItems(rawVal.slice(1, -1));
+    } else if (rawVal !== "") {
+      // Scalar: `applyTo: "glob"` or `applyTo: glob`.
       fm.applyTo = yamlUnquote(rawVal);
-      break;
-    }
-
-    // Bare key — block-list mode: read following `- item` lines.
-    const { items } = readBlockList(fmLines, i + 1);
-    if (items.length > 0) {
-      fm.applyTo = items;
+    } else {
+      // Bare key - block-list mode: read the following `- item` lines.
+      const { items } = readBlockList(fmLines, i + 1);
+      if (items.length > 0) {
+        fm.applyTo = items;
+      }
     }
     break;
   }

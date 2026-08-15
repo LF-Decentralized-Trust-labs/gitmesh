@@ -1,5 +1,10 @@
 [
   {
+    "path": ".github/agents/AGENTS.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
     "path": ".github/agents/sub.md",
     "kind": "agent",
     "scope": "project"
@@ -8,6 +13,16 @@
     "path": ".github/copilot-instructions.md",
     "kind": "instructions",
     "scope": "project"
+  },
+  {
+    "path": ".github/instructions/nested/docs.instructions.md",
+    "kind": "rule",
+    "scope": "project",
+    "frontmatter": {
+      "applyTo": [
+        "**/*.md"
+      ]
+    }
   },
   {
     "path": ".github/instructions/test.instructions.md",
@@ -25,7 +40,11 @@
   {
     "path": ".vscode/settings.json",
     "kind": "settings",
-    "scope": "project"
+    "scope": "project",
+    "autoApprove": [
+      "chat.tools.global.autoApprove",
+      "chat.tools.terminal.autoApprove"
+    ]
   },
   {
     "path": "AGENTS.md",

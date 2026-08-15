@@ -57,6 +57,39 @@ describe("copilot detect()", () => {
     ]);
   });
 
+  it("classifies AGENTS.md under .github/agents/ as an agent, not instructions", () => {
+    const { repo } = makeRepo({
+      ".github/agents/AGENTS.md": "# Agent\n",
+      ".github/agents/nested/AGENTS.md": "# Nested agent\n",
+    });
+    expect(detect(repo)).toEqual([
+      { path: ".github/agents/AGENTS.md", kind: "agent", scope: "project" },
+      { path: ".github/agents/nested/AGENTS.md", kind: "agent", scope: "project" },
+    ]);
+  });
+
+  it("searches .github/instructions/ recursively", () => {
+    const { repo } = makeRepo({
+      ".github/instructions/nested/deep.instructions.md": "---\napplyTo: deep\n---\n",
+      ".github/instructions/notes.md": "not an instructions file\n",
+    });
+    expect(detect(repo)).toEqual([
+      {
+        path: ".github/instructions/nested/deep.instructions.md",
+        kind: "rule",
+        scope: "project",
+        frontmatter: { applyTo: "deep" },
+      },
+    ]);
+  });
+
+  it("ignores .instructions.md files outside .github/instructions/", () => {
+    const { repo } = makeRepo({
+      "docs/style.instructions.md": "---\napplyTo: nope\n---\n",
+    });
+    expect(detect(repo)).toEqual([]);
+  });
+
   it("detects all copilot config artifacts", () => {
     const { repo } = makeRepo({
       ".github/copilot-instructions.md": "root\n",
@@ -81,24 +114,85 @@ describe("copilot detect()", () => {
     expect(detect(repo)).toEqual([]);
   });
 
-  it("emits settings artifact for chat.tools.terminal.autoApprove", () => {
+  it("names every auto-approve key that is set, and no settings value", () => {
     const { repo } = makeRepo({
-      ".vscode/settings.json": '{ "chat.tools.terminal.autoApprove": false }\n',
+      ".vscode/settings.json": JSON.stringify({
+        "chat.tools.urls.autoApprove": true,
+        "chat.tools.terminal.autoApprove": { rm: true },
+        "github.copilot.advanced": { secret: "s3cret" },
+      }),
     });
-    const artifacts = detect(repo);
-    expect(artifacts).toEqual([
-      { path: ".vscode/settings.json", kind: "settings", scope: "project" },
+    expect(detect(repo)).toEqual([
+      {
+        path: ".vscode/settings.json",
+        kind: "settings",
+        scope: "project",
+        autoApprove: [
+          "chat.tools.terminal.autoApprove",
+          "chat.tools.urls.autoApprove",
+        ],
+      },
     ]);
   });
 
-  it("emits settings artifact for chat.tools.urls.autoApprove", () => {
+  it("emits a settings artifact for a single key, even when it is false", () => {
     const { repo } = makeRepo({
-      ".vscode/settings.json": '{ "chat.tools.urls.autoApprove": true }\n',
+      ".vscode/settings.json": '{ "chat.tools.terminal.autoApprove": false }\n',
     });
-    const artifacts = detect(repo);
-    expect(artifacts).toEqual([
-      { path: ".vscode/settings.json", kind: "settings", scope: "project" },
+    expect(detect(repo)).toEqual([
+      {
+        path: ".vscode/settings.json",
+        kind: "settings",
+        scope: "project",
+        autoApprove: ["chat.tools.terminal.autoApprove"],
+      },
     ]);
+  });
+
+  it("reads JSONC settings: comments and a trailing comma", () => {
+    const { repo } = makeRepo({
+      ".vscode/settings.json": [
+        "{",
+        "  // let it run",
+        '  "chat.tools.global.autoApprove": true, /* block */',
+        '  "editor.rulers": [80, 100,],',
+        "}",
+        "",
+      ].join("\n"),
+    });
+    expect(detect(repo)).toEqual([
+      {
+        path: ".vscode/settings.json",
+        kind: "settings",
+        scope: "project",
+        autoApprove: ["chat.tools.global.autoApprove"],
+      },
+    ]);
+  });
+
+  it("does not mistake comment markers or commas inside string values for syntax", () => {
+    const { repo } = makeRepo({
+      ".vscode/settings.json": JSON.stringify({
+        "chat.tools.global.autoApprove": true,
+        "http.proxy": "http://example.com/*",
+        "files.exclude": "a,}",
+      }),
+    });
+    expect(detect(repo)).toEqual([
+      {
+        path: ".vscode/settings.json",
+        kind: "settings",
+        scope: "project",
+        autoApprove: ["chat.tools.global.autoApprove"],
+      },
+    ]);
+  });
+
+  it("survives a settings.json that is not a JSON object", () => {
+    for (const content of ["null", "42", '"hello"', "[1, 2]", "not json at all"]) {
+      const { repo } = makeRepo({ ".vscode/settings.json": content });
+      expect(detect(repo)).toEqual([]);
+    }
   });
 
   it.skipIf(!symlinkSupport.file)(
@@ -112,6 +206,24 @@ describe("copilot detect()", () => {
           kind: "instructions",
           scope: "project",
           symlinkTarget: "CLAUDE.md",
+        },
+      ]);
+    },
+  );
+
+  it.skipIf(!symlinkSupport.file)(
+    "reports a dangling settings.json symlink on presence alone",
+    () => {
+      // A file in `.vscode/` so the directory exists to link into.
+      const { root, repo } = makeRepo({ ".vscode/keep.txt": "x\n" });
+      symlinkSync("missing.json", join(root, ".vscode/settings.json"));
+      expect(detect(repo)).toEqual([
+        {
+          path: ".vscode/settings.json",
+          kind: "settings",
+          scope: "project",
+          symlinkTarget: "missing.json",
+          broken: true,
         },
       ]);
     },
