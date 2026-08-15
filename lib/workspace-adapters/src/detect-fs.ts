@@ -165,26 +165,6 @@ export function walk(
   }
 }
 
-/**
- * Final path segment, used as the machine-independent display name of probe
- * paths. `win32.basename` handles both separators (POSIX `basename` would
- * treat `C:\a\b` as a single segment), so probe paths from any OS work.
- */
-export function lastSegment(path: string): string {
-  return win32.basename(path);
-}
-
-/** Deterministic code-unit ordering by path, then kind, then scope. */
-export function compareArtifacts(a: DetectedArtifact, b: DetectedArtifact): number {
-  if (a.path !== b.path) {
-    return a.path < b.path ? -1 : 1;
-  }
-  if (a.kind !== b.kind) {
-    return a.kind < b.kind ? -1 : 1;
-  }
-  return a.scope < b.scope ? -1 : a.scope > b.scope ? 1 : 0;
-}
-
 /** Inventories `relPath` under `root` when it holds a file (or file symlink). */
 export function addFile<K extends string>(
   root: string,
@@ -218,38 +198,54 @@ export function collectMarkdownTree<K extends string>(
   );
 }
 
+/**
+ * Final path segment, used as the machine-independent display name of probe
+ * paths. `win32.basename` handles both separators (POSIX `basename` would
+ * treat `C:\a\b` as a single segment), so probe paths from any OS work.
+ */
+export function lastSegment(path: string): string {
+  return win32.basename(path);
+}
+
+/** Deterministic code-unit ordering by path, then kind, then scope. */
+export function compareArtifacts(a: DetectedArtifact, b: DetectedArtifact): number {
+  if (a.path !== b.path) {
+    return a.path < b.path ? -1 : 1;
+  }
+  if (a.kind !== b.kind) {
+    return a.kind < b.kind ? -1 : 1;
+  }
+  return a.scope < b.scope ? -1 : a.scope > b.scope ? 1 : 0;
+}
+
 // ---------------------------------------------------------------------------
-// Shared lightweight YAML utilities used by frontmatter parsers in adapters
-// (cursor `.mdc`, copilot `.instructions.md`). Zero external dependencies —
-// the project convention for pure file inspection (pivot.md §Hard rules).
+// Lightweight YAML primitives shared by the frontmatter parsers (cursor
+// `.mdc`, copilot `.instructions.md`). No YAML dependency - the project
+// convention for pure file inspection.
 // ---------------------------------------------------------------------------
 
 /**
- * Finds the `---`-delimited frontmatter block in file content and returns the
- * raw lines within it (exclusive of the delimiter lines). Returns `null` when
- * the file does not open with a `---` delimiter or has no closing delimiter.
+ * The raw lines of a `---`-delimited frontmatter block, exclusive of the
+ * delimiters. `null` when the content does not open with `---` or the block
+ * is never closed.
  */
 export function parseFrontmatterBlock(content: string): string[] | null {
   const lines = content.split(/\r?\n/);
   if (lines.length === 0 || lines[0]!.trim() !== "---") {
     return null;
   }
-  let endIndex = -1;
   for (let i = 1; i < lines.length; i++) {
     if (lines[i]!.trim() === "---") {
-      endIndex = i;
-      break;
+      return lines.slice(1, i);
     }
   }
-  if (endIndex === -1) {
-    return null;
-  }
-  return lines.slice(1, endIndex);
+  return null;
 }
 
 /**
- * Reads consecutive `- item` lines from `lines[start]`; items are trimmed
- * and unquoted. Stops at the first non-list line.
+ * Reads consecutive `- item` lines from `lines[start]`, stopping at the first
+ * line that is not one; items are trimmed, unquoted, and empties dropped.
+ * `end` is the index of the stopping line.
  */
 export function readBlockList(
   lines: string[],
@@ -271,9 +267,9 @@ export function readBlockList(
 }
 
 /**
- * Splits a YAML flow sequence inner string (`"a", "b"`) on commas that are
- * outside of single- or double-quoted strings. Items are trimmed and
- * unquoted. Handles globs like `{ts,tsx}` safely.
+ * Splits the inner text of a YAML flow sequence (`"a", "b"`) on commas
+ * outside quotes, so brace globs like `{ts,tsx}` survive; items are trimmed,
+ * unquoted, and empties dropped.
  */
 export function splitFlowItems(inner: string): string[] {
   const items: string[] = [];
@@ -299,10 +295,7 @@ export function splitFlowItems(inner: string): string[] {
   return items.map((item) => yamlUnquote(item.trim())).filter((item) => item !== "");
 }
 
-/**
- * Strips a trailing YAML line comment (`# …`) that appears outside of quoted
- * regions. The stripped value is then trimmed.
- */
+/** Strips a trailing `# …` comment that starts outside a quoted region. */
 export function stripYamlComment(value: string): string {
   let quote: '"' | "'" | undefined;
   for (let i = 0; i < value.length; i++) {
@@ -320,7 +313,7 @@ export function stripYamlComment(value: string): string {
   return value;
 }
 
-/** Strips surrounding single or double quotes from a YAML scalar value. */
+/** Strips surrounding single or double quotes from a YAML scalar. */
 export function yamlUnquote(s: string): string {
   if (s.length >= 2) {
     const first = s[0];

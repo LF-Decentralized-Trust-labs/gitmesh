@@ -5,7 +5,11 @@ import {
   collectMarkdownTree,
   compareArtifacts,
   makeArtifact,
+  parseFrontmatterBlock,
+  readBlockList,
+  splitFlowItems,
   walk,
+  yamlUnquote,
   type FileInfo,
 } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
@@ -145,28 +149,14 @@ export function parseMdcFrontmatter(absPath: string): MdcFrontmatter | undefined
  * Extracts frontmatter from `.mdc` file content. Exported for testing.
  */
 export function extractFrontmatter(content: string): MdcFrontmatter | undefined {
-  const lines = content.split(/\r?\n/);
-
-  // Frontmatter must start with `---` on the first line.
-  if (lines.length === 0 || lines[0]!.trim() !== "---") {
-    return undefined;
-  }
-
-  // Find the closing `---`.
-  let endIndex = -1;
-  for (let i = 1; i < lines.length; i++) {
-    if (lines[i]!.trim() === "---") {
-      endIndex = i;
-      break;
-    }
-  }
-  if (endIndex === -1) {
+  const fmLines = parseFrontmatterBlock(content);
+  if (fmLines === null) {
     return undefined;
   }
 
   const fm: MdcFrontmatter = {};
-  for (let i = 1; i < endIndex; i++) {
-    const line = lines[i]!;
+  for (let i = 0; i < fmLines.length; i++) {
+    const line = fmLines[i]!;
     const colonIdx = line.indexOf(":");
     if (colonIdx === -1) {
       continue;
@@ -176,7 +166,7 @@ export function extractFrontmatter(content: string): MdcFrontmatter | undefined 
 
     switch (key) {
       case "description": {
-        const value = unquote(rawValue);
+        const value = yamlUnquote(rawValue);
         if (value !== "") {
           fm.description = value;
         }
@@ -186,7 +176,7 @@ export function extractFrontmatter(content: string): MdcFrontmatter | undefined 
         let value: string;
         if (rawValue === "") {
           // Bare key: a YAML block list (`- pattern` lines) or null.
-          const list = readBlockList(lines, i + 1, endIndex);
+          const list = readBlockList(fmLines, i + 1);
           value = list.items.join(",");
           i = list.end - 1;
         } else {
@@ -213,27 +203,6 @@ export function extractFrontmatter(content: string): MdcFrontmatter | undefined 
   return fm;
 }
 
-/** Reads consecutive `- item` lines from `start`; items are trimmed and unquoted. */
-function readBlockList(
-  lines: string[],
-  start: number,
-  endIndex: number,
-): { items: string[]; end: number } {
-  const items: string[] = [];
-  let i = start;
-  for (; i < endIndex; i++) {
-    const match = /^\s*-\s*(.*)$/.exec(lines[i]!);
-    if (!match) {
-      break;
-    }
-    const item = unquote(match[1]!.trim());
-    if (item !== "") {
-      items.push(item);
-    }
-  }
-  return { items, end: i };
-}
-
 /**
  * Normalizes a scalar `globs` value to Cursor's canonical comma-separated
  * form: a flow list (`["a", "b"]`) is flattened, a plain scalar passes
@@ -243,42 +212,5 @@ function normalizeGlobs(rawValue: string): string {
   if (rawValue.startsWith("[") && rawValue.endsWith("]")) {
     return splitFlowItems(rawValue.slice(1, -1)).join(",");
   }
-  return unquote(rawValue);
-}
-
-/** Splits flow-list items on commas outside quotes; items are trimmed and unquoted. */
-function splitFlowItems(inner: string): string[] {
-  const items: string[] = [];
-  let current = "";
-  let quote: '"' | "'" | undefined;
-  for (const ch of inner) {
-    if (quote !== undefined) {
-      if (ch === quote) {
-        quote = undefined;
-      }
-      current += ch;
-    } else if (ch === '"' || ch === "'") {
-      quote = ch;
-      current += ch;
-    } else if (ch === ",") {
-      items.push(current);
-      current = "";
-    } else {
-      current += ch;
-    }
-  }
-  items.push(current);
-  return items.map((item) => unquote(item.trim())).filter((item) => item !== "");
-}
-
-/** Strips surrounding quotes (single or double) from a string value. */
-function unquote(s: string): string {
-  if (s.length >= 2) {
-    const first = s[0];
-    const last = s[s.length - 1];
-    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
-      return s.slice(1, -1);
-    }
-  }
-  return s;
+  return yamlUnquote(rawValue);
 }
