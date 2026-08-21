@@ -199,6 +199,32 @@ export function collectMarkdownTree<K extends string>(
 }
 
 /**
+ * Inventories one artifact per skill directory under `root`/`relBase`: the
+ * `<name>/SKILL.md` manifest. A skill's other resource files belong to the
+ * skill, not the inventory. Shared by every adapter whose skills fragment by
+ * path only (`.claude/skills`, `.agents/skills`, `.agent/skills` - pivot.md
+ * §4.3 structural fact 1).
+ */
+export function collectSkillManifests<K extends string>(
+  root: string,
+  relBase: string,
+  kind: K,
+  out: Array<DetectedArtifact & { kind: K }>,
+): void {
+  const base = join(root, relBase);
+  for (const entry of sortedEntries(base)) {
+    if (!isTraversableDir(entry, join(base, entry.name))) {
+      continue;
+    }
+    const rel = `${relBase}/${entry.name}/SKILL.md`;
+    const info = inspectFile(join(base, entry.name, "SKILL.md"));
+    if (info) {
+      out.push(makeArtifact(rel, kind, "project", info));
+    }
+  }
+}
+
+/**
  * Final path segment, used as the machine-independent display name of probe
  * paths. `win32.basename` handles both separators (POSIX `basename` would
  * treat `C:\a\b` as a single segment), so probe paths from any OS work.

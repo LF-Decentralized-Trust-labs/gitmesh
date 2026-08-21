@@ -1,0 +1,4 @@
+{
+  "deniedCommands": ["rm -rf /"],
+  "enableTerminalSandbox": true
+}

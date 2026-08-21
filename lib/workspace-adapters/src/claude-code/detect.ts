@@ -3,13 +3,12 @@ import { join, posix, win32 } from "node:path";
 import {
   addFile,
   collectMarkdownTree,
+  collectSkillManifests,
   compareArtifacts,
   inspectFile,
-  isTraversableDir,
   lastSegment,
   makeArtifact,
   safeStat,
-  sortedEntries,
   walk,
 } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
@@ -101,7 +100,7 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   collectMarkdownTree(root, ".claude/rules", "rule", artifacts);
   collectMarkdownTree(root, ".claude/commands", "command", artifacts);
   collectMarkdownTree(root, ".claude/agents", "subagent", artifacts);
-  collectSkills(root, artifacts);
+  collectSkillManifests(root, ".claude/skills", "skill", artifacts);
 
   // 3. Repo-root singletons: MCP config and plugin/marketplace manifests.
   addFile(root, ".mcp.json", "mcp-config", "project", artifacts);
@@ -126,24 +125,6 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   }
 
   return dedupe(artifacts).sort(compareArtifacts);
-}
-
-/**
- * Inventories `.claude/skills/<name>/SKILL.md`: one artifact per skill; a
- * skill's other resource files belong to the skill, not the inventory.
- */
-function collectSkills(root: string, out: ClaudeCodeArtifact[]): void {
-  const base = join(root, ".claude", "skills");
-  for (const entry of sortedEntries(base)) {
-    if (!isTraversableDir(entry, join(base, entry.name))) {
-      continue;
-    }
-    const rel = `.claude/skills/${entry.name}/SKILL.md`;
-    const info = inspectFile(join(base, entry.name, "SKILL.md"));
-    if (info) {
-      out.push(makeArtifact(rel, "skill", "project", info));
-    }
-  }
 }
 
 /** Managed probes may alias; everything else is unique by construction. */

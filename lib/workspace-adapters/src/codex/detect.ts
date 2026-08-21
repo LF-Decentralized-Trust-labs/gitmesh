@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
 import {
+  collectSkillManifests,
   compareArtifacts,
   fileInfoFromEntry,
   inspectFile,
@@ -113,16 +114,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   );
 
   // Skills: one `.agents/skills/<name>/SKILL.md` manifest per skill.
-  const skillsBase = join(root, ".agents", "skills");
-  for (const entry of sortedEntries(skillsBase)) {
-    if (!isTraversableDir(entry, join(skillsBase, entry.name))) {
-      continue;
-    }
-    const info = inspectFile(join(skillsBase, entry.name, "SKILL.md"));
-    if (info) {
-      out.push(makeArtifact(`.agents/skills/${entry.name}/SKILL.md`, "skill", "project", info));
-    }
-  }
+  collectSkillManifests(root, ".agents/skills", "skill", out);
 
   // CODEX_HOME hint: presence only - the value is a machine-specific path.
   const codexHomeEnv = env["CODEX_HOME"];

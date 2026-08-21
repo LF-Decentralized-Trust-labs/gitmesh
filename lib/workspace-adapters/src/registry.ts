@@ -13,6 +13,10 @@ export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map
   AdapterLoader
 >([
   [
+    "antigravity",
+    async () => (await import("./antigravity/index.js")).antigravityAdapter,
+  ],
+  [
     "claude-code",
     async () => (await import("./claude-code/index.js")).claudeCodeAdapter,
   ],

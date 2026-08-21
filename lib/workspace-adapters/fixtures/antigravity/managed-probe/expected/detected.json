@@ -1,0 +1,12 @@
+[
+  {
+    "path": "GEMINI.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "antigravity-cli/settings.json",
+    "kind": "settings",
+    "scope": "managed"
+  }
+]

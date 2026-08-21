@@ -38,6 +38,10 @@ describe("listGoldenCases", () => {
   it("discovers adapter/case pairs sorted deterministically", () => {
     const cases = listGoldenCases(fixturesRoot);
     expect(cases.map((c) => `${c.adapter}/${c.name}`)).toEqual([
+      "antigravity/full-surface",
+      "antigravity/managed-probe",
+      "antigravity/no-artifacts",
+      "antigravity/plugin-bundles",
       "claude-code/full-surface",
       "claude-code/no-artifacts",
       "claude-code/scoped-and-managed",

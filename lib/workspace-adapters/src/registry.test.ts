@@ -17,7 +17,13 @@ function dummyAdapter(name: string): AgentAdapter {
 describe("createAdapterRegistry", () => {
   it("lists the built-in adapters by default", () => {
     const registry = createAdapterRegistry();
-    expect(registry.list()).toEqual(["claude-code", "codex", "copilot", "cursor"]);
+    expect(registry.list()).toEqual([
+      "antigravity",
+      "claude-code",
+      "codex",
+      "copilot",
+      "cursor",
+    ]);
   });
 
   it("lists 0 adapters for an empty loader map", () => {

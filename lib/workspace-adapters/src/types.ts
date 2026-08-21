@@ -40,6 +40,13 @@ export interface RepoContext {
    */
   requirementsTomlPaths?: readonly string[];
   /**
+   * Absolute paths probed - for presence only - for the antigravity-cli
+   * settings file, Antigravity's enforcement surface. Defaults to
+   * `~/.gemini/antigravity-cli/settings.json`; tests point these at fixture
+   * paths. An empty array disables the probe.
+   */
+  antigravitySettingsPaths?: readonly string[];
+  /**
    * Environment consulted for machine-scoped hints (e.g. `CODEX_HOME`).
    * Defaults to `process.env`; tests inject a fixed map. Read only by the
    * codex detector today; the claude-code detector's default

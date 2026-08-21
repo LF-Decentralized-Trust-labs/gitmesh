@@ -1,0 +1,52 @@
+[
+  {
+    "path": ".agent/skills/lint/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/agents/reviewer.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/hooks.json",
+    "kind": "hooks",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/mcp_config.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/plugin.json",
+    "kind": "plugin-manifest",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/rules/style.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/extensions/deploy/skills/ship/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".gemini/settings.json",
+    "kind": "settings",
+    "scope": "project"
+  },
+  {
+    "path": "GEMINI.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/GEMINI.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]
