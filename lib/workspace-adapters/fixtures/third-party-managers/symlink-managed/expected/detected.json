@@ -1,0 +1,30 @@
+[
+  {
+    "path": ".claude/skills",
+    "kind": "symlink",
+    "scope": "project",
+    "symlinkTarget": "../.agents/skills",
+    "manager": "symlinks"
+  },
+  {
+    "path": ".cursorrules",
+    "kind": "symlink",
+    "scope": "project",
+    "symlinkTarget": "AGENTS.md",
+    "manager": "symlinks"
+  },
+  {
+    "path": "CLAUDE.md",
+    "kind": "symlink",
+    "scope": "project",
+    "symlinkTarget": "AGENTS.md",
+    "manager": "symlinks"
+  },
+  {
+    "path": "GEMINI.md",
+    "kind": "symlink",
+    "scope": "project",
+    "symlinkTarget": "AGENTS.md",
+    "manager": "symlinks"
+  }
+]

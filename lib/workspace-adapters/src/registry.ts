@@ -28,6 +28,11 @@ export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map
   ["devin", async () => (await import("./devin/index.js")).devinAdapter],
   ["opencode", async () => (await import("./opencode/index.js")).openCodeAdapter],
   ["roo", async () => (await import("./roo/index.js")).rooAdapter],
+  [
+    "third-party-managers",
+    async () =>
+      (await import("./third-party-managers/index.js")).thirdPartyManagersAdapter,
+  ],
 ]);
 
 export interface AdapterRegistry {

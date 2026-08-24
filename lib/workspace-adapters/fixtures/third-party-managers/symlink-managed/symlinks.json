@@ -1,0 +1,6 @@
+{
+  "CLAUDE.md": "AGENTS.md",
+  "GEMINI.md": "AGENTS.md",
+  ".cursorrules": "AGENTS.md",
+  ".claude/skills": "../.agents/skills"
+}

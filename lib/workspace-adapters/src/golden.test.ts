@@ -74,6 +74,10 @@ describe("listGoldenCases", () => {
       "roo/full-surface",
       "roo/no-artifacts",
       "roo/root-fallbacks",
+      "third-party-managers/lockfiles-and-state",
+      "third-party-managers/no-artifacts",
+      "third-party-managers/ruler-managed",
+      "third-party-managers/symlink-managed",
     ]);
     for (const c of cases) {
       expect(c.inputRepoDir).toBe(join(c.dir, "input-repo"));

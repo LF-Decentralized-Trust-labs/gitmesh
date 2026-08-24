@@ -1,0 +1,56 @@
+[
+  {
+    "path": ".agents/agents.json",
+    "kind": "source",
+    "scope": "project",
+    "manager": "agents-json"
+  },
+  {
+    "path": ".agentsync-state.json",
+    "kind": "state",
+    "scope": "project",
+    "manager": "agentsync"
+  },
+  {
+    "path": ".ai/agent_sync.yaml",
+    "kind": "config",
+    "scope": "project",
+    "manager": "agent_sync"
+  },
+  {
+    "path": ".mcp.lock",
+    "kind": "lockfile",
+    "scope": "project",
+    "manager": "mcp-lock"
+  },
+  {
+    "path": ".rulesync/mcp.jsonc",
+    "kind": "config",
+    "scope": "project",
+    "manager": "rulesync"
+  },
+  {
+    "path": ".rulesync/rules/overview.md",
+    "kind": "source",
+    "scope": "project",
+    "manager": "rulesync"
+  },
+  {
+    "path": "agentsync.json",
+    "kind": "config",
+    "scope": "project",
+    "manager": "agentsync"
+  },
+  {
+    "path": "rulesync.jsonc",
+    "kind": "config",
+    "scope": "project",
+    "manager": "rulesync"
+  },
+  {
+    "path": "skills-lock.json",
+    "kind": "lockfile",
+    "scope": "project",
+    "manager": "skills-lock"
+  }
+]

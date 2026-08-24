@@ -1,0 +1,32 @@
+[
+  {
+    "path": ".ruler/AGENTS.md",
+    "kind": "source",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": ".ruler/mcp.json",
+    "kind": "config",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": ".ruler/ruler.toml",
+    "kind": "config",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": ".ruler/skills/lint/SKILL.md",
+    "kind": "source",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": ".ruler/style/frontend.md",
+    "kind": "source",
+    "scope": "project",
+    "manager": "ruler"
+  }
+]

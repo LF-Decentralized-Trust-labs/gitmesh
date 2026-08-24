@@ -28,6 +28,7 @@ describe("createAdapterRegistry", () => {
       "devin",
       "opencode",
       "roo",
+      "third-party-managers",
     ]);
   });
 

@@ -1,9 +1,11 @@
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   symlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -42,6 +44,13 @@ export function loadCaseOptions<T>(caseDir: string): T {
  * negative-case acceptance check, the fixtures-declared-on-adapter check,
  * and one byte-exact assertion per case. `contextFor` maps a case directory
  * (holding the adapter-specific `options.json`) to the detector's context.
+ *
+ * Fixture trees in git cannot contain symlinks (checkout differs across
+ * platforms; the golden harness rejects them), so a case may declare links
+ * in a `symlinks.json` sidecar (`{ "link": "target" }`, targets as literal
+ * link contents). Such a case runs against a temp copy of `input-repo/`
+ * with the links created - typed per resolved target so Windows works -
+ * and is skipped where symlinks are unsupported.
  */
 export function describeDetectorGoldens(
   adapter: AgentAdapter,
@@ -52,6 +61,7 @@ export function describeDetectorGoldens(
     const goldenCases = listGoldenCases(fixturesRoot).filter(
       (c) => c.adapter === adapter.name,
     );
+    const temp = useTempDirs();
 
     it(`ships at least 3 cases including the negative one (${taskId} AC)`, () => {
       expect(goldenCases.length).toBeGreaterThanOrEqual(3);
@@ -63,16 +73,55 @@ export function describeDetectorGoldens(
     });
 
     for (const goldenCase of goldenCases) {
-      it(`matches ${goldenCase.name} byte-exactly`, async () => {
-        await assertGoldenCase(goldenCase, (inputRepoDir) => [
-          {
-            path: "detected.json",
-            content: serialize(adapter.detect(contextFor(goldenCase.dir, inputRepoDir))),
-          },
-        ]);
-      });
+      const symlinks = loadCaseSymlinks(goldenCase.dir);
+      const needsSymlinks = Object.keys(symlinks).length > 0;
+      it.skipIf(needsSymlinks && !symlinkSupport.file)(
+        `matches ${goldenCase.name} byte-exactly`,
+        async () => {
+          await assertGoldenCase(goldenCase, (inputRepoDir) => {
+            const root = needsSymlinks
+              ? materializeWithSymlinks(inputRepoDir, symlinks, temp.makeDir)
+              : inputRepoDir;
+            return [
+              {
+                path: "detected.json",
+                content: serialize(adapter.detect(contextFor(goldenCase.dir, root))),
+              },
+            ];
+          });
+        },
+      );
     }
   });
+}
+
+/** The `symlinks.json` sidecar of a golden case; `{}` when absent. */
+function loadCaseSymlinks(caseDir: string): Record<string, string> {
+  const sidecarPath = join(caseDir, "symlinks.json");
+  return existsSync(sidecarPath)
+    ? (JSON.parse(readFileSync(sidecarPath, "utf8")) as Record<string, string>)
+    : {};
+}
+
+/** Copies `inputRepoDir` into a temp dir and creates the declared links. */
+function materializeWithSymlinks(
+  inputRepoDir: string,
+  symlinks: Record<string, string>,
+  makeDir: (prefix: string) => string,
+): string {
+  const root = makeDir("gitmesh-golden-symlinks-");
+  cpSync(inputRepoDir, root, { recursive: true });
+  for (const [link, target] of Object.entries(symlinks)) {
+    const abs = join(root, link);
+    mkdirSync(dirname(abs), { recursive: true });
+    // Windows needs the link type; "dir" (not junction) keeps the literal
+    // relative target intact, and needs the same privilege as file links.
+    const resolved = resolve(dirname(abs), target);
+    const type =
+      existsSync(resolved) && statSync(resolved).isDirectory() ? "dir" : "file";
+    symlinkSync(target, abs, type);
+  }
+  return root;
 }
 
 function serialize(artifacts: readonly DetectedArtifact[]): string {

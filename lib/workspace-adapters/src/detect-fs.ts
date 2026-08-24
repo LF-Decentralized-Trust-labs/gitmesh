@@ -90,7 +90,16 @@ export function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | nu
   return entry.isFile() ? {} : null;
 }
 
-export function symlinkInfo(absPath: string): FileInfo {
+/**
+ * Symlink details of one link. `isHealthy` decides what the link may resolve
+ * to before it counts as broken: file detectors use the default (a file);
+ * the topology scan accepts anything that resolves (symlinked config
+ * *directories* are exactly what symlink managers create).
+ */
+export function symlinkInfo(
+  absPath: string,
+  isHealthy: (stats: Stats) => boolean = (stats) => stats.isFile(),
+): FileInfo {
   let symlinkTarget: string;
   try {
     symlinkTarget = readlinkSync(absPath).replaceAll("\\", "/");
@@ -100,7 +109,7 @@ export function symlinkInfo(absPath: string): FileInfo {
     return { broken: true };
   }
   const resolved = safeStat(absPath);
-  return resolved?.isFile() ? { symlinkTarget } : { symlinkTarget, broken: true };
+  return resolved && isHealthy(resolved) ? { symlinkTarget } : { symlinkTarget, broken: true };
 }
 
 /** True for directories, including symlinks that resolve to directories. */
