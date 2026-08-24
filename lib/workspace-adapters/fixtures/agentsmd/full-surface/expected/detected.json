@@ -1,0 +1,17 @@
+[
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "docs/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

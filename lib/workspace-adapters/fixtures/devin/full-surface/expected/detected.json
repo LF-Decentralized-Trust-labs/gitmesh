@@ -1,0 +1,47 @@
+[
+  {
+    "path": ".devin/blueprint.yaml",
+    "kind": "config",
+    "scope": "project"
+  },
+  {
+    "path": ".devin/rules/style.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".devin/skills/lint/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurf/hooks.json",
+    "kind": "hooks",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurf/rules/legacy.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurf/skills/ship/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurf/workflows/deploy.md",
+    "kind": "workflow",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "services/api/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

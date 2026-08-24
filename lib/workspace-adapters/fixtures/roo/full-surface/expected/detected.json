@@ -1,0 +1,47 @@
+[
+  {
+    "path": ".roo/commands/release.md",
+    "kind": "command",
+    "scope": "project"
+  },
+  {
+    "path": ".roo/mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": ".roo/rules-code/style.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".roo/rules/base.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".roo/rules/deep/nested.txt",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".rooignore",
+    "kind": "ignore",
+    "scope": "project"
+  },
+  {
+    "path": ".roomodes",
+    "kind": "modes",
+    "scope": "project"
+  },
+  {
+    "path": "AGENT.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

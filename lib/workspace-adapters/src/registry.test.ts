@@ -18,11 +18,16 @@ describe("createAdapterRegistry", () => {
   it("lists the built-in adapters by default", () => {
     const registry = createAdapterRegistry();
     expect(registry.list()).toEqual([
+      "agentsmd",
       "antigravity",
       "claude-code",
+      "cline",
       "codex",
       "copilot",
       "cursor",
+      "devin",
+      "opencode",
+      "roo",
     ]);
   });
 

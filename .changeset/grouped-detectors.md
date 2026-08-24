@@ -1,0 +1,5 @@
+---
+"@gitmesh/workspace-adapters": minor
+---
+
+Add the grouped T1.6 detectors (pivot §12): `opencode`, `agentsmd`, `devin` (ex-Windsurf) and `cline`/`roo`, each a pure, read-only, symlink-aware `detect()` with per-tool golden fixtures including a negative case, registered lazily in the built-in registry. Surfaces were re-verified against each vendor's docs on 2026-08-24 and are wider than the §4.3 rows: opencode gains `.opencode/` command/agent/mode/skill/plugin/theme trees (singular and plural directory names) and `opencode.json{,c}` at any depth; devin gains the preferred `.devin/rules/`, `.windsurf/{workflows,hooks.json,skills}`, and `.devin/blueprint.yaml` alongside the legacy `.windsurfrules`; cline classifies the `.clinerules` file-or-directory surface with its `workflows/` and `hooks/` subtrees; roo covers `.roo/rules*/` trees with `.roorules*` fallbacks, `.roomodes`, `.roo/mcp.json`, `.roo/commands/` and `.rooignore`. Adds the shared `collectDirFiles` single-level scan to `detect-fs`.

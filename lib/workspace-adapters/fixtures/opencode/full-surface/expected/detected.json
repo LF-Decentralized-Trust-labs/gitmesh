@@ -1,0 +1,47 @@
+[
+  {
+    "path": ".opencode/agent/planner.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/command/review.md",
+    "kind": "command",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/opencode.jsonc",
+    "kind": "config",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/plugin/notify.ts",
+    "kind": "plugin",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/skill/lint/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/themes/dark.json",
+    "kind": "theme",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  },
+  {
+    "path": "opencode.json",
+    "kind": "config",
+    "scope": "project"
+  },
+  {
+    "path": "packages/app/AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

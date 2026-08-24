@@ -38,6 +38,9 @@ describe("listGoldenCases", () => {
   it("discovers adapter/case pairs sorted deterministically", () => {
     const cases = listGoldenCases(fixturesRoot);
     expect(cases.map((c) => `${c.adapter}/${c.name}`)).toEqual([
+      "agentsmd/full-surface",
+      "agentsmd/no-artifacts",
+      "agentsmd/root-only",
       "antigravity/full-surface",
       "antigravity/managed-probe",
       "antigravity/no-artifacts",
@@ -46,6 +49,9 @@ describe("listGoldenCases", () => {
       "claude-code/no-artifacts",
       "claude-code/scoped-and-managed",
       "claude-code/user-scope-not-requested",
+      "cline/legacy-single-file",
+      "cline/no-artifacts",
+      "cline/rules-directory",
       "codex/codex-home-hint",
       "codex/full-surface",
       "codex/no-artifacts",
@@ -57,8 +63,17 @@ describe("listGoldenCases", () => {
       "cursor/legacy-cursorrules",
       "cursor/mdc-frontmatter",
       "cursor/no-artifacts",
+      "devin/full-surface",
+      "devin/legacy-windsurfrules",
+      "devin/no-artifacts",
       "dummy/copy-through",
       "dummy/rejects-drift",
+      "opencode/full-surface",
+      "opencode/no-artifacts",
+      "opencode/plural-dirs",
+      "roo/full-surface",
+      "roo/no-artifacts",
+      "roo/root-fallbacks",
     ]);
     for (const c of cases) {
       expect(c.inputRepoDir).toBe(join(c.dir, "input-repo"));

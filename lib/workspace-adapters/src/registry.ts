@@ -12,6 +12,7 @@ export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map
   string,
   AdapterLoader
 >([
+  ["agentsmd", async () => (await import("./agentsmd/index.js")).agentsMdAdapter],
   [
     "antigravity",
     async () => (await import("./antigravity/index.js")).antigravityAdapter,
@@ -20,9 +21,13 @@ export const builtinAdapterLoaders: ReadonlyMap<string, AdapterLoader> = new Map
     "claude-code",
     async () => (await import("./claude-code/index.js")).claudeCodeAdapter,
   ],
+  ["cline", async () => (await import("./cline/index.js")).clineAdapter],
   ["codex", async () => (await import("./codex/index.js")).codexAdapter],
   ["copilot", async () => (await import("./copilot/index.js")).copilotAdapter],
   ["cursor", async () => (await import("./cursor/index.js")).cursorAdapter],
+  ["devin", async () => (await import("./devin/index.js")).devinAdapter],
+  ["opencode", async () => (await import("./opencode/index.js")).openCodeAdapter],
+  ["roo", async () => (await import("./roo/index.js")).rooAdapter],
 ]);
 
 export interface AdapterRegistry {

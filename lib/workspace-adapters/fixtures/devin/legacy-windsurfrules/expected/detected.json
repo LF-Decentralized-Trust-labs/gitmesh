@@ -1,0 +1,12 @@
+[
+  {
+    "path": ".windsurf/rules/old.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurfrules",
+    "kind": "rule",
+    "scope": "project"
+  }
+]

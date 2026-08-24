@@ -199,6 +199,32 @@ export function collectMarkdownTree<K extends string>(
 }
 
 /**
+ * Inventories the files directly inside `root`/`relBase` whose names pass
+ * `filter`, at project scope - for surfaces documented as a single-level
+ * glob (`.roo/commands/*.md`, `.opencode/plugin/*.ts`, …) where a recursive
+ * walk would over-report.
+ */
+export function collectDirFiles<K extends string>(
+  root: string,
+  relBase: string,
+  filter: (name: string) => boolean,
+  kind: K,
+  out: Array<DetectedArtifact & { kind: K }>,
+): void {
+  const base = join(root, relBase);
+  for (const entry of sortedEntries(base)) {
+    const abs = join(base, entry.name);
+    if (isTraversableDir(entry, abs) || !filter(entry.name)) {
+      continue;
+    }
+    const info = fileInfoFromEntry(entry, abs);
+    if (info) {
+      out.push(makeArtifact(`${relBase}/${entry.name}`, kind, "project", info));
+    }
+  }
+}
+
+/**
  * Inventories one artifact per skill directory under `root`/`relBase`: the
  * `<name>/SKILL.md` manifest. A skill's other resource files belong to the
  * skill, not the inventory. Shared by every adapter whose skills fragment by

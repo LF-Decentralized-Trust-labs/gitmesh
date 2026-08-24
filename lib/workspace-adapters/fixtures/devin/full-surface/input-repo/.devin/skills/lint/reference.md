@@ -1,0 +1,1 @@
+resource, not a manifest

@@ -1,0 +1,22 @@
+[
+  {
+    "path": ".opencode/agents/reviewer.md",
+    "kind": "agent",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/commands/ship/run.md",
+    "kind": "command",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/modes/build.md",
+    "kind": "mode",
+    "scope": "project"
+  },
+  {
+    "path": ".opencode/skills/deploy/SKILL.md",
+    "kind": "skill",
+    "scope": "project"
+  }
+]

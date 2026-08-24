@@ -1,0 +1,17 @@
+[
+  {
+    "path": ".clinerules",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".cursorrules",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".windsurfrules",
+    "kind": "rule",
+    "scope": "project"
+  }
+]

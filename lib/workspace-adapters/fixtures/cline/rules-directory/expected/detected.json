@@ -1,0 +1,32 @@
+[
+  {
+    "path": ".clineignore",
+    "kind": "ignore",
+    "scope": "project"
+  },
+  {
+    "path": ".clinerules/01-coding.md",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".clinerules/hooks/PreToolUse",
+    "kind": "hooks",
+    "scope": "project"
+  },
+  {
+    "path": ".clinerules/notes.txt",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".clinerules/workflows/pr-review.md",
+    "kind": "workflow",
+    "scope": "project"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project"
+  }
+]

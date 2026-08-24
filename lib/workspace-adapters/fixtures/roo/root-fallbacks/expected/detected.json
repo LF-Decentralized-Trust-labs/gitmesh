@@ -1,0 +1,12 @@
+[
+  {
+    "path": ".roorules",
+    "kind": "rule",
+    "scope": "project"
+  },
+  {
+    "path": ".roorules-code",
+    "kind": "rule",
+    "scope": "project"
+  }
+]
