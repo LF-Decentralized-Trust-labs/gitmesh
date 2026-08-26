@@ -13,3 +13,12 @@ export {
   type InstructionScope,
   type FrontmatterSplit,
 } from "./normalizer/index.js";
+export {
+  computeDriftReport,
+  type DriftDocumentInput,
+  type DriftDocument,
+  type DriftBlockRef,
+  type PairDrift,
+  type BlockPresence,
+  type DriftReport,
+} from "./drift/index.js";

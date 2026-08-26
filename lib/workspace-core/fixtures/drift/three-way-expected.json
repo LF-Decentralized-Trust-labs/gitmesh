@@ -1,0 +1,237 @@
+{
+  "documents": [
+    {
+      "paths": [
+        ".cursor/rules/style.mdc"
+      ],
+      "label": ".cursor/rules/style.mdc",
+      "doc": {
+        "scope": {
+          "globs": [
+            "**/*.ts"
+          ],
+          "description": "Style rules"
+        },
+        "blocks": [
+          {
+            "kind": "heading",
+            "text": "# Project rules",
+            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc",
+            "managed": false
+          },
+          {
+            "kind": "list",
+            "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+            "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf",
+            "managed": false
+          },
+          {
+            "kind": "paragraph",
+            "text": "Never commit secrets.",
+            "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac",
+            "managed": false
+          }
+        ],
+        "hash": "6aa28fde0afdac9a9b984c9e3e675e686a27103b1f61c0f073d918c1bda05f97"
+      }
+    },
+    {
+      "paths": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "label": "AGENTS.md",
+      "doc": {
+        "blocks": [
+          {
+            "kind": "heading",
+            "text": "# Project rules",
+            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc",
+            "managed": false
+          },
+          {
+            "kind": "paragraph",
+            "text": "Use pnpm for all installs.",
+            "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e",
+            "managed": false
+          },
+          {
+            "kind": "list",
+            "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+            "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf",
+            "managed": false
+          }
+        ],
+        "hash": "c1602201ac940f4e55f59e8ffca1fd2da3a8dc9ddfdaea694073fd15dbd40063"
+      }
+    },
+    {
+      "paths": [
+        "GEMINI.md"
+      ],
+      "label": "GEMINI.md",
+      "doc": {
+        "blocks": [
+          {
+            "kind": "heading",
+            "text": "# Project rules",
+            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc",
+            "managed": false
+          },
+          {
+            "kind": "paragraph",
+            "text": "Use pnpm for all installs.",
+            "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e",
+            "managed": false
+          },
+          {
+            "kind": "paragraph",
+            "text": "Prefer tabs over spaces.",
+            "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369",
+            "managed": false
+          }
+        ],
+        "hash": "7aed378f679050712d636a3a9d5b92d7c54094a713ab78fe0b17b06f8a433d98"
+      }
+    }
+  ],
+  "symlinkGroups": [
+    [
+      "AGENTS.md",
+      "CLAUDE.md"
+    ]
+  ],
+  "pairs": [
+    {
+      "a": ".cursor/rules/style.mdc",
+      "b": "AGENTS.md",
+      "onlyInA": [
+        {
+          "kind": "paragraph",
+          "text": "Never commit secrets.",
+          "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
+        }
+      ],
+      "onlyInB": [
+        {
+          "kind": "paragraph",
+          "text": "Use pnpm for all installs.",
+          "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
+        }
+      ],
+      "reordered": [],
+      "sharedCount": 2,
+      "identical": false
+    },
+    {
+      "a": ".cursor/rules/style.mdc",
+      "b": "GEMINI.md",
+      "onlyInA": [
+        {
+          "kind": "list",
+          "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+          "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+        },
+        {
+          "kind": "paragraph",
+          "text": "Never commit secrets.",
+          "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
+        }
+      ],
+      "onlyInB": [
+        {
+          "kind": "paragraph",
+          "text": "Use pnpm for all installs.",
+          "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
+        },
+        {
+          "kind": "paragraph",
+          "text": "Prefer tabs over spaces.",
+          "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+        }
+      ],
+      "reordered": [],
+      "sharedCount": 1,
+      "identical": false
+    },
+    {
+      "a": "AGENTS.md",
+      "b": "GEMINI.md",
+      "onlyInA": [
+        {
+          "kind": "list",
+          "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+          "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+        }
+      ],
+      "onlyInB": [
+        {
+          "kind": "paragraph",
+          "text": "Prefer tabs over spaces.",
+          "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+        }
+      ],
+      "reordered": [],
+      "sharedCount": 2,
+      "identical": false
+    }
+  ],
+  "divergentBlocks": [
+    {
+      "block": {
+        "kind": "list",
+        "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+        "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+      },
+      "presentIn": [
+        ".cursor/rules/style.mdc",
+        "AGENTS.md"
+      ],
+      "missingFrom": [
+        "GEMINI.md"
+      ]
+    },
+    {
+      "block": {
+        "kind": "paragraph",
+        "text": "Never commit secrets.",
+        "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
+      },
+      "presentIn": [
+        ".cursor/rules/style.mdc"
+      ],
+      "missingFrom": [
+        "AGENTS.md",
+        "GEMINI.md"
+      ]
+    },
+    {
+      "block": {
+        "kind": "paragraph",
+        "text": "Use pnpm for all installs.",
+        "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
+      },
+      "presentIn": [
+        "AGENTS.md",
+        "GEMINI.md"
+      ],
+      "missingFrom": [
+        ".cursor/rules/style.mdc"
+      ]
+    },
+    {
+      "block": {
+        "kind": "paragraph",
+        "text": "Prefer tabs over spaces.",
+        "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+      },
+      "presentIn": [
+        "GEMINI.md"
+      ],
+      "missingFrom": [
+        ".cursor/rules/style.mdc",
+        "AGENTS.md"
+      ]
+    }
+  ]
+}

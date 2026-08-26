@@ -1,0 +1,10 @@
+---
+description: Style rules
+globs: "**/*.ts"
+---
+# Project rules
+
+- Run tests before every commit.
+- Sign off commits with -s.
+
+Never commit secrets.
