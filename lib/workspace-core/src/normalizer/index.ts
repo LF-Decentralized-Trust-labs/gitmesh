@@ -1,15 +1,15 @@
-export { workspaceIRSchema, type WorkspaceIR } from "./workspace-ir.js";
 export {
   normalizeInstructionMarkdown,
   sha256Hex,
   hashBlock,
   hashDocument,
-  parseScopeFrontmatter,
-  resolveLogicalPath,
-  isSameLogicalDocument,
   type BlockKind,
   type NormalizedBlock,
   type NormalizedDocument,
+} from "./normalize.js";
+export {
+  parseScopeFrontmatter,
   type InstructionScope,
   type FrontmatterSplit,
-} from "./normalizer/index.js";
+} from "./frontmatter.js";
+export { resolveLogicalPath, isSameLogicalDocument } from "./symlink.js";
