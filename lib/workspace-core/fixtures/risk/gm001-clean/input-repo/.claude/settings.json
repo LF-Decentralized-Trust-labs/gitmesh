@@ -1,0 +1,6 @@
+{
+  "apiKeyHelper": "/usr/local/bin/get-key",
+  "permissions": {
+    "deny": ["Read(.env)"]
+  }
+}

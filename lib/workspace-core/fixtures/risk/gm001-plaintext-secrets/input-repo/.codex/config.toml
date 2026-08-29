@@ -1,0 +1,9 @@
+approval_policy = "on-request"
+
+[mcp_servers.slack]
+command = "slack-mcp"
+env = { SLACK_TOKEN = "xoxb-fake-fake-fakefakefake" }
+
+[mcp_servers.aws.env]
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

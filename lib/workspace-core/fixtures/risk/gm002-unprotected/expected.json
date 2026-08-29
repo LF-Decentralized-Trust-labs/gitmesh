@@ -1,0 +1,20 @@
+[
+  {
+    "ruleId": "GM002",
+    "severity": "warning",
+    "message": "No deny/ask rule protects .env files; add \"Read(**/.env)\" and \"Read(**/.env.*)\" to permissions.deny in .claude/settings.json.",
+    "adapter": "claude-code"
+  },
+  {
+    "ruleId": "GM002",
+    "severity": "warning",
+    "message": "No beforeReadFile hook guards secret files; add one to .cursor/hooks.json that blocks .env reads.",
+    "adapter": "cursor"
+  },
+  {
+    "ruleId": "GM002",
+    "severity": "warning",
+    "message": "permission.read allows .env files, overriding OpenCode's default deny; remove the allow or set \"*.env\" and \"*.env.*\" back to \"deny\" in opencode.json.",
+    "adapter": "opencode"
+  }
+]

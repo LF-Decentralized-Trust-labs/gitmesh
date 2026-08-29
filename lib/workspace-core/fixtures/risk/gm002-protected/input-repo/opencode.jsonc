@@ -1,0 +1,10 @@
+{
+  // keep the default .env deny explicit
+  "permission": {
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+    },
+  },
+}

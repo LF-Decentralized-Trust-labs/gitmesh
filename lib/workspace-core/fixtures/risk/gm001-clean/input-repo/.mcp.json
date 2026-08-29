@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "github-mcp",
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "HOME_DIR": "$HOME",
+        "OPENAI_API_KEY": "op://vault/openai/credential",
+        "SLACK_TOKEN": "env:SLACK_TOKEN",
+        "DB_PASSWORD": "changeme",
+        "API_TOKEN": "<your-token>",
+        "API_KEY": "",
+        "SESSION_ID": "9f2c7a1e4b8d6c3a5e7f1b2d4c6a8e0f"
+      }
+    }
+  }
+}
