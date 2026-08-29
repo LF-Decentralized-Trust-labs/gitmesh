@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [{ "command": "node hooks/check.js" }]
+  }
+}

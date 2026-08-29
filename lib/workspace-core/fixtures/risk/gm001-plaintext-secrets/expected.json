@@ -1,0 +1,50 @@
+[
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext AWS access key id in \"AWS_ACCESS_KEY_ID\" (line 8); move it out of the file and reference it from the environment.",
+    "path": ".codex/config.toml"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext Slack token in \"SLACK_TOKEN\" (line 5); move it out of the file and reference it from the environment.",
+    "path": ".codex/config.toml"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext high-entropy value in \"AWS_SECRET_ACCESS_KEY\" (line 9); move it out of the file and reference it from the environment.",
+    "path": ".codex/config.toml"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext GitHub token in \"GITHUB_TOKEN\" (line 7); move it out of the file and reference it from the environment.",
+    "path": ".mcp.json"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext OpenAI/Anthropic-style key in \"--api-key\" (line 13); move it out of the file and reference it from the environment.",
+    "path": ".mcp.json"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext OpenAI/Anthropic-style key in \"OPENAI_API_KEY\" (line 5); move it out of the file and reference it from the environment.",
+    "path": ".ruler/mcp.json"
+  },
+  {
+    "ruleId": "GM001",
+    "severity": "error",
+    "message": "Plaintext JWT in \"Authorization\" (line 8); move it out of the file and reference it from the environment.",
+    "path": "opencode.jsonc"
+  },
+  {
+    "ruleId": "GM002",
+    "severity": "warning",
+    "message": "No deny/ask rule protects .env files; add \"Read(**/.env)\" and \"Read(**/.env.*)\" to permissions.deny in .claude/settings.json.",
+    "adapter": "claude-code"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  // MCP servers
+  "mcp": {
+    "internal": {
+      "type": "remote",
+      "url": "https://mcp.example.com",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlIn0.fakefakefakefake",
+        "X-Input": "${input:token}",
+      },
+    },
+  },
+}

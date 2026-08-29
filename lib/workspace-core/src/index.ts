@@ -1,4 +1,5 @@
 export { workspaceIRSchema, type WorkspaceIR } from "./workspace-ir.js";
+export { parseJsonc } from "./jsonc.js";
 export {
   normalizeInstructionMarkdown,
   sha256Hex,

@@ -1,0 +1,6 @@
+{
+  "permission": {
+    "edit": "ask",
+    "read": "allow"
+  }
+}

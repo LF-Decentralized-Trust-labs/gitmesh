@@ -1,0 +1,6 @@
+[
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
+  { "adapter": "copilot", "path": ".github/copilot-instructions.md", "kind": "instructions", "scope": "project" },
+  { "adapter": "cursor", "path": ".cursor/hooks.json", "kind": "hooks", "scope": "project" },
+  { "adapter": "opencode", "path": "opencode.jsonc", "kind": "config", "scope": "project" }
+]

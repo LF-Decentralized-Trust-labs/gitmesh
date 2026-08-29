@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_FAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKE01",
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+    "anthropic": {
+      "command": "anthropic-mcp",
+      "args": ["--api-key", "sk-ant-api03-fakefakefakefakefakefake0000"]
+    }
+  }
+}

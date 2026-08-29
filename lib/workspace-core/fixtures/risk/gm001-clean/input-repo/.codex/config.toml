@@ -1,0 +1,2 @@
+model = "gpt-5.2-codex"
+approval_policy = "on-request"

@@ -1,0 +1,7 @@
+[
+  { "adapter": "claude-code", "path": ".mcp.json", "kind": "mcp-config", "scope": "project" },
+  { "adapter": "claude-code", "path": "managed-settings.json", "kind": "settings", "scope": "managed" },
+  { "adapter": "codex", "path": ".codex/config.toml", "kind": "config", "scope": "project" },
+  { "adapter": "opencode", "path": "opencode.jsonc", "kind": "config", "scope": "project" },
+  { "adapter": "third-party-managers", "path": ".ruler/mcp.json", "kind": "config", "scope": "project" }
+]

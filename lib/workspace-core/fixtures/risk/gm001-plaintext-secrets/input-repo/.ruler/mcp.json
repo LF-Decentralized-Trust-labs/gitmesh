@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "openai": {
+      "command": "openai-mcp",
+      "env": { "OPENAI_API_KEY": "sk-proj-fakefakefakefakefakefake00" }
+    }
+  }
+}
