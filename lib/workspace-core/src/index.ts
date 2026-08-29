@@ -22,3 +22,4 @@ export {
   type BlockPresence,
   type DriftReport,
 } from "./drift/index.js";
+export * from "./risk/index.js";
