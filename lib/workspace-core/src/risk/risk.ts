@@ -13,9 +13,9 @@
  * "CLAUDE.md without an AGENTS.md bridge").
  *
  * Pure data → data: no filesystem access, no wallclock; the caller (the
- * doctor pipeline) reads file contents. Findings carry a message and
- * provenance only - never raw artifact content - so secret values stay out
- * of every output mode by construction (hard rule 5, §10.1 principle 7).
+ * doctor pipeline) reads file contents. Findings never include raw artifact
+ * content, but rule messages are free-form, so rules MUST redact any secret
+ * values they inspect (hard rule 5, §10.1 principle 7).
  * Deterministic: findings sort by rule id, then path, then message,
  * independent of rule table order. Rendering is T1.16's job.
  */
