@@ -13,11 +13,22 @@
  * "CLAUDE.md without an AGENTS.md bridge").
  *
  * Pure data → data: no filesystem access, no wallclock; the caller (the
- * doctor pipeline) reads file contents. Findings never include raw artifact
- * content, but rule messages are free-form, so rules MUST redact any secret
- * values they inspect (hard rule 5, §10.1 principle 7).
- * Deterministic: findings sort by rule id, then path, then message,
- * independent of rule table order. Rendering is T1.16's job.
+ * doctor pipeline) reads file contents. The engine copies only `message`,
+ * `path` and `adapter` out of what a rule returns, so raw artifact content
+ * can never reach a finding by accident; rule messages are free-form, so
+ * rules MUST still redact any secret values they inspect (hard rule 5,
+ * §10.1 principle 7). Rules must be total: a throwing `check` aborts the
+ * run (a rule bug, surfaced by that rule's fixtures), so parse tolerantly.
+ *
+ * Deterministic: identical findings collapse to one (the same file is
+ * inventoried by several adapters, e.g. a root AGENTS.md), and findings
+ * sort by rule id, path, adapter, message - independent of rule table and
+ * inventory order. Rendering is T1.16's job.
+ *
+ * Planned additive extensions (keep these out of individual rules):
+ * managed-by-X provenance on artifacts (§8.1 item 1, T1.7 `manager`),
+ * VCS tracked/ignored status (GM009), repo history context (GM008), and
+ * per-rule docs metadata (§8.1 item 3, T2.1).
  */
 
 /**
@@ -29,7 +40,9 @@ export type RiskSeverity = "info" | "warning" | "error";
 
 /**
  * Configuration tier of an artifact. Mirrors the adapters' `ArtifactScope`
- * literally; core cannot import it (the dependency points the other way).
+ * literally; the adapters package depends on core, so the shared
+ * `ArtifactScope` / `DetectedArtifact` types can move here in a follow-up
+ * and be re-exported from adapters.
  */
 export type RiskArtifactScope = "managed" | "user" | "project" | "local";
 
@@ -113,32 +126,33 @@ export interface RiskRule {
 
 /**
  * Runs a rule table over a doctor inventory and returns the stamped,
- * deterministically ordered findings. Throws on duplicate rule ids
- * (a misconfigured table, not a repository problem).
+ * de-duplicated, deterministically ordered findings. Throws on duplicate
+ * rule ids (a misconfigured table, not a repository problem).
  */
 export function runRiskRules(
   input: RiskInput,
   rules: readonly RiskRule[],
 ): RiskFinding[] {
   const ids = new Set<string>();
+  const findings = new Map<string, RiskFinding>();
   for (const rule of rules) {
     if (ids.has(rule.id)) {
       throw new Error(`duplicate risk rule id: ${rule.id}`);
     }
     ids.add(rule.id);
-  }
 
-  const findings: RiskFinding[] = [];
-  for (const rule of rules) {
     const matched = input.artifacts.filter((artifact) =>
       matchesApplicability(artifact, rule.appliesTo),
     );
-    for (const finding of rule.check({ matched, input })) {
-      findings.push({ ...finding, ruleId: rule.id, severity: rule.severity });
+    for (const { message, path, adapter } of rule.check({ matched, input })) {
+      const finding: RiskFinding = { ruleId: rule.id, severity: rule.severity, message };
+      if (path !== undefined) finding.path = path;
+      if (adapter !== undefined) finding.adapter = adapter;
+      findings.set(JSON.stringify([rule.id, path, adapter, message]), finding);
     }
   }
 
-  return findings.sort(compareFindings);
+  return [...findings.values()].sort(compareFindings);
 }
 
 function matchesApplicability(artifact: RiskArtifact, appliesTo: RiskApplicability): boolean {
@@ -149,11 +163,15 @@ function matchesApplicability(artifact: RiskArtifact, appliesTo: RiskApplicabili
   );
 }
 
-/** Stable order: rule id, then path (path-less findings first), then message. */
+/**
+ * Stable order: rule id, then path, then adapter (absent values first),
+ * then message.
+ */
 function compareFindings(a: RiskFinding, b: RiskFinding): number {
   return (
     compareStrings(a.ruleId, b.ruleId) ||
     compareStrings(a.path ?? "", b.path ?? "") ||
+    compareStrings(a.adapter ?? "", b.adapter ?? "") ||
     compareStrings(a.message, b.message)
   );
 }
