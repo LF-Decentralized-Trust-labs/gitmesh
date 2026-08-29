@@ -22,3 +22,16 @@ export {
   type BlockPresence,
   type DriftReport,
 } from "./drift/index.js";
+export {
+  runRiskRules,
+  riskRules,
+  type RiskSeverity,
+  type RiskArtifactScope,
+  type RiskArtifact,
+  type RiskInput,
+  type RiskApplicability,
+  type RuleFinding,
+  type RiskFinding,
+  type RuleContext,
+  type RiskRule,
+} from "./risk/index.js";
