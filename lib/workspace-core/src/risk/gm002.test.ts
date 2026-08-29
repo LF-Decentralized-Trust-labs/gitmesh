@@ -51,6 +51,8 @@ describe("GM002", () => {
     '{"permissions": {"deny": ["Read(.env)"]}}',
     '{"permissions": {"deny": ["Read(./.env)"]}}',
     '{"permissions": {"deny": ["Read(**/.env.*)"]}}',
+    '{"permissions": {"deny": ["Read(*.env)"]}}',
+    '{"permissions": {"deny": ["Read(**)"]}}',
     '{"permissions": {"ask": ["Read(.env*)"]}}',
   ])("treats claude-code as protected by %s", (settings) => {
     expect(adaptersFlagged([claude(settings)])).toEqual([]);
@@ -58,6 +60,9 @@ describe("GM002", () => {
 
   it.each([
     '{"permissions": {"deny": ["Read(**/*.pem)"]}}',
+    '{"permissions": {"deny": ["Read(config/**)"]}}',
+    '{"permissions": {"deny": ["Read(.env.example)"]}}',
+    '{"permissions": {"deny": ["Read(.environment)"]}}',
     '{"permissions": {"allow": ["Read(.env)"]}}',
     "{}",
     "not json",
@@ -86,12 +91,24 @@ describe("GM002", () => {
     expect(adaptersFlagged([artifact("cursor", ".cursor/mcp.json", "mcp-config", "{}")])).toEqual(["cursor"]);
   });
 
-  it("treats opencode as protected by default and unprotected only on an explicit allow", () => {
+  it("treats opencode as protected by default and unprotected when a secret path resolves to allow", () => {
+    for (const config of [
+      '{"permission": {"edit": "ask"}}',
+      '{"permission": {"read": "deny"}}',
+      '{"permission": {"read": {"*": "allow", "*.env.example": "allow"}}}',
+      '{"permission": {"read": {"*": "deny"}}}',
+      "not json",
+    ]) {
+      expect(adaptersFlagged([opencode(config)])).toEqual([]);
+    }
     expect(adaptersFlagged([artifact("opencode", "AGENTS.md", "instructions", "# x")])).toEqual([]);
-    expect(adaptersFlagged([opencode('{"permission": {"edit": "ask"}}')])).toEqual([]);
-    expect(adaptersFlagged([opencode('{"permission": {"read": {"*": "allow", "*.env.example": "allow"}}}')])).toEqual([]);
-    expect(adaptersFlagged([opencode("not json")])).toEqual([]);
-    expect(adaptersFlagged([opencode('{"permission": {"read": "allow"}}')])).toEqual(["opencode"]);
-    expect(adaptersFlagged([opencode('{"permission": {"read": {"*.env": "allow"}}}')])).toEqual(["opencode"]);
+    for (const config of [
+      '{"permission": {"read": "allow"}}',
+      '{"permission": {"read": {"*.env": "allow"}}}',
+      '{"permission": {"read": {"**/.env": "allow"}}}',
+      '{"permission": {"read": {"*.env.*": "allow"}}}',
+    ]) {
+      expect(adaptersFlagged([opencode(config)])).toEqual(["opencode"]);
+    }
   });
 });

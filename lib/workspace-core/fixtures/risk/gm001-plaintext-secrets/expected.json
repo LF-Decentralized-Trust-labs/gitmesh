@@ -26,7 +26,7 @@
   {
     "ruleId": "GM001",
     "severity": "error",
-    "message": "Plaintext OpenAI/Anthropic-style key on line 13; move it out of the file and reference it from the environment.",
+    "message": "Plaintext OpenAI/Anthropic-style key in \"--api-key\" (line 13); move it out of the file and reference it from the environment.",
     "path": ".mcp.json"
   },
   {

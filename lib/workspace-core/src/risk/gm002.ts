@@ -7,15 +7,18 @@ import type { RiskArtifact, RiskRule } from "./risk.js";
  * fires once per agent present in the inventory whose readable config
  * leaves `.env` exposed.
  *
- * Agents that can express a read deny, and what counts as protection:
- * - claude-code: a `Read(<glob>)` entry naming `.env` in `permissions.deny`
- *   or `permissions.ask` of any settings file.
+ * Protection means a deny/ask pattern that actually matches a secret path
+ * (`SECRET_PATHS`, from the §10.5 `deny_read` set) under the agent's own
+ * glob semantics - `Read(**)` protects, `Read(config/**)` does not.
+ * - claude-code: a `Read(<glob>)` entry in `permissions.deny` or
+ *   `permissions.ask` of any settings file.
  * - cursor: a non-empty `hooks.beforeReadFile` list (the hook body is not
  *   inspectable; presence is the best available proxy).
- * - opencode: denies `*.env` / `*.env.*` reads by default, so only a config
- *   that sets `permission.read` to `"allow"` or maps a `.env` pattern to
- *   `"allow"` is unprotected. The docs do not state how a user value merges
- *   with that default (verified 2026-08-29), so only explicit allows count.
+ * - opencode: denies `*.env` / `*.env.*` reads by default (last matching
+ *   rule wins), so it is unprotected only when the config's `permission.read`
+ *   makes a secret path resolve to `"allow"`. The docs do not state how a
+ *   user value merges with the default (verified 2026-08-29); the user's
+ *   object is assumed to override default keys in place and append new ones.
  *
  * Excluded, with reasons: Copilot / VS Code has no hard deny (§10.5
  * coverage annotation); Codex `sandbox_mode` and Antigravity denied-commands
@@ -79,6 +82,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** Paths a read deny must cover; any one covered counts as protection. */
+const SECRET_PATHS = [".env", ".env.local"];
+
+/** OpenCode's built-in `permission.read` rules (opencode.ai/docs/permissions). */
+const OPENCODE_READ_DEFAULTS: Record<string, unknown> = {
+  "*": "allow",
+  "*.env": "deny",
+  "*.env.*": "deny",
+  "*.env.example": "allow",
+};
+
 function claudeDeniesEnvRead(config: unknown): boolean {
   const permissions = isRecord(config) ? config.permissions : undefined;
   if (!isRecord(permissions)) {
@@ -87,7 +101,10 @@ function claudeDeniesEnvRead(config: unknown): boolean {
   return [permissions.deny, permissions.ask].some(
     (rules) =>
       Array.isArray(rules) &&
-      rules.some((rule) => typeof rule === "string" && /^Read\(.*\.env.*\)$/.test(rule)),
+      rules.some((rule) => {
+        const glob = typeof rule === "string" ? /^Read\((.*)\)$/.exec(rule)?.[1] : undefined;
+        return glob !== undefined && SECRET_PATHS.some((path) => globMatches(glob, path));
+      }),
   );
 }
 
@@ -99,12 +116,23 @@ function cursorHasBeforeReadFile(config: unknown): boolean {
 function opencodeAllowsEnvRead(config: unknown): boolean {
   const permission = isRecord(config) ? config.permission : undefined;
   const read = isRecord(permission) ? permission.read : undefined;
-  return (
-    read === "allow" ||
-    (isRecord(read) &&
-      Object.entries(read).some(
-        ([pattern, action]) =>
-          pattern.includes(".env") && !pattern.includes(".env.example") && action === "allow",
-      ))
+  if (!isRecord(read)) {
+    return read === "allow";
+  }
+  const rules = Object.entries({ ...OPENCODE_READ_DEFAULTS, ...read });
+  return SECRET_PATHS.some(
+    (path) => rules.filter(([glob]) => globMatches(glob, path)).at(-1)?.[1] === "allow",
   );
+}
+
+/** Minimal glob match: `**` spans directories, `*`/`?` stay in a segment, a `./` prefix is dropped. */
+function globMatches(glob: string, path: string): boolean {
+  const source = glob
+    .replace(/^\.\//, "")
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*\*\/?/g, "\u0000")
+    .replace(/\*/g, "[^/]*")
+    .replace(/\?/g, "[^/]")
+    .replace(/\u0000/g, ".*");
+  return new RegExp(`^${source}$`).test(path);
 }

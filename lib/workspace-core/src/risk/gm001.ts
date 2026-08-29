@@ -6,11 +6,22 @@ import type { RiskRule } from "./risk.js";
  * entropy gate on secret-named keys; findings name the file, line and key,
  * never the value (hard rule 5).
  *
+ * Two tiers. The generic one is positional: a random-looking value sitting
+ * under a credential-named key, behind an auth scheme (`Bearer …`), or
+ * after a credential-named flag (`"--api-key", "…"`, `--token=…`) is
+ * reported whatever vendor issued it. The vendor token-shape table is the
+ * high-precision tier for positions with no name at all (bare `args`
+ * entries, URLs); it is deliberately short - a shape earns a row only when
+ * it is distinctive enough to carry no false positives on its own.
+ *
  * The scanner is format-agnostic: it reads lines, not JSON/TOML/YAML trees,
  * so the same code covers `.mcp.json`, `.codex/config.toml`,
  * `opencode.jsonc` and `.gemini/settings.json` without a parser and cannot
  * throw on malformed input. Cost: unquoted YAML values reach only the
  * token-shape patterns (the entropy gate needs a quoted `key: "value"`).
+ * `.env*` files are never inventoried, so example values there are never
+ * scanned; accepted findings will need the allowlist that lands with the
+ * CLI config (T1.17).
  *
  * Third-party-manager files (`.ruler/mcp.json`, `.rulesync/mcp.jsonc`) are
  * scanned too: ADR-004 protects the manager's territory from GitMesh writes
@@ -67,6 +78,16 @@ const TOKEN_PATTERNS: readonly (readonly [reason: string, re: RegExp])[] = [
 const PAIR_RE =
   /(?:"((?:[^"\\]|\\.)*)"|'([^'\\]*)'|([A-Za-z_][\w.-]*))\s*[:=]\s*(?:"((?:[^"\\]|\\.)*)"|'([^'\\]*)')/g;
 
+/**
+ * A CLI flag and its value, as one `--flag=value` string or two adjacent
+ * array entries `"--flag", "value"`; a credential-named flag stands in for
+ * the key (`-y package` is not a pair).
+ */
+const FLAG_RE = /(--?[\w-]+)(?:"\s*,\s*"|=)((?:[^"\\]|\\.)*)"/g;
+
+/** Auth schemes that prefix a credential in header values. */
+const SCHEME_RE = /^(?:Bearer|Basic|Token)\s+/i;
+
 /** Key names that carry credentials. Bare `auth` is out: it matches `author`. */
 const KEY_RE = /token|secret|passw(?:or)?d|api[_-]?key|credential|private[_-]?key|authorization|bearer/i;
 
@@ -106,20 +127,21 @@ function looksRandom(value: string): boolean {
 /**
  * Scans `content` line by line. Token shapes are matched anywhere on the
  * line (so key-less `args` entries count) and attributed to the enclosing
- * `key: "value"` pair when there is one; remaining pairs with a secret-named
- * key and a random-looking, non-placeholder value are reported as
- * high-entropy. One hit per line and key; the first reason wins.
+ * `key: "value"` pair or `--flag value` when there is one; remaining pairs
+ * with a credential-named key or flag and a random-looking, non-placeholder
+ * value (auth scheme stripped) are reported as high-entropy. One hit per
+ * line and key; the first reason wins.
  */
 export function scanForSecrets(content: string): SecretHit[] {
   const hits: SecretHit[] = [];
   content.split("\n").forEach((raw, index) => {
     const line = raw.replace(/\r$/, "");
-    const pairs = [...line.matchAll(PAIR_RE)].map((m) => ({
-      key: m[1] ?? m[2] ?? m[3] ?? "",
-      value: m[4] ?? m[5] ?? "",
-      start: m.index,
-      end: m.index + m[0].length,
-    }));
+    const pairs = [
+      ...[...line.matchAll(PAIR_RE)].map((m) => ({ key: m[1] ?? m[2] ?? m[3] ?? "", value: m[4] ?? m[5] ?? "", m })),
+      ...[...line.matchAll(FLAG_RE)]
+        .filter((m) => KEY_RE.test(m[1] ?? ""))
+        .map((m) => ({ key: m[1] ?? "", value: m[2] ?? "", m })),
+    ].map(({ key, value, m }) => ({ key, value, start: m.index, end: m.index + m[0].length }));
     const seen = new Set<string | undefined>();
     const add = (key: string | undefined, reason: string): void => {
       if (!seen.has(key)) {
@@ -133,7 +155,8 @@ export function scanForSecrets(content: string): SecretHit[] {
       }
     }
     for (const { key, value } of pairs) {
-      if (KEY_RE.test(key) && !PLACEHOLDER_RE.test(value) && looksRandom(value)) {
+      const bare = value.replace(SCHEME_RE, "");
+      if (KEY_RE.test(key) && !PLACEHOLDER_RE.test(bare) && looksRandom(bare)) {
         add(key, "high-entropy value");
       }
     }
