@@ -384,11 +384,11 @@ function resolveNextSessionState(input: {
 
   const displayId = truncateDisplayId(
     explicitDisplayId ??
-      (codec.getDisplayId ? codec.getDisplayId(deserialized) : null) ??
-      readNonEmptyString(deserialized?.sessionId) ??
-      (shouldUsePrevious ? previousDisplayId : null) ??
-      explicitSessionId ??
-      (shouldUsePrevious ? previousLegacySessionId : null),
+    (codec.getDisplayId ? codec.getDisplayId(deserialized) : null) ??
+    readNonEmptyString(deserialized?.sessionId) ??
+    (shouldUsePrevious ? previousDisplayId : null) ??
+    explicitSessionId ??
+    (shouldUsePrevious ? previousLegacySessionId : null),
   );
 
   const legacySessionId =
@@ -470,8 +470,8 @@ export function heartbeatService(db: Db) {
       );
       return truncateDisplayId(
         existingTaskSession?.sessionDisplayId ??
-          (codec.getDisplayId ? codec.getDisplayId(parsedParams) : null) ??
-          readNonEmptyString(parsedParams?.sessionId),
+        (codec.getDisplayId ? codec.getDisplayId(parsedParams) : null) ??
+        readNonEmptyString(parsedParams?.sessionId),
       );
     }
 
@@ -489,10 +489,10 @@ export function heartbeatService(db: Db) {
     const contextProjectId = readNonEmptyString(context.projectId);
     const issueProjectId = issueId
       ? await db
-          .select({ projectId: issues.projectId })
-          .from(issues)
-          .where(and(eq(issues.id, issueId), eq(issues.projectId, agent.projectId)))
-          .then((rows) => rows[0]?.projectId ?? null)
+        .select({ projectId: issues.projectId })
+        .from(issues)
+        .where(and(eq(issues.id, issueId), eq(issues.projectId, agent.projectId)))
+        .then((rows) => rows[0]?.projectId ?? null)
       : null;
     const resolvedProjectId = issueProjectId ?? contextProjectId;
     const useProjectWorkspace = opts?.useProjectWorkspace !== false;
@@ -500,15 +500,15 @@ export function heartbeatService(db: Db) {
 
     const projectWorkspaceRows = workspaceProjectId
       ? await db
-          .select()
-          .from(projectWorkspaces)
-          .where(
-            and(
-              eq(projectWorkspaces.projectId, agent.projectId),
-              eq(projectWorkspaces.projectId, workspaceProjectId),
-            ),
-          )
-          .orderBy(asc(projectWorkspaces.createdAt), asc(projectWorkspaces.id))
+        .select()
+        .from(projectWorkspaces)
+        .where(
+          and(
+            eq(projectWorkspaces.projectId, agent.projectId),
+            eq(projectWorkspaces.projectId, workspaceProjectId),
+          ),
+        )
+        .orderBy(asc(projectWorkspaces.createdAt), asc(projectWorkspaces.id))
       : [];
 
     const workspaceHints = projectWorkspaceRows.map((workspace) => ({
@@ -962,45 +962,62 @@ export function heartbeatService(db: Db) {
     const additionalCostCents = Math.max(0, Math.round((result.costUsd ?? 0) * 100));
     const hasTokenUsage = inputTokens > 0 || outputTokens > 0 || cachedInputTokens > 0;
 
-    await db
-      .update(agentRuntimeState)
-      .set({
-        adapterType: agent.adapterType,
-        sessionId: session.legacySessionId,
-        lastRunId: run.id,
-        lastRunStatus: run.status,
-        lastError: result.errorMessage ?? null,
-        totalInputTokens: sql`${agentRuntimeState.totalInputTokens} + ${inputTokens}`,
-        totalOutputTokens: sql`${agentRuntimeState.totalOutputTokens} + ${outputTokens}`,
-        totalCachedInputTokens: sql`${agentRuntimeState.totalCachedInputTokens} + ${cachedInputTokens}`,
-        totalCostCents: sql`${agentRuntimeState.totalCostCents} + ${additionalCostCents}`,
-        updatedAt: new Date(),
-      })
-      .where(eq(agentRuntimeState.agentId, agent.id));
 
-    if (additionalCostCents > 0 || hasTokenUsage) {
-      await db.insert(costEvents).values({
-        projectId: agent.projectId,
-        agentId: agent.id,
-        provider: result.provider ?? "unknown",
-        model: result.model ?? "unknown",
-        inputTokens,
-        outputTokens,
-        costCents: additionalCostCents,
-        occurredAt: new Date(),
-      });
-    }
+    const now = new Date();
 
-    if (additionalCostCents > 0) {
-      await db
-        .update(agents)
+    await db.transaction(async (tx) => {
+      await tx
+        .update(agentRuntimeState)
         .set({
-          spentMonthlyCents: sql`${agents.spentMonthlyCents} + ${additionalCostCents}`,
-          updatedAt: new Date(),
+          adapterType: agent.adapterType,
+          sessionId: session.legacySessionId,
+          lastRunId: run.id,
+          lastRunStatus: run.status,
+          lastError: result.errorMessage ?? null,
+
+          totalInputTokens: sql`${agentRuntimeState.totalInputTokens} + ${inputTokens}`,
+
+          totalOutputTokens: sql`${agentRuntimeState.totalOutputTokens} + ${outputTokens}`,
+
+          totalCachedInputTokens: sql`${agentRuntimeState.totalCachedInputTokens} + ${cachedInputTokens}`,
+
+          totalCostCents: sql`${agentRuntimeState.totalCostCents} + ${additionalCostCents}`,
+
+          updatedAt: now,
         })
-        .where(eq(agents.id, agent.id));
-    }
+        .where(eq(agentRuntimeState.agentId, agent.id));
+
+      if (additionalCostCents > 0 || hasTokenUsage) {
+        await tx.insert(costEvents).values({
+          projectId: agent.projectId,
+          agentId: agent.id,
+
+          provider: result.provider ?? "unknown",
+          model: result.model ?? "unknown",
+
+          inputTokens,
+          outputTokens,
+
+          costCents: additionalCostCents,
+
+          occurredAt: now,
+        });
+      }
+
+      if (additionalCostCents > 0) {
+        await tx
+          .update(agents)
+          .set({
+            spentMonthlyCents: sql`${agents.spentMonthlyCents} + ${additionalCostCents}`,
+
+            updatedAt: now,
+          })
+          .where(eq(agents.id, agent.id));
+      }
+    });
+
   }
+
 
   async function startNextQueuedRunForAgent(agentId: string) {
     return withAgentStartLock(agentId, async () => {
@@ -1164,19 +1181,19 @@ export function heartbeatService(db: Db) {
 
     const issueAssigneeConfig = issueId
       ? await db
-          .select({
-            assigneeAgentId: issues.assigneeAgentId,
-            assigneeAdapterOverrides: issues.assigneeAdapterOverrides,
-          })
-          .from(issues)
-          .where(and(eq(issues.id, issueId), eq(issues.projectId, agent.projectId)))
-          .then((rows) => rows[0] ?? null)
+        .select({
+          assigneeAgentId: issues.assigneeAgentId,
+          assigneeAdapterOverrides: issues.assigneeAdapterOverrides,
+        })
+        .from(issues)
+        .where(and(eq(issues.id, issueId), eq(issues.projectId, agent.projectId)))
+        .then((rows) => rows[0] ?? null)
       : null;
     const issueAssigneeOverrides =
       issueAssigneeConfig && issueAssigneeConfig.assigneeAgentId === agent.id
         ? parseIssueAssigneeAdapterOverrides(
-            issueAssigneeConfig.assigneeAdapterOverrides,
-          )
+          issueAssigneeConfig.assigneeAdapterOverrides,
+        )
         : null;
     const taskSession = taskKey
       ? await getTaskSession(agent.projectId, agent.id, agent.adapterType, taskKey)
@@ -1204,10 +1221,10 @@ export function heartbeatService(db: Db) {
       ...(runtimeSessionResolution.warning ? [runtimeSessionResolution.warning] : []),
       ...(resetTaskSession && sessionResetReason
         ? [
-            taskKey
-              ? `Skipping saved session resume for task "${taskKey}" because ${sessionResetReason}.`
-              : `Skipping saved session resume because ${sessionResetReason}.`,
-          ]
+          taskKey
+            ? `Skipping saved session resume for task "${taskKey}" because ${sessionResetReason}.`
+            : `Skipping saved session resume because ${sessionResetReason}.`,
+        ]
         : []),
     ];
     const workspaceContextValue = {
@@ -1228,9 +1245,9 @@ export function heartbeatService(db: Db) {
     const runtimeSessionFallback = taskKey || resetTaskSession ? null : runtime.sessionId;
     const previousSessionDisplayId = truncateDisplayId(
       taskSessionForRun?.sessionDisplayId ??
-        (sessionCodec.getDisplayId ? sessionCodec.getDisplayId(runtimeSessionParams) : null) ??
-        readNonEmptyString(runtimeSessionParams?.sessionId) ??
-        runtimeSessionFallback,
+      (sessionCodec.getDisplayId ? sessionCodec.getDisplayId(runtimeSessionParams) : null) ??
+      readNonEmptyString(runtimeSessionParams?.sessionId) ??
+      runtimeSessionFallback,
     );
     const runtimeForAdapter = {
       sessionId: readNonEmptyString(runtimeSessionParams?.sessionId) ?? runtimeSessionFallback,
@@ -1418,10 +1435,10 @@ export function heartbeatService(db: Db) {
       const usageJson =
         adapterResult.usage || adapterResult.costUsd != null
           ? ({
-              ...(adapterResult.usage ?? {}),
-              ...(adapterResult.costUsd != null ? { costUsd: adapterResult.costUsd } : {}),
-              ...(adapterResult.billingType ? { billingType: adapterResult.billingType } : {}),
-            } as Record<string, unknown>)
+            ...(adapterResult.usage ?? {}),
+            ...(adapterResult.costUsd != null ? { costUsd: adapterResult.costUsd } : {}),
+            ...(adapterResult.billingType ? { billingType: adapterResult.billingType } : {}),
+          } as Record<string, unknown>)
           : null;
 
       await setRunStatus(run.id, status, {
