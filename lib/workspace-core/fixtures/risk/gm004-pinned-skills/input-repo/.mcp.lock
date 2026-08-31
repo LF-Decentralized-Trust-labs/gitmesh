@@ -1,0 +1,6 @@
+{
+  "lockfileVersion": 1,
+  "servers": {
+    "release": { "version": "1.2.0" }
+  }
+}

@@ -22,7 +22,8 @@
   {
     "path": ".gemini/plugins/alpha/skills/one/SKILL.md",
     "kind": "skill",
-    "scope": "project"
+    "scope": "project",
+    "executable": true
   },
   {
     "path": ".gemini/plugins/beta/mcp_config.json",

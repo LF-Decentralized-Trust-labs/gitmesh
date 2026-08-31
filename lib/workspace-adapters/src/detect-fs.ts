@@ -254,9 +254,39 @@ export function collectSkillManifests<K extends string>(
     const rel = `${relBase}/${entry.name}/SKILL.md`;
     const info = inspectFile(join(base, entry.name, "SKILL.md"));
     if (info) {
-      out.push(makeArtifact(rel, kind, "project", info));
+      const artifact = makeArtifact(rel, kind, "project", info);
+      if (skillDirHasExecutable(join(base, entry.name))) {
+        artifact.executable = true;
+      }
+      out.push(artifact);
     }
   }
+}
+
+/**
+ * Script-file extensions that mark a skill directory as carrying executable
+ * content (GM004, T1.12). Extension-based, never the executable bit - the
+ * bit is not deterministic across checkouts and platforms.
+ */
+const SKILL_SCRIPT_RE = /\.(?:sh|bash|zsh|py|rb|ps1|js|mjs|cjs)$/;
+
+/**
+ * True when the skill directory at `absDir` holds a script file at any
+ * depth. Cycle-safe via {@link walk}; descent stops once one is found.
+ */
+export function skillDirHasExecutable(absDir: string): boolean {
+  let found = false;
+  walk(
+    absDir,
+    "",
+    new Set(),
+    () => !found,
+    (name) => SKILL_SCRIPT_RE.test(name),
+    () => {
+      found = true;
+    },
+  );
+  return found;
 }
 
 /**

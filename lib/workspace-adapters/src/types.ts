@@ -79,6 +79,12 @@ export interface DetectedArtifact {
   /** Configuration tier the artifact belongs to. */
   scope: ArtifactScope;
   /**
+   * True when the artifact is a skill manifest whose directory holds script
+   * files (`.sh`, `.py`, …) - the GM004 executable-content signal (T1.12).
+   * Set only when true, so inventories without skill scripts are unchanged.
+   */
+  executable?: boolean;
+  /**
    * Literal symlink target (`/`-normalized) when the artifact file is itself
    * a symbolic link. Symlinked config is a healthy pattern (pivot.md §10.4):
    * it is inventoried as a link, never resolved away.

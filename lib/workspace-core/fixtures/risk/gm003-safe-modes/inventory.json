@@ -1,0 +1,5 @@
+[
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
+  { "adapter": "codex", "path": ".codex/config.toml", "kind": "config", "scope": "project" },
+  { "adapter": "copilot", "path": ".vscode/settings.json", "kind": "settings", "scope": "project" }
+]

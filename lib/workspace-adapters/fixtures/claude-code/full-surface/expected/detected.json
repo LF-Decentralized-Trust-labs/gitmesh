@@ -47,7 +47,8 @@
   {
     "path": ".claude/skills/deploy/SKILL.md",
     "kind": "skill",
-    "scope": "project"
+    "scope": "project",
+    "executable": true
   },
   {
     "path": ".mcp.json",
