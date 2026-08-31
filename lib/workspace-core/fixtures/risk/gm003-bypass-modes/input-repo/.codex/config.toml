@@ -1,0 +1,6 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[profiles.safe]
+approval_policy = "untrusted"
+sandbox_mode = "read-only"

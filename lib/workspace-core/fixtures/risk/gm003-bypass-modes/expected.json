@@ -1,0 +1,32 @@
+[
+  {
+    "ruleId": "GM003",
+    "severity": "error",
+    "message": "permissions.defaultMode is \"bypassPermissions\" in .claude/settings.json, disabling permission prompts for everyone using this repo; remove it or use \"acceptEdits\".",
+    "path": ".claude/settings.json"
+  },
+  {
+    "ruleId": "GM003",
+    "severity": "error",
+    "message": "approval_policy = \"never\" in .codex/config.toml auto-approves every Codex action; use \"on-request\" or \"untrusted\".",
+    "path": ".codex/config.toml"
+  },
+  {
+    "ruleId": "GM003",
+    "severity": "error",
+    "message": "sandbox_mode = \"danger-full-access\" in .codex/config.toml removes the Codex kernel sandbox once the project is trusted; use \"workspace-write\" or \"read-only\".",
+    "path": ".codex/config.toml"
+  },
+  {
+    "ruleId": "GM003",
+    "severity": "error",
+    "message": "chat.tools.global.autoApprove is enabled in .vscode/settings.json, auto-approving Copilot tool use; remove the key or set it to false.",
+    "path": ".vscode/settings.json"
+  },
+  {
+    "ruleId": "GM003",
+    "severity": "error",
+    "message": "chat.tools.terminal.autoApprove is enabled in .vscode/settings.json, auto-approving Copilot tool use; remove the key or set it to false.",
+    "path": ".vscode/settings.json"
+  }
+]

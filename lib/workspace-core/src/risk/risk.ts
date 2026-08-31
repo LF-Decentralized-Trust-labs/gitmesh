@@ -61,6 +61,11 @@ export interface RiskArtifact {
   scope: RiskArtifactScope;
   /** Raw content when the caller read it; presence probes carry none. */
   content?: string;
+  /**
+   * True when a skill manifest's directory holds script files - the
+   * detectors' GM004 executable-content stamp (T1.12); absent otherwise.
+   */
+  executable?: boolean;
   /** Literal symlink target when the artifact is itself a symlink. */
   symlinkTarget?: string;
   /** True when the artifact is a symlink that does not resolve to a file. */

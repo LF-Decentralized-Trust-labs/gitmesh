@@ -1,0 +1,6 @@
+[
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
+  { "adapter": "claude-code", "path": ".claude/skills/deploy/SKILL.md", "kind": "skill", "scope": "project", "executable": true },
+  { "adapter": "claude-code", "path": ".claude/skills/style-guide/SKILL.md", "kind": "skill", "scope": "project" },
+  { "adapter": "codex", "path": ".agents/skills/release/SKILL.md", "kind": "skill", "scope": "project" }
+]

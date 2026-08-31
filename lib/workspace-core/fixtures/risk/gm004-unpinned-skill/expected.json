@@ -1,0 +1,14 @@
+[
+  {
+    "ruleId": "GM004",
+    "severity": "warning",
+    "message": "Skill \"release\" has executable content but no recognized pin; pin it in .gitmesh/lock.json, skills-lock.json or .mcp.lock so what it runs is integrity-checked.",
+    "path": ".agents/skills/release/SKILL.md"
+  },
+  {
+    "ruleId": "GM004",
+    "severity": "warning",
+    "message": "Skill \"deploy\" has executable content but no recognized pin; pin it in .gitmesh/lock.json, skills-lock.json or .mcp.lock so what it runs is integrity-checked.",
+    "path": ".claude/skills/deploy/SKILL.md"
+  }
+]

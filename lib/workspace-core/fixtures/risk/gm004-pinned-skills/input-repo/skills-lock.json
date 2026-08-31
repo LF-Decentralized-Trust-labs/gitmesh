@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "skills": {
+    "vercel-labs/agent-skills/deploy": { "skillFolderHash": "3c1f2b7a9d4e" }
+  }
+}

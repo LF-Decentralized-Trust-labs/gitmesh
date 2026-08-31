@@ -6,6 +6,7 @@ import {
   compareArtifacts,
   makeArtifact,
   safeStat,
+  skillDirHasExecutable,
   walk,
 } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
@@ -113,7 +114,11 @@ export function detect(repo: RepoContext): AntigravityArtifact[] {
     (_name, rel, info) => {
       const kind = pluginArtifactKind(rel);
       if (kind !== undefined) {
-        out.push(makeArtifact(rel, kind, "project", info));
+        const artifact = makeArtifact(rel, kind, "project", info);
+        if (kind === "skill" && skillDirHasExecutable(join(root, rel, ".."))) {
+          artifact.executable = true;
+        }
+        out.push(artifact);
       }
     },
   );

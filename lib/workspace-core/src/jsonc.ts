@@ -66,3 +66,12 @@ function endOfString(text: string, start: number): number {
   }
   return text.length;
 }
+
+/**
+ * Narrows to a plain object - the shape `parseJsonc` output is probed with.
+ * Shared by the GM rules (gm002/gm003/gm004) so each stays a total function
+ * over arbitrary parse results.
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}

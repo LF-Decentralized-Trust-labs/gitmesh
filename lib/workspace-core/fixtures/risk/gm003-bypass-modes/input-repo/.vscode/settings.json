@@ -1,0 +1,4 @@
+{
+  "chat.tools.global.autoApprove": true,
+  "chat.tools.terminal.autoApprove": { "npm test": true }
+}

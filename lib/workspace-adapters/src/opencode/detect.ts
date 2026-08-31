@@ -5,6 +5,7 @@ import {
   collectMarkdownTree,
   compareArtifacts,
   makeArtifact,
+  skillDirHasExecutable,
   walk,
 } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
@@ -100,7 +101,11 @@ export function detect(repo: RepoContext): OpenCodeArtifact[] {
       () => true,
       (name) => name === "SKILL.md",
       (_name, rel, info) => {
-        out.push(makeArtifact(rel, "skill", "project", info));
+        const artifact = makeArtifact(rel, "skill", "project", info);
+        if (skillDirHasExecutable(join(root, rel, ".."))) {
+          artifact.executable = true;
+        }
+        out.push(artifact);
       },
     );
   }

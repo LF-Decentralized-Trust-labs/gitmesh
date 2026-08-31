@@ -17,6 +17,7 @@
   {
     "path": ".opencode/skills/deploy/SKILL.md",
     "kind": "skill",
-    "scope": "project"
+    "scope": "project",
+    "executable": true
   }
 ]

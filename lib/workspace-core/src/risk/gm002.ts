@@ -1,4 +1,4 @@
-import { parseJsonc } from "../jsonc.js";
+import { isRecord, parseJsonc } from "../jsonc.js";
 import type { RiskArtifact, RiskRule } from "./risk.js";
 
 /**
@@ -76,10 +76,6 @@ const PROTECTORS: readonly Protector[] = [
 
 function parsed(artifact: RiskArtifact): unknown[] {
   return artifact.content === undefined ? [] : [parseJsonc(artifact.content)];
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /** Paths a read deny must cover; any one covered counts as protection. */
