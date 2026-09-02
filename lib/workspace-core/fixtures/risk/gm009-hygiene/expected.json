@@ -1,0 +1,14 @@
+[
+  {
+    "ruleId": "GM009",
+    "severity": "warning",
+    "message": ".claude/settings.local.json is a personal local-scope file but is committed; gitignore it so personal machine state stays out of the shared repository.",
+    "path": ".claude/settings.local.json"
+  },
+  {
+    "ruleId": "GM009",
+    "severity": "warning",
+    "message": ".mcp.json is shared project configuration but is gitignored; commit it, or move the personal parts to a local-scope variant.",
+    "path": ".mcp.json"
+  }
+]

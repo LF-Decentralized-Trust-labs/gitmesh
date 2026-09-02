@@ -25,10 +25,12 @@
  * sort by rule id, path, adapter, message - independent of rule table and
  * inventory order. Rendering is T1.16's job.
  *
- * Planned additive extensions (keep these out of individual rules):
- * managed-by-X provenance on artifacts (§8.1 item 1, T1.7 `manager`),
- * VCS tracked/ignored status (GM009), repo history context (GM008), and
- * per-rule docs metadata (§8.1 item 3, T2.1).
+ * Caller-supplied context (the GM004 lock precedent - honored the day the
+ * doctor pipeline computes it, T1.16/T1.17 lane): VCS `tracked`/`ignored`
+ * status per artifact (GM009) and `historyAdapters` repo-history evidence
+ * (GM008). Planned additive extensions (keep these out of individual
+ * rules): managed-by-X provenance on artifacts (§8.1 item 1, T1.7
+ * `manager`) and per-rule docs metadata (§8.1 item 3, T2.1).
  */
 
 /**
@@ -70,11 +72,30 @@ export interface RiskArtifact {
   symlinkTarget?: string;
   /** True when the artifact is a symlink that does not resolve to a file. */
   broken?: boolean;
+  /**
+   * VCS status, caller-supplied (the doctor pipeline's lane): true when
+   * the file is committed to the repository. Absent = unknown; GM009 fires
+   * only on explicit values.
+   */
+  tracked?: boolean;
+  /**
+   * VCS status, caller-supplied: true when the repository's ignore rules
+   * match the file. Absent = unknown.
+   */
+  ignored?: boolean;
 }
 
 /** The doctor inventory the engine runs over. */
 export interface RiskInput {
   artifacts: readonly RiskArtifact[];
+  /**
+   * Adapters with evidence in the repository's history, caller-supplied
+   * under the doctor pipeline's documented evidence standard (the pivot
+   * fixes none). Absent = history unknown: GM008 stays silent rather than
+   * treating missing evidence as orphanhood. An empty list is an explicit
+   * "nothing seen".
+   */
+  historyAdapters?: readonly string[];
 }
 
 /**

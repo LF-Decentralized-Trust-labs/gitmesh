@@ -1,0 +1,5 @@
+[
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project", "tracked": true },
+  { "adapter": "claude-code", "path": ".claude/settings.local.json", "kind": "settings", "scope": "local", "tracked": true },
+  { "adapter": "claude-code", "path": ".mcp.json", "kind": "mcp-config", "scope": "project", "tracked": false, "ignored": true }
+]
