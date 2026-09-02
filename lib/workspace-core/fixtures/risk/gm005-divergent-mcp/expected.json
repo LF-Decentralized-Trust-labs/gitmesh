@@ -1,0 +1,12 @@
+[
+  {
+    "ruleId": "GM005",
+    "severity": "warning",
+    "message": "MCP server \"github\" is configured with different values for env \"GITHUB_TOKEN\" across tools (.codex/config.toml, .cursor/mcp.json, .mcp.json); one of them is stale - settle on one credential and reference it from the environment."
+  },
+  {
+    "ruleId": "GM005",
+    "severity": "warning",
+    "message": "MCP server \"github\" is defined with different urls across tools (.codex/config.toml, .cursor/mcp.json, .mcp.json); point every tool at the same endpoint or remove the stale definition."
+  }
+]

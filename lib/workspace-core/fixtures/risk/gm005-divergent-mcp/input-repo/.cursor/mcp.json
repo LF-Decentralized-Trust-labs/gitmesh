@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://mcp.github.example/v2",
+      "env": { "GITHUB_TOKEN": "${GH_TOKEN}" }
+    }
+  }
+}
