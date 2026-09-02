@@ -1,0 +1,7 @@
+[
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
+  { "adapter": "claude-code", "path": ".mcp.json", "kind": "mcp-config", "scope": "project" },
+  { "adapter": "codex", "path": ".codex/config.toml", "kind": "config", "scope": "project" },
+  { "adapter": "cursor", "path": ".cursor/hooks.json", "kind": "hooks", "scope": "project" },
+  { "adapter": "cursor", "path": ".cursor/mcp.json", "kind": "mcp-config", "scope": "project" }
+]
