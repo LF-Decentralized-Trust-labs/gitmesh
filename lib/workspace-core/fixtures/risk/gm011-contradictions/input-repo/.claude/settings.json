@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": ["Bash(rm -rf tmp/*)", "Bash(pnpm test:*)"],
+    "deny": ["Bash(pnpm test:*)", "Read(.env)", "Read(**/.env.*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "./hooks/guard.sh" }] }
+    ]
+  }
+}

@@ -1,5 +1,7 @@
 # Project
 
+@AGENTS.md
+
 <!-- gitmesh:managed adapter=claude-code -->
 - run pnpm test before pushing
 

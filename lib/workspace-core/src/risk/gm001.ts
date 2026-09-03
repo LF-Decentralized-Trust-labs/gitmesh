@@ -81,7 +81,9 @@ const PAIR_RE =
 /**
  * A CLI flag and its value, as one `--flag=value` string or two adjacent
  * array entries `"--flag", "value"`; a credential-named flag stands in for
- * the key (`-y package` is not a pair).
+ * the key (`-y package` is not a pair). Pretty-printed JSON splits the two
+ * entries across lines, so a line ending in a credential-named flag entry
+ * carries the flag onto the next line's leading quoted string.
  */
 const FLAG_RE = /(--?[\w-]+)(?:"\s*,\s*"|=)((?:[^"\\]|\\.)*)"/g;
 
@@ -134,14 +136,27 @@ function looksRandom(value: string): boolean {
  */
 export function scanForSecrets(content: string): SecretHit[] {
   const hits: SecretHit[] = [];
+  let pendingFlag: string | undefined;
   content.split("\n").forEach((raw, index) => {
     const line = raw.replace(/\r$/, "");
+    const carried = pendingFlag;
+    pendingFlag = undefined;
     const pairs = [
       ...[...line.matchAll(PAIR_RE)].map((m) => ({ key: m[1] ?? m[2] ?? m[3] ?? "", value: m[4] ?? m[5] ?? "", m })),
       ...[...line.matchAll(FLAG_RE)]
         .filter((m) => KEY_RE.test(m[1] ?? ""))
         .map((m) => ({ key: m[1] ?? "", value: m[2] ?? "", m })),
     ].map(({ key, value, m }) => ({ key, value, start: m.index, end: m.index + m[0].length }));
+    if (carried !== undefined) {
+      const value = /^\s*"((?:[^"\\]|\\.)*)"/.exec(line);
+      if (value) {
+        pairs.push({ key: carried, value: value[1]!, start: 0, end: value[0].length });
+      }
+    }
+    const trailing = /"(--?[\w-]+)"\s*,\s*$/.exec(line);
+    if (trailing && KEY_RE.test(trailing[1]!)) {
+      pendingFlag = trailing[1];
+    }
     const seen = new Set<string | undefined>();
     const add = (key: string | undefined, reason: string): void => {
       if (!seen.has(key)) {

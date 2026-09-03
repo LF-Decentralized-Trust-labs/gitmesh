@@ -38,6 +38,7 @@
 import { createHash } from "node:crypto";
 
 import { parseScopeFrontmatter, type InstructionScope } from "./frontmatter.js";
+import { FENCE_OPEN, fenceClose, GITMESH_MANAGED_CLOSE, GITMESH_MANAGED_OPEN } from "./grammar.js";
 
 /** Kinds of normalized instruction blocks. */
 export type BlockKind = "heading" | "paragraph" | "fence" | "list";
@@ -71,9 +72,6 @@ export interface NormalizedDocument {
   hash: string;
 }
 
-const GITMESH_MANAGED_OPEN = /^<!--\s*gitmesh:managed\b[^>]*-->$/;
-const GITMESH_MANAGED_CLOSE = /^<!--\s*\/gitmesh:managed\s*-->$/;
-const FENCE_OPEN = /^ {0,3}(`{3,}|~{3,})[ \t]*([^`]*)$/;
 const HEADING = /^ {0,3}(#{1,6})(?:[ \t]+(.*))?$/;
 const LIST_ITEM = /^([ \t]*)(?:([-*+])|(\d{1,9})[.)])[ \t]+(.*)$/;
 
@@ -139,7 +137,7 @@ export function normalizeInstructionMarkdown(content: string): NormalizedDocumen
       const marker = fence[1]!;
       const info = fence[2]!.trim();
       const inner: string[] = [];
-      const close = new RegExp(`^ {0,3}${marker[0]}{${marker.length},}[ \\t]*$`);
+      const close = fenceClose(marker);
       i++;
       for (; i < lines.length && !close.test(lines[i]!); i++) {
         inner.push(lines[i]!);

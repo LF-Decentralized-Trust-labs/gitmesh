@@ -8,7 +8,7 @@
   {
     "ruleId": "GM006",
     "severity": "warning",
-    "message": "Managed region opened on line 3 of CLAUDE.md is never closed; restore the <!-- /gitmesh:managed --> line so managed content can be told apart from hand edits.",
+    "message": "Managed region opened on line 5 of CLAUDE.md is never closed; restore the <!-- /gitmesh:managed --> line so managed content can be told apart from hand edits.",
     "path": "CLAUDE.md"
   }
 ]

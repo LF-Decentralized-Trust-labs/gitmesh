@@ -2,7 +2,7 @@
   {
     "ruleId": "GM007",
     "severity": "warning",
-    "message": "CLAUDE.md is 40434 characters, over the 40000-character effective-context threshold (ICSE 2026 context-rot finding: oversized context measurably hurts agent task success); split it or prune stale content.",
+    "message": "CLAUDE.md is 40446 characters, over the 40000-character effective-context threshold (ICSE 2026 context-rot finding: oversized context measurably hurts agent task success); split it or prune stale content.",
     "path": "CLAUDE.md"
   }
 ]

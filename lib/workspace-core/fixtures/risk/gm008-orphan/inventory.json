@@ -1,8 +1,37 @@
 {
-  "historyAdapters": ["claude-code"],
+  "historyAdapters": [
+    "claude-code"
+  ],
   "artifacts": [
-    { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
-    { "adapter": "claude-code", "path": "CLAUDE.md", "kind": "instructions", "scope": "project" },
-    { "adapter": "devin", "path": ".windsurfrules", "kind": "rule", "scope": "project" }
+    {
+      "adapter": "claude-code",
+      "path": ".claude/settings.json",
+      "kind": "settings",
+      "scope": "project"
+    },
+    {
+      "adapter": "claude-code",
+      "path": "CLAUDE.md",
+      "kind": "instructions",
+      "scope": "project"
+    },
+    {
+      "adapter": "codex",
+      "path": "AGENTS.md",
+      "kind": "instructions",
+      "scope": "project"
+    },
+    {
+      "adapter": "devin",
+      "path": ".windsurfrules",
+      "kind": "rule",
+      "scope": "project"
+    },
+    {
+      "adapter": "devin",
+      "path": "AGENTS.md",
+      "kind": "instructions",
+      "scope": "project"
+    }
   ]
 }

@@ -71,3 +71,15 @@ describe("GM008", () => {
     ).toEqual([]);
   });
 });
+
+describe("GM008 - distinctive presence", () => {
+  it("a path claimed by several adapters is evidence for none of them", () => {
+    const shared = (adapter: string) => artifact(adapter, "AGENTS.md");
+    expect(
+      run({
+        artifacts: [shared("codex"), shared("cursor"), artifact("devin", ".windsurfrules")],
+        historyAdapters: [],
+      }),
+    ).toEqual([expect.objectContaining({ adapter: "devin" })]);
+  });
+});

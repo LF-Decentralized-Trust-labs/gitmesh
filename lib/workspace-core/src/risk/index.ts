@@ -11,3 +11,4 @@ export {
   type RiskRule,
 } from "./risk.js";
 export { riskRules } from "./rules.js";
+export { GM007_DEFAULT_THRESHOLD, makeGm007 } from "./gm007.js";

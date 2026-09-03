@@ -23,13 +23,19 @@ import type { RiskArtifact, RiskRule } from "./risk.js";
  * Excluded, with reasons: Copilot / VS Code has no hard deny (§10.5
  * coverage annotation); Codex `sandbox_mode` and Antigravity denied-commands
  * are command/sandbox controls, not path-level read denies. A managed
- * settings probe carries no content and never counts as protection: the
- * repo itself carries no portable rule.
+ * settings probe carries no content and never counts as protection, and
+ * neither does a user- or local-scope file (`scopes: ["project"]`): a deny
+ * on one developer's machine protects no other clone - the repo itself
+ * carries no portable rule.
  */
 export const gm002: RiskRule = {
   id: "GM002",
   severity: "warning",
-  appliesTo: { adapters: ["claude-code", "cursor", "opencode"], kinds: ["settings", "hooks", "config"] },
+  appliesTo: {
+    adapters: ["claude-code", "cursor", "opencode"],
+    kinds: ["settings", "hooks", "config"],
+    scopes: ["project"],
+  },
   check: ({ matched, input }) =>
     PROTECTORS.flatMap(({ adapter, kind, message, unprotected }) => {
       if (!input.artifacts.some((artifact) => artifact.adapter === adapter)) {
