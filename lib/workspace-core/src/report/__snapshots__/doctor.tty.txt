@@ -1,0 +1,40 @@
+[1mgitmesh doctor[0m
+
+[1mInventory (9 artifacts, 6 adapters)[0m
+  [36mantigravity[0m
+    GEMINI.md  [2minstructions[0m
+  [36mclaude-code[0m
+    .claude/settings.json  [2msettings    [0m
+    .mcp.json              [2mmcp-config  [0m
+    CLAUDE.md              [2minstructions[0m  [2msymlink -> AGENTS.md[0m
+    ~/.claude/CLAUDE.md    [2minstructions[0m  [2muser[0m
+  [36mcodex[0m
+    AGENTS.md  [2minstructions[0m
+  [36mcursor[0m
+    .cursor/rules/style.mdc  [2mrule[0m
+  [36mroo[0m
+    .roo/rules/old.md  [2mrule[0m  [2msymlink -> ../missing.md, broken[0m
+  [36mthird-party-managers[0m
+    .ruler/ruler.toml  [2mconfig[0m  [2mmanaged by ruler[0m
+
+[1mDrift (3 instruction documents, 3 divergent pairs)[0m
+  AGENTS.md = CLAUDE.md  [32msymlink group, zero drift[0m
+  .cursor/rules/style.mdc vs AGENTS.md  [33m1 block only in .cursor/rules/style.mdc, 2 blocks only in AGENTS.md, 1 shared[0m
+  .cursor/rules/style.mdc vs GEMINI.md  [33m1 block only in .cursor/rules/style.mdc, 3 blocks only in GEMINI.md, 1 shared[0m
+  AGENTS.md vs GEMINI.md  [33m1 block only in GEMINI.md, 1 reordered, 3 shared[0m
+  divergent blocks
+    "Never commit secrets | tokens."  [2min .cursor/rules/style.mdc; missing from AGENTS.md, GEMINI.md[0m
+    "# Project rules"  [2min AGENTS.md, GEMINI.md; missing from .cursor/rules/style.mdc[0m
+    "- Run tests before every commit...."  [2min AGENTS.md, GEMINI.md; missing from .cursor/rules/style.mdc[0m
+    "Prefer tabs over spaces."  [2min GEMINI.md; missing from .cursor/rules/style.mdc, AGENTS.md[0m
+
+[1mFindings (1 error, 2 warnings, 1 info)[0m
+  [31merror[0m
+    [1mGM001[0m  .mcp.json (claude-code)  MCP server github sets GITHUB_TOKEN to a plaintext value (redacted)
+  [33mwarning[0m
+    [1mGM002[0m             No agent denies reads of .env files
+    [1mGM010[0m  CLAUDE.md  CLAUDE.md is not bridged to AGENTS.md | add an @AGENTS.md shim
+  [36minfo[0m
+    [1mGM008[0m  (roo)  roo config present but no roo activity in history
+
+[1mScore[0m [33m55/100[0m

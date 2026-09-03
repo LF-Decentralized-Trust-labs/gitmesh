@@ -38,3 +38,16 @@ export {
   type RuleContext,
   type RiskRule,
 } from "./risk/index.js";
+export {
+  summarizeDoctorReport,
+  renderDoctorTty,
+  renderDoctorJson,
+  renderDoctorMarkdown,
+  DOCTOR_JSON_SCHEMA_VERSION,
+  type DoctorArtifact,
+  type DoctorReport,
+  type DoctorSummary,
+  type DoctorTtyOptions,
+  type DoctorJson,
+  type DoctorJsonDocument,
+} from "./report/index.js";
