@@ -16,12 +16,19 @@ import type { RiskRule } from "./risk.js";
  * `historyAdapters` absent - until then; absence of evidence about
  * history is never treated as evidence of orphanhood.
  *
- * Fires once per adapter that has at least one project- or local-scope
- * artifact in the inventory but is missing from `historyAdapters`.
- * Repo-tier scopes only: user and managed artifacts are machine state, not
- * repository config, and say nothing about what the repo's team uses.
- * `third-party-managers` is exempt - it is not an agent, and ADR-004 says
- * management is never itself a finding.
+ * Presence means a *distinctive* artifact: a path claimed by several
+ * adapters in the inventory - a shared root AGENTS.md that six agents all
+ * read - is evidence for none of them specifically, so it never makes an
+ * adapter "present" here. Without that gate, any AGENTS.md repo would
+ * fan out one orphan finding per AGENTS.md-reading agent the moment the
+ * pipeline supplies history.
+ *
+ * Fires once per adapter that has at least one distinctive project- or
+ * local-scope artifact in the inventory but is missing from
+ * `historyAdapters`. Repo-tier scopes only: user and managed artifacts are
+ * machine state, not repository config, and say nothing about what the
+ * repo's team uses. `third-party-managers` is exempt - it is not an
+ * agent, and ADR-004 says management is never itself a finding.
  */
 export const gm008: RiskRule = {
   id: "GM008",
@@ -32,8 +39,21 @@ export const gm008: RiskRule = {
     if (history === undefined) {
       return [];
     }
-    const present = [...new Set(matched.map((artifact) => artifact.adapter))].sort();
-    return present.flatMap((adapter) =>
+    const claimants = new Map<string, Set<string>>();
+    for (const artifact of input.artifacts) {
+      const set = claimants.get(artifact.path);
+      if (set) {
+        set.add(artifact.adapter);
+      } else {
+        claimants.set(artifact.path, new Set([artifact.adapter]));
+      }
+    }
+    const present = new Set(
+      matched
+        .filter((artifact) => claimants.get(artifact.path)!.size === 1)
+        .map((artifact) => artifact.adapter),
+    );
+    return [...present].sort().flatMap((adapter) =>
       adapter === "third-party-managers" || history.includes(adapter)
         ? []
         : [

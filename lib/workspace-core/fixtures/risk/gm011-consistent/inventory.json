@@ -1,0 +1,7 @@
+[
+  { "adapter": "claude-code", "path": ".claude/agents/reviewer.md", "kind": "subagent", "scope": "project" },
+  { "adapter": "claude-code", "path": ".claude/rules/style.md", "kind": "rule", "scope": "project" },
+  { "adapter": "claude-code", "path": ".claude/settings.json", "kind": "settings", "scope": "project" },
+  { "adapter": "claude-code", "path": "CLAUDE.md", "kind": "instructions", "scope": "project" },
+  { "adapter": "codex", "path": "AGENTS.md", "kind": "instructions", "scope": "project" }
+]

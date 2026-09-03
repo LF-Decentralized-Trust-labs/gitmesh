@@ -23,6 +23,12 @@ function readInput(caseDir: string): RiskInput {
   const parsed = JSON.parse(readFileSync(join(caseDir, "inventory.json"), "utf8")) as
     | RiskArtifact[]
     | { historyAdapters?: string[]; artifacts: RiskArtifact[] };
+  if (!Array.isArray(parsed)) {
+    const unknown = Object.keys(parsed).filter((key) => key !== "artifacts" && key !== "historyAdapters");
+    if (unknown.length > 0) {
+      throw new Error(`unknown inventory.json keys: ${unknown.join(", ")}`);
+    }
+  }
   const inventory = Array.isArray(parsed) ? parsed : parsed.artifacts;
   const artifacts = inventory.map((artifact) => {
     const file = join(caseDir, "input-repo", artifact.path);

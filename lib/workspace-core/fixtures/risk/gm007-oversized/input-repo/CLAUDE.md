@@ -1,5 +1,7 @@
 # Project instructions
 
+@AGENTS.md
+
 - rule 0000: run the linter, keep functions small, prefer pure helpers over shared state.
 - rule 0001: run the linter, keep functions small, prefer pure helpers over shared state.
 - rule 0002: run the linter, keep functions small, prefer pure helpers over shared state.

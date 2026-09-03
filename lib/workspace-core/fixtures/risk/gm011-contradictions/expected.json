@@ -1,0 +1,26 @@
+[
+  {
+    "ruleId": "GM011",
+    "severity": "warning",
+    "message": "\"Bash(pnpm test:*)\" appears in both permissions.allow and permissions.deny in .claude/settings.json; deny wins, so the allow is dead - remove one side.",
+    "path": ".claude/settings.json"
+  },
+  {
+    "ruleId": "GM011",
+    "severity": "warning",
+    "message": "\"Bash(rm -rf tmp/*)\" in permissions.allow pre-approves a destructive command while a PreToolUse hook matches Bash in .claude/settings.json; hooks run regardless of allows - drop the allow or align it with the hook.",
+    "path": ".claude/settings.json"
+  },
+  {
+    "ruleId": "GM011",
+    "severity": "warning",
+    "message": "CLAUDE.md imports @.claude/rules/style.md, which is not in the workspace inventory; fix the path or create the file (dangling reference).",
+    "path": "CLAUDE.md"
+  },
+  {
+    "ruleId": "GM011",
+    "severity": "warning",
+    "message": "CLAUDE.md references subagent_type \"releaser\", but no such agent exists under .claude/agents/ (dangling reference); fix the name or add the agent.",
+    "path": "CLAUDE.md"
+  }
+]

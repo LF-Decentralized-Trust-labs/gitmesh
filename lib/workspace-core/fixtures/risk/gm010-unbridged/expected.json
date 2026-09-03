@@ -1,0 +1,8 @@
+[
+  {
+    "ruleId": "GM010",
+    "severity": "warning",
+    "message": "CLAUDE.md does not bridge to AGENTS.md; add an \"@AGENTS.md\" import line to CLAUDE.md (or symlink one file to the other) so both stay one instruction source.",
+    "path": "CLAUDE.md"
+  }
+]

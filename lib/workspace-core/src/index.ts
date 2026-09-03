@@ -26,6 +26,8 @@ export {
 export {
   runRiskRules,
   riskRules,
+  GM007_DEFAULT_THRESHOLD,
+  makeGm007,
   type RiskSeverity,
   type RiskArtifactScope,
   type RiskArtifact,

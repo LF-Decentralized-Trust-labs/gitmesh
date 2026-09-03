@@ -112,3 +112,20 @@ describe("GM002", () => {
     }
   });
 });
+
+describe("GM002 - protection must be committed project scope", () => {
+  it("a user-scope deny does not protect the repo's other clones", () => {
+    expect(
+      adaptersFlagged([
+        claude("{}"),
+        {
+          adapter: "claude-code",
+          path: "~/.claude/settings.json",
+          kind: "settings",
+          scope: "user",
+          content: '{"permissions": {"deny": ["Read(**/.env)"]}}',
+        },
+      ]),
+    ).toEqual(["claude-code"]);
+  });
+});
