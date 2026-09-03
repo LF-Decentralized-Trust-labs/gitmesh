@@ -1,0 +1,8 @@
+[
+  {
+    "ruleId": "GM008",
+    "severity": "info",
+    "message": "Configuration for devin is present in the repository, but devin is unseen in its history; if the team has moved on from this agent, retire the orphan config.",
+    "adapter": "devin"
+  }
+]

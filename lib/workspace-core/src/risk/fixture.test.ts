@@ -9,7 +9,9 @@ import { riskRules } from "./rules.js";
 /**
  * Golden cases for the GM rule table: `fixtures/risk/<case>/` holds an
  * `input-repo/` tree, an `inventory.json` listing the artifacts a doctor run
- * would detect there (`{ adapter, path, kind, scope }`), and `expected.json`
+ * would detect there (`{ adapter, path, kind, scope }` plus optional VCS
+ * flags; either a bare array or `{ historyAdapters, artifacts }` when a
+ * case supplies GM008's history evidence), and `expected.json`
  * with the full table's findings. Content is attached from `input-repo/`
  * when the file exists; presence probes (managed scope) have none. Every
  * case runs every rule, so each triggering case for one rule is a
@@ -18,13 +20,17 @@ import { riskRules } from "./rules.js";
 const FIXTURES = fileURLToPath(new URL("../../fixtures/risk/", import.meta.url));
 
 function readInput(caseDir: string): RiskInput {
-  const inventory = JSON.parse(readFileSync(join(caseDir, "inventory.json"), "utf8")) as RiskArtifact[];
-  return {
-    artifacts: inventory.map((artifact) => {
-      const file = join(caseDir, "input-repo", artifact.path);
-      return existsSync(file) ? { ...artifact, content: readFileSync(file, "utf8") } : artifact;
-    }),
-  };
+  const parsed = JSON.parse(readFileSync(join(caseDir, "inventory.json"), "utf8")) as
+    | RiskArtifact[]
+    | { historyAdapters?: string[]; artifacts: RiskArtifact[] };
+  const inventory = Array.isArray(parsed) ? parsed : parsed.artifacts;
+  const artifacts = inventory.map((artifact) => {
+    const file = join(caseDir, "input-repo", artifact.path);
+    return existsSync(file) ? { ...artifact, content: readFileSync(file, "utf8") } : artifact;
+  });
+  return Array.isArray(parsed) || parsed.historyAdapters === undefined
+    ? { artifacts }
+    : { artifacts, historyAdapters: parsed.historyAdapters };
 }
 
 describe("risk rule fixtures", () => {
