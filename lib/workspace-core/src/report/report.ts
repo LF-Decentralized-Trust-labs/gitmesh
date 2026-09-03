@@ -8,13 +8,16 @@
  * label), the T1.9 drift report and the T1.10 findings. The three renderers
  * (`tty`, `json`, `markdown`) turn it into text. Pure data → string: no
  * filesystem, no wallclock, deterministic ordering, and artifact `content`
- * never reaches any output mode (hard rule 5).
+ * never reaches any output mode (hard rule 5); drift block text passes
+ * through GM001's scanner first, so a token pasted into an instruction
+ * file is redacted in every mode too.
  *
  * Score: 100 minus 20 per error, 5 per warning, 5 per pair of instruction
  * documents that differ; `info` findings never cost points. Clamped at 0.
  */
 
-import type { DriftReport, PairDrift } from "../drift/index.js";
+import type { DriftBlockRef, DriftReport, PairDrift } from "../drift/index.js";
+import { scanForSecrets } from "../risk/gm001.js";
 import type { RiskArtifact, RiskFinding, RiskSeverity } from "../risk/index.js";
 
 /** An inventoried artifact plus its third-party manager, when one owns it. */
@@ -113,6 +116,15 @@ export function blockPreview(text: string): string {
   const firstLine = text.split("\n", 1)[0] ?? "";
   const cut = firstLine.length > 60 || firstLine.length < text.length;
   return `${firstLine.slice(0, 60)}${cut ? "..." : ""}`;
+}
+
+/** A block safe to print: lines GM001 flags are replaced; the hash still identifies it. */
+export function redactBlock(block: DriftBlockRef): DriftBlockRef {
+  const hits = scanForSecrets(block.text);
+  if (hits.length === 0) return block;
+  const lines = block.text.split("\n");
+  for (const { line, reason } of hits) lines[line - 1] = `[redacted ${reason}]`;
+  return { kind: block.kind, text: lines.join("\n"), hash: block.hash };
 }
 
 export function plural(count: number, noun: string): string {

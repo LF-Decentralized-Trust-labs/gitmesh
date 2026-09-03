@@ -115,6 +115,21 @@ describe("doctor renderers - guarantees", () => {
     expect(render(REPORT)).not.toContain("ghp_");
   });
 
+  it("redacts GM001-detected secrets in drift block text in every mode", () => {
+    const token = `ghp_${"Ab1".repeat(12)}`;
+    const report: DoctorReport = {
+      ...EMPTY,
+      drift: computeDriftReport([
+        { path: "AGENTS.md", content: `Deploy with ${token} and ship.\n` },
+        { path: "GEMINI.md", content: "Ship.\n" },
+      ]),
+    };
+    for (const render of Object.values(RENDERERS)) {
+      expect(render(report)).not.toContain(token);
+      expect(render(report)).toContain("[redacted GitHub token]");
+    }
+  });
+
   it("colors only decorate: plain output is the colored output without escapes", () => {
     const ESC = String.fromCharCode(27);
     const colored = renderDoctorTty(REPORT, { color: true });

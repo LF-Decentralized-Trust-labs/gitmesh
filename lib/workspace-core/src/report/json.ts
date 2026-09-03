@@ -10,6 +10,7 @@ import type { BlockPresence, PairDrift } from "../drift/index.js";
 import type { RiskFinding } from "../risk/index.js";
 import {
   groupArtifacts,
+  redactBlock,
   summarizeDoctorReport,
   type DoctorArtifact,
   type DoctorReport,
@@ -70,12 +71,12 @@ export function renderDoctorJson(report: DoctorReport): string {
         b,
         identical,
         sharedCount,
-        onlyInA,
-        onlyInB,
-        reordered,
+        onlyInA: onlyInA.map(redactBlock),
+        onlyInB: onlyInB.map(redactBlock),
+        reordered: reordered.map(redactBlock),
       })),
       divergentBlocks: drift.divergentBlocks.map(({ block, presentIn, missingFrom }) => ({
-        block,
+        block: redactBlock(block),
         presentIn,
         missingFrom,
       })),

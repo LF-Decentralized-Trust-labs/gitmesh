@@ -11,14 +11,17 @@ import {
   findingsOf,
   groupArtifacts,
   plural,
+  redactBlock,
   SEVERITIES,
   summarizeDoctorReport,
   type DoctorReport,
 } from "./report.js";
 
-/** Table-cell safe text: no pipes, no line breaks. */
-const cell = (text: string): string => text.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
-const code = (text: string): string => `\`${cell(text)}\``;
+/** Table-cell safe text: no pipes, no line breaks; code spans are literal, prose also escapes HTML. */
+const span = (text: string): string => text.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+const cell = (text: string): string =>
+  span(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const code = (text: string): string => `\`${span(text)}\``;
 
 export function renderDoctorMarkdown(report: DoctorReport): string {
   const summary = summarizeDoctorReport(report);
@@ -65,7 +68,7 @@ export function renderDoctorMarkdown(report: DoctorReport): string {
     lines.push("Divergent blocks:", "");
     for (const { block, presentIn, missingFrom } of drift.divergentBlocks) {
       lines.push(
-        `- ${cell(JSON.stringify(blockPreview(block.text)))} in ${presentIn.map(code).join(", ")}; ` +
+        `- ${cell(JSON.stringify(blockPreview(redactBlock(block).text)))} in ${presentIn.map(code).join(", ")}; ` +
           `missing from ${missingFrom.map(code).join(", ")}`,
       );
     }

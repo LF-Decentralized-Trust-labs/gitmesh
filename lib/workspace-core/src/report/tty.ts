@@ -15,6 +15,7 @@ import {
   findingsOf,
   groupArtifacts,
   plural,
+  redactBlock,
   SEVERITIES,
   summarizeDoctorReport,
   type DoctorReport,
@@ -95,7 +96,7 @@ export function renderDoctorTty(report: DoctorReport, options: DoctorTtyOptions 
     lines.push("  divergent blocks");
     for (const { block, presentIn, missingFrom } of drift.divergentBlocks) {
       lines.push(
-        `    ${JSON.stringify(blockPreview(block.text))}  ` +
+        `    ${JSON.stringify(blockPreview(redactBlock(block).text))}  ` +
           p.dim(`in ${presentIn.join(", ")}; missing from ${missingFrom.join(", ")}`),
       );
     }

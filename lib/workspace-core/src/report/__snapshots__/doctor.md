@@ -35,11 +35,11 @@ Divergent blocks:
 | antigravity | `GEMINI.md` | instructions |  |
 | claude-code | `.claude/settings.json` | settings |  |
 | claude-code | `.mcp.json` | mcp-config |  |
-| claude-code | `CLAUDE.md` | instructions | symlink -> AGENTS.md |
+| claude-code | `CLAUDE.md` | instructions | symlink -&gt; AGENTS.md |
 | claude-code | `~/.claude/CLAUDE.md` | instructions | user |
 | codex | `AGENTS.md` | instructions |  |
 | cursor | `.cursor/rules/style.mdc` | rule |  |
-| roo | `.roo/rules/old.md` | rule | symlink -> ../missing.md, broken |
+| roo | `.roo/rules/old.md` | rule | symlink -&gt; ../missing.md, broken |
 | third-party-managers | `.ruler/ruler.toml` | config | managed by ruler |
 
 </details>
