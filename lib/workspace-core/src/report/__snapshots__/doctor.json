@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "summary": {
+    "score": 55,
+    "artifacts": 9,
+    "adapters": 6,
+    "findings": {
+      "error": 1,
+      "warning": 2,
+      "info": 1
+    },
+    "driftingPairs": 3
+  },
+  "artifacts": [
+    {
+      "adapter": "antigravity",
+      "path": "GEMINI.md",
+      "kind": "instructions",
+      "scope": "project"
+    },
+    {
+      "adapter": "claude-code",
+      "path": ".claude/settings.json",
+      "kind": "settings",
+      "scope": "project"
+    },
+    {
+      "adapter": "claude-code",
+      "path": ".mcp.json",
+      "kind": "mcp-config",
+      "scope": "project"
+    },
+    {
+      "adapter": "claude-code",
+      "path": "CLAUDE.md",
+      "kind": "instructions",
+      "scope": "project",
+      "symlinkTarget": "AGENTS.md"
+    },
+    {
+      "adapter": "claude-code",
+      "path": "~/.claude/CLAUDE.md",
+      "kind": "instructions",
+      "scope": "user"
+    },
+    {
+      "adapter": "codex",
+      "path": "AGENTS.md",
+      "kind": "instructions",
+      "scope": "project"
+    },
+    {
+      "adapter": "cursor",
+      "path": ".cursor/rules/style.mdc",
+      "kind": "rule",
+      "scope": "project"
+    },
+    {
+      "adapter": "roo",
+      "path": ".roo/rules/old.md",
+      "kind": "rule",
+      "scope": "project",
+      "symlinkTarget": "../missing.md",
+      "broken": true
+    },
+    {
+      "adapter": "third-party-managers",
+      "path": ".ruler/ruler.toml",
+      "kind": "config",
+      "scope": "project",
+      "manager": "ruler"
+    }
+  ],
+  "drift": {
+    "documents": [
+      {
+        "label": ".cursor/rules/style.mdc",
+        "paths": [
+          ".cursor/rules/style.mdc"
+        ],
+        "blocks": 2
+      },
+      {
+        "label": "AGENTS.md",
+        "paths": [
+          "AGENTS.md",
+          "CLAUDE.md"
+        ],
+        "blocks": 3
+      },
+      {
+        "label": "GEMINI.md",
+        "paths": [
+          "GEMINI.md"
+        ],
+        "blocks": 4
+      }
+    ],
+    "symlinkGroups": [
+      [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ]
+    ],
+    "pairs": [
+      {
+        "a": ".cursor/rules/style.mdc",
+        "b": "AGENTS.md",
+        "identical": false,
+        "sharedCount": 1,
+        "onlyInA": [
+          {
+            "kind": "paragraph",
+            "text": "Never commit secrets | tokens.",
+            "hash": "9933c0723bba45ba1473bda997d6dfd46eba7b7b4d2983d2614abc3f50878324"
+          }
+        ],
+        "onlyInB": [
+          {
+            "kind": "heading",
+            "text": "# Project rules",
+            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc"
+          },
+          {
+            "kind": "list",
+            "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+            "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+          }
+        ],
+        "reordered": []
+      },
+      {
+        "a": ".cursor/rules/style.mdc",
+        "b": "GEMINI.md",
+        "identical": false,
+        "sharedCount": 1,
+        "onlyInA": [
+          {
+            "kind": "paragraph",
+            "text": "Never commit secrets | tokens.",
+            "hash": "9933c0723bba45ba1473bda997d6dfd46eba7b7b4d2983d2614abc3f50878324"
+          }
+        ],
+        "onlyInB": [
+          {
+            "kind": "heading",
+            "text": "# Project rules",
+            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc"
+          },
+          {
+            "kind": "list",
+            "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+            "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+          },
+          {
+            "kind": "paragraph",
+            "text": "Prefer tabs over spaces.",
+            "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+          }
+        ],
+        "reordered": []
+      },
+      {
+        "a": "AGENTS.md",
+        "b": "GEMINI.md",
+        "identical": false,
+        "sharedCount": 3,
+        "onlyInA": [],
+        "onlyInB": [
+          {
+            "kind": "paragraph",
+            "text": "Prefer tabs over spaces.",
+            "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+          }
+        ],
+        "reordered": [
+          {
+            "kind": "paragraph",
+            "text": "Use pnpm for all installs.",
+            "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
+          }
+        ]
+      }
+    ],
+    "divergentBlocks": [
+      {
+        "block": {
+          "kind": "paragraph",
+          "text": "Never commit secrets | tokens.",
+          "hash": "9933c0723bba45ba1473bda997d6dfd46eba7b7b4d2983d2614abc3f50878324"
+        },
+        "presentIn": [
+          ".cursor/rules/style.mdc"
+        ],
+        "missingFrom": [
+          "AGENTS.md",
+          "GEMINI.md"
+        ]
+      },
+      {
+        "block": {
+          "kind": "heading",
+          "text": "# Project rules",
+          "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc"
+        },
+        "presentIn": [
+          "AGENTS.md",
+          "GEMINI.md"
+        ],
+        "missingFrom": [
+          ".cursor/rules/style.mdc"
+        ]
+      },
+      {
+        "block": {
+          "kind": "list",
+          "text": "- Run tests before every commit.\n- Sign off commits with -s.",
+          "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
+        },
+        "presentIn": [
+          "AGENTS.md",
+          "GEMINI.md"
+        ],
+        "missingFrom": [
+          ".cursor/rules/style.mdc"
+        ]
+      },
+      {
+        "block": {
+          "kind": "paragraph",
+          "text": "Prefer tabs over spaces.",
+          "hash": "01c3727681055430f7d74b10c6d0e928850d332362c18bf5157b07943e015369"
+        },
+        "presentIn": [
+          "GEMINI.md"
+        ],
+        "missingFrom": [
+          ".cursor/rules/style.mdc",
+          "AGENTS.md"
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "ruleId": "GM001",
+      "severity": "error",
+      "message": "MCP server github sets GITHUB_TOKEN to a plaintext value (redacted)",
+      "path": ".mcp.json",
+      "adapter": "claude-code"
+    },
+    {
+      "ruleId": "GM002",
+      "severity": "warning",
+      "message": "No agent denies reads of .env files"
+    },
+    {
+      "ruleId": "GM008",
+      "severity": "info",
+      "message": "roo config present but no roo activity in history",
+      "adapter": "roo"
+    },
+    {
+      "ruleId": "GM010",
+      "severity": "warning",
+      "message": "CLAUDE.md is not bridged to AGENTS.md | add an @AGENTS.md shim",
+      "path": "CLAUDE.md"
+    }
+  ]
+}
