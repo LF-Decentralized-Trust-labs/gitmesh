@@ -28,6 +28,8 @@ export const workspacePaths = [
   "lib/adapters/cursor",
   "lib/adapters/opencode",
   "lib/adapters/pi",
+  "lib/workspace-core",
+  "lib/workspace-adapters",
 ];
 
 // Workspace packages that should NOT be bundled - they'll be published

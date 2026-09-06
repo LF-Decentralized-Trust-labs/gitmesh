@@ -3,3 +3,4 @@
 # harness compares. Never text-convert them, on any platform.
 lib/workspace-adapters/fixtures/** -text
 lib/adapters/**/fixtures/** -text
+cli/fixtures/** -text

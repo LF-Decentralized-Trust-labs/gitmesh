@@ -42,7 +42,8 @@
     "prepublishOnly": "node build.mjs"
   },
   "dependencies": {
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "esbuild": "^0.27.3"
