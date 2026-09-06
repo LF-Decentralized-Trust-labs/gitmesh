@@ -16,9 +16,11 @@ import { createProgram } from "../program.js";
 import { collectDoctorReport, findRepoRoot, runDoctor } from "../workspace/doctor.js";
 
 /**
- * T1.17 spies: every mutating fs API, every network entry point and every
- * subprocess spawner is wrapped in a recording mock (originals still run,
+ * T1.17 spies: a curated set of mutating fs APIs, network entry points and
+ * subprocess spawners is wrapped in a recording mock (originals still run,
  * so test setup works); a doctor run must leave all of them uncalled.
+ * Ambiguous calls such as `fs.open` (read or write depending on flags) are
+ * not tracked.
  */
 const { SPIED, wrap } = vi.hoisted(() => {
   const SPIED: Record<string, readonly string[]> = {
