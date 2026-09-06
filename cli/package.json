@@ -45,6 +45,8 @@
     "@gitmesh/data": "workspace:*",
     "@gitmesh/server": "workspace:*",
     "@gitmesh/core": "workspace:*",
+    "@gitmesh/workspace-adapters": "workspace:*",
+    "@gitmesh/workspace-core": "workspace:*",
     "drizzle-orm": "0.45.2",
     "dotenv": "^17.0.1",
     "commander": "^13.1.0",

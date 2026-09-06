@@ -1,0 +1,7 @@
+---
+description: Style rules
+globs: "**/*.ts"
+---
+Use pnpm for all installs.
+
+Never commit secrets.

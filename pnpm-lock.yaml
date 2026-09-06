@@ -76,6 +76,12 @@ importers:
       '@gitmesh/server':
         specifier: workspace:*
         version: link:../server
+      '@gitmesh/workspace-adapters':
+        specifier: workspace:*
+        version: link:../lib/workspace-adapters
+      '@gitmesh/workspace-core':
+        specifier: workspace:*
+        version: link:../lib/workspace-core
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -305,6 +311,9 @@ importers:
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
     devDependencies:
       esbuild:
         specifier: ^0.27.3

@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import { Command } from "commander";
 import { applyDataDirOverride, type DataDirOptionLike } from "./config/data-dir.js";
+import { registerDoctorCommand } from "./workspace/doctor.js";
 
 export type CliMode = "gitmesh" | "gitmesh-agents";
 
@@ -22,7 +23,6 @@ const CLI_VERSION: string = (
 ).version;
 
 const STUB_COMMANDS: ReadonlyArray<[name: string, description: string]> = [
-  ["doctor", "Audit agent configuration across coding agents"],
   ["init", "Create .gitmesh/ workspace config from existing agent files"],
   ["migrate", "Migrate existing per-tool configs into the canonical source"],
   ["apply", "Compile canonical config to each agent's native files"],
@@ -71,6 +71,7 @@ export function createProgram(
     .description("GitMesh - audit and govern every coding agent from your repo")
     .version(CLI_VERSION);
 
+  registerDoctorCommand(program);
   for (const [name, description] of STUB_COMMANDS) {
     program
       .command(name)

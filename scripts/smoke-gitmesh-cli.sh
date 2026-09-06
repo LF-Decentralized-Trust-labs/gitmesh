@@ -47,13 +47,13 @@ for subcommand in doctor init migrate apply check policy legacy; do
   fi
 done
 
-echo "==> gitmesh doctor exits 1 while unimplemented"
+echo "==> gitmesh doctor --json audits the empty project and exits 0"
 set +e
-"$GITMESH" doctor >/dev/null 2>&1
+DOCTOR_OUTPUT="$("$GITMESH" doctor --json)"
 DOCTOR_EXIT=$?
 set -e
-if [ "$DOCTOR_EXIT" -ne 1 ]; then
-  echo "FAIL: gitmesh doctor exited $DOCTOR_EXIT, expected 1 (stub)" >&2
+if [ "$DOCTOR_EXIT" -ne 0 ] || ! grep -q '"schemaVersion": 1' <<<"$DOCTOR_OUTPUT"; then
+  echo "FAIL: gitmesh doctor --json exited $DOCTOR_EXIT without a schema v1 report" >&2
   exit 1
 fi
 
