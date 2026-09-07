@@ -327,6 +327,19 @@ export function forgeWebhookRoutes(db: Db) {
         return;
       }
 
+      const insecureDev = process.env.GITMESH_WEBHOOK_DEV_INSECURE === "true";
+      if (!insecureDev) {
+        const valid = await validateGitLabToken(
+          db,
+          event.projectId,
+          firstHeaderValue(req.headers["x-gitlab-token"]),
+        );
+        if (!valid) {
+          res.status(401).json({ error: "Invalid webhook token" });
+          return;
+        }
+      }
+
       await storeWebhookDelivery(db, event.projectId, "gitlab", req.body as Record<string, unknown>, "received");
       const result = await forgeSync.processEvent(event);
       await storeWebhookDelivery(db, event.projectId, "gitlab", req.body as Record<string, unknown>, "processed");
@@ -364,6 +377,23 @@ export function forgeWebhookRoutes(db: Db) {
       if (!event) {
         res.status(200).json({ ignored: true, reason: "Unhandled event type" });
         return;
+      }
+
+      const insecureDev = process.env.GITMESH_WEBHOOK_DEV_INSECURE === "true";
+      if (!insecureDev) {
+        const rawBody = (req as Request & { rawBody?: Buffer }).rawBody;
+        const signatureHeader = firstHeaderValue(
+          req.headers["x-gitea-signature"] ?? req.headers["x-forgejo-signature"],
+        );
+        if (!rawBody) {
+          res.status(400).json({ error: "Webhook raw body unavailable" });
+          return;
+        }
+        const valid = await validateForgejoSignature(db, event.projectId, rawBody, signatureHeader);
+        if (!valid) {
+          res.status(401).json({ error: "Invalid webhook signature" });
+          return;
+        }
       }
 
       await storeWebhookDelivery(db, event.projectId, "forgejo", req.body as Record<string, unknown>, "received");
@@ -760,6 +790,75 @@ async function validateGitHubSignature(
 
   if (expected.length !== actual.length) return false;
   return crypto.timingSafeEqual(expected, actual);
+}
+
+async function validateGitLabToken(
+  db: Db,
+  projectId: string,
+  tokenHeader: string | undefined,
+): Promise<boolean> {
+  if (!tokenHeader) return false;
+
+  const secret = await getActiveWebhookSecret(db, projectId, "gitlab");
+  if (!secret) return false;
+
+  return timingSafeStringEqual(tokenHeader, secret);
+}
+
+async function validateForgejoSignature(
+  db: Db,
+  projectId: string,
+  rawBody: Buffer,
+  signatureHeader: string | undefined,
+): Promise<boolean> {
+  if (!signatureHeader) return false;
+
+  const secret = await getActiveWebhookSecret(db, projectId, "forgejo");
+  if (!secret) return false;
+
+  const expected = parseSha256Signature(signatureHeader);
+  if (!expected) return false;
+
+  const actual = crypto.createHmac("sha256", secret).update(rawBody).digest();
+  if (expected.length !== actual.length) return false;
+  return crypto.timingSafeEqual(expected, actual);
+}
+
+async function getActiveWebhookSecret(
+  db: Db,
+  projectId: string,
+  provider: ForgeProvider,
+): Promise<string | null> {
+  const rows = await db
+    .select({ webhookSecret: forgeWebhooks.webhookSecret })
+    .from(forgeWebhooks)
+    .where(
+      and(
+        eq(forgeWebhooks.projectId, projectId),
+        eq(forgeWebhooks.forgeProvider, provider),
+        eq(forgeWebhooks.active, true),
+      ),
+    );
+
+  return rows[0]?.webhookSecret ?? null;
+}
+
+function firstHeaderValue(header: string | string[] | undefined): string | undefined {
+  return Array.isArray(header) ? header[0] : header;
+}
+
+function timingSafeStringEqual(actual: string, expected: string): boolean {
+  const actualBuffer = Buffer.from(actual, "utf8");
+  const expectedBuffer = Buffer.from(expected, "utf8");
+  if (actualBuffer.length !== expectedBuffer.length) return false;
+  return crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+}
+
+function parseSha256Signature(signatureHeader: string): Buffer | null {
+  const value = signatureHeader.trim();
+  const hex = value.startsWith("sha256=") ? value.slice("sha256=".length) : value;
+  if (!/^[0-9a-f]{64}$/i.test(hex)) return null;
+  return Buffer.from(hex, "hex");
 }
 
 /**
