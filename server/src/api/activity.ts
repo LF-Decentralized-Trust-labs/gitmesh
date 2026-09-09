@@ -54,6 +54,12 @@ export function activityRoutes(db: Db) {
    * Export audit log with policy metadata for compliance / offline analysis.
    * GET /projects/:projectId/audit-log/export?format=json|csv
    * Addresses the exportable format slice of #436.
+   *
+   * Intentional legacy placement: #436 asks for exportable audit formats on the
+   * current runtime. The pivot plan (doc/pivot/pivot.md §10.8) keeps server/
+   * untouched for the *new* install path; this route hardens the existing
+   * activity API used by operators today rather than moving export into the
+   * CLI workspace packages (separate follow-up).
    */
   router.get("/projects/:projectId/audit-log/export", async (req, res) => {
     const projectId = req.params.projectId as string;
@@ -73,6 +79,14 @@ export function activityRoutes(db: Db) {
     };
     const result = await svc.list(filters);
 
+    const sanitizeDetails = (details: unknown) => {
+      if (details == null) return null;
+      if (typeof details === "object" && !Array.isArray(details)) {
+        return sanitizeRecord(details as Record<string, unknown>);
+      }
+      return details;
+    };
+
     const rows = result.map((e) => ({
       id: e.id,
       projectId: e.projectId,
@@ -86,7 +100,7 @@ export function activityRoutes(db: Db) {
       runId: e.runId,
       policyVersion: e.policyVersion,
       policyOutcome: e.policyOutcome,
-      details: e.details,
+      details: sanitizeDetails(e.details),
     }));
 
     if (format === "json") {
@@ -118,8 +132,12 @@ export function activityRoutes(db: Db) {
       "policyVersion",
       "policyOutcome",
     ];
+    /** Escape CSV cells and neutralize spreadsheet formula injection. */
     const escape = (v: unknown) => {
-      const s = v == null ? "" : String(v);
+      let s = v == null ? "" : String(v);
+      if (/^[=+\-@]/.test(s)) {
+        s = `'${s}`;
+      }
       if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
       return s;
     };
