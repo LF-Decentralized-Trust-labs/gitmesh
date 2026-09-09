@@ -50,6 +50,108 @@ export function activityRoutes(db: Db) {
     res.json(result);
   });
 
+  /**
+   * Export audit log with policy metadata for compliance / offline analysis.
+   * GET /projects/:projectId/audit-log/export?format=json|csv
+   * Addresses the exportable format slice of #436.
+   */
+  router.get("/projects/:projectId/audit-log/export", async (req, res) => {
+    const projectId = req.params.projectId as string;
+    assertProjectAccess(req, projectId);
+
+    const format = String(req.query.format ?? "json").toLowerCase();
+    if (format !== "json" && format !== "csv") {
+      res.status(400).json({ error: "format must be 'json' or 'csv'" });
+      return;
+    }
+
+    const filters = {
+      projectId,
+      agentId: req.query.agentId as string | undefined,
+      entityType: req.query.entityType as string | undefined,
+      entityId: req.query.entityId as string | undefined,
+    };
+    const result = await svc.list(filters);
+
+    const rows = result.map((e) => ({
+      id: e.id,
+      projectId: e.projectId,
+      createdAt: e.createdAt,
+      actorType: e.actorType,
+      actorId: e.actorId,
+      agentId: e.agentId,
+      action: e.action,
+      entityType: e.entityType,
+      entityId: e.entityId,
+      runId: e.runId,
+      policyVersion: e.policyVersion,
+      policyOutcome: e.policyOutcome,
+      details: e.details,
+    }));
+
+    if (format === "json") {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="gitmesh-audit-${projectId}.json"`
+      );
+      res.json({
+        exportedAt: new Date().toISOString(),
+        projectId,
+        count: rows.length,
+        events: rows,
+      });
+      return;
+    }
+
+    const header = [
+      "id",
+      "projectId",
+      "createdAt",
+      "actorType",
+      "actorId",
+      "agentId",
+      "action",
+      "entityType",
+      "entityId",
+      "runId",
+      "policyVersion",
+      "policyOutcome",
+    ];
+    const escape = (v: unknown) => {
+      const s = v == null ? "" : String(v);
+      if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+      return s;
+    };
+    const lines = [
+      header.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.projectId,
+          r.createdAt instanceof Date ? r.createdAt.toISOString() : r.createdAt,
+          r.actorType,
+          r.actorId,
+          r.agentId,
+          r.action,
+          r.entityType,
+          r.entityId,
+          r.runId,
+          r.policyVersion,
+          r.policyOutcome,
+        ]
+          .map(escape)
+          .join(",")
+      ),
+    ];
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="gitmesh-audit-${projectId}.csv"`
+    );
+    res.send(lines.join("\n"));
+  });
+
   router.post("/projects/:projectId/activity", validate(createActivitySchema), async (req, res) => {
     assertBoard(req);
     const projectId = req.params.projectId as string;
