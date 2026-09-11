@@ -89,8 +89,10 @@ function locate(
   if (artifact.path.startsWith("~/")) return join(home, artifact.path.slice(2));
   const [head, ...rest] = artifact.path.split("/");
   if (head !== undefined && head.startsWith("$") && rest.length > 0) {
+    // An unset *or empty* variable has no location: `join("", "config.toml")`
+    // would be a relative path, i.e. a read against the current directory.
     const base = env[head.slice(1)];
-    return base === undefined ? undefined : join(base, ...rest);
+    return base ? join(base, ...rest) : undefined;
   }
   return undefined;
 }
