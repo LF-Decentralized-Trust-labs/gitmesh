@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "summary": {
-    "score": 60,
+    "score": 70,
     "artifacts": 12,
     "adapters": 9,
     "findings": {
@@ -9,7 +9,7 @@
       "warning": 1,
       "info": 0
     },
-    "driftingPairs": 3
+    "driftingPairs": 1
   },
   "artifacts": [
     {
@@ -88,13 +88,6 @@
   "drift": {
     "documents": [
       {
-        "label": ".cursor/rules/style.mdc",
-        "paths": [
-          ".cursor/rules/style.mdc"
-        ],
-        "blocks": 2
-      },
-      {
         "label": "AGENTS.md",
         "paths": [
           "AGENTS.md"
@@ -111,63 +104,6 @@
     ],
     "symlinkGroups": [],
     "pairs": [
-      {
-        "a": ".cursor/rules/style.mdc",
-        "b": "AGENTS.md",
-        "identical": false,
-        "sharedCount": 1,
-        "onlyInA": [
-          {
-            "kind": "paragraph",
-            "text": "Never commit secrets.",
-            "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
-          }
-        ],
-        "onlyInB": [
-          {
-            "kind": "heading",
-            "text": "# Project rules",
-            "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc"
-          },
-          {
-            "kind": "list",
-            "text": "- Run tests before every commit.\n- Sign off commits with -s.",
-            "hash": "ae94fa06bafa2010af947c8953b02d92a01acdc9e5b3cdd7b6bb576292273ddf"
-          }
-        ],
-        "reordered": []
-      },
-      {
-        "a": ".cursor/rules/style.mdc",
-        "b": "CLAUDE.md",
-        "identical": false,
-        "sharedCount": 0,
-        "onlyInA": [
-          {
-            "kind": "paragraph",
-            "text": "Use pnpm for all installs.",
-            "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
-          },
-          {
-            "kind": "paragraph",
-            "text": "Never commit secrets.",
-            "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
-          }
-        ],
-        "onlyInB": [
-          {
-            "kind": "paragraph",
-            "text": "@AGENTS.md",
-            "hash": "815391fe7dc625eb10f29aafd331f4e3aab42d967cbd9aa086a0db00b1f23d4e"
-          },
-          {
-            "kind": "list",
-            "text": "- Claude-only: prefer the Edit tool over shell edits.",
-            "hash": "1e8e5a840e980efbcfca6fdf84cb83385cf44c7d40c32864cea1328aff7902a3"
-          }
-        ],
-        "reordered": []
-      },
       {
         "a": "AGENTS.md",
         "b": "CLAUDE.md",
@@ -208,34 +144,6 @@
     "divergentBlocks": [
       {
         "block": {
-          "kind": "paragraph",
-          "text": "Use pnpm for all installs.",
-          "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
-        },
-        "presentIn": [
-          ".cursor/rules/style.mdc",
-          "AGENTS.md"
-        ],
-        "missingFrom": [
-          "CLAUDE.md"
-        ]
-      },
-      {
-        "block": {
-          "kind": "paragraph",
-          "text": "Never commit secrets.",
-          "hash": "5f53ace965b8f860a98922dd77faa0342393e38545919383b174da45bee31cac"
-        },
-        "presentIn": [
-          ".cursor/rules/style.mdc"
-        ],
-        "missingFrom": [
-          "AGENTS.md",
-          "CLAUDE.md"
-        ]
-      },
-      {
-        "block": {
           "kind": "heading",
           "text": "# Project rules",
           "hash": "3170bcf78a16dcb419f6a089e430f6f6cb220fca35e8a8b40ec4055441cb5cfc"
@@ -244,7 +152,19 @@
           "AGENTS.md"
         ],
         "missingFrom": [
-          ".cursor/rules/style.mdc",
+          "CLAUDE.md"
+        ]
+      },
+      {
+        "block": {
+          "kind": "paragraph",
+          "text": "Use pnpm for all installs.",
+          "hash": "a76abedac569cf9c4e7d2e498226a1d3cc73bb77375b568a3651717d26ab678e"
+        },
+        "presentIn": [
+          "AGENTS.md"
+        ],
+        "missingFrom": [
           "CLAUDE.md"
         ]
       },
@@ -258,7 +178,6 @@
           "AGENTS.md"
         ],
         "missingFrom": [
-          ".cursor/rules/style.mdc",
           "CLAUDE.md"
         ]
       },
@@ -272,7 +191,6 @@
           "CLAUDE.md"
         ],
         "missingFrom": [
-          ".cursor/rules/style.mdc",
           "AGENTS.md"
         ]
       },
@@ -286,7 +204,6 @@
           "CLAUDE.md"
         ],
         "missingFrom": [
-          ".cursor/rules/style.mdc",
           "AGENTS.md"
         ]
       }

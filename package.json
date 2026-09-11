@@ -30,7 +30,7 @@
     "release": "./scripts/release.sh",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "lint": "eslint lib/workspace-core lib/workspace-adapters",
+    "lint": "eslint lib/workspace-core lib/workspace-adapters cli/src/workspace",
     "check:tokens": "node scripts/check-forbidden-tokens.mjs",
     "docs:dev": "cd docs && npx mintlify dev"
   },

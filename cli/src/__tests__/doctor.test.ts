@@ -1,16 +1,27 @@
-import { cpSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import * as fs from "node:fs";
 import * as fsPromises from "node:fs/promises";
 import * as childProcess from "node:child_process";
 import * as dns from "node:dns";
+import * as dnsPromises from "node:dns/promises";
 import * as http from "node:http";
+import * as http2 from "node:http2";
 import * as https from "node:https";
 import * as net from "node:net";
+import * as tls from "node:tls";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
-import { assertGoldenCase } from "@gitmesh/workspace-adapters";
+import { assertGoldenCase, type RepoContext } from "@gitmesh/workspace-adapters";
 import { renderDoctorJson, type DoctorJson } from "@gitmesh/workspace-core";
 import { createProgram } from "../program.js";
 import { collectDoctorReport, findRepoRoot, runDoctor } from "../workspace/doctor.js";
@@ -21,8 +32,14 @@ import { collectDoctorReport, findRepoRoot, runDoctor } from "../workspace/docto
  * so test setup works); a doctor run must leave all of them uncalled.
  * Ambiguous calls such as `fs.open` (read or write depending on flags) are
  * not tracked.
+ *
+ * Mocks are memoized per module id because two of these modules are reachable
+ * under two names: `fs.promises` is the same object as `node:fs/promises`,
+ * and `dns.promises` the same as `node:dns/promises`. Wrapping each alias
+ * separately would leave a write through `fs.promises.writeFile` recorded on
+ * a mock nobody asserts on - the read-only guarantee would still report clean.
  */
-const { SPIED, wrap } = vi.hoisted(() => {
+const { SPIED, alias, wrap } = vi.hoisted(() => {
   const SPIED: Record<string, readonly string[]> = {
     "node:fs": [
       "appendFile", "appendFileSync", "chmod", "chmodSync", "chown", "chownSync", "copyFile",
@@ -38,28 +55,68 @@ const { SPIED, wrap } = vi.hoisted(() => {
     ],
     "node:http": ["request", "get"],
     "node:https": ["request", "get"],
+    // tls.connect builds its own net.Socket and calls socket.connect(), so it
+    // does not route through the node:net spies below.
+    "node:http2": ["connect"],
     "node:net": ["connect", "createConnection"],
+    "node:tls": ["connect"],
     "node:dns": ["lookup", "resolve", "resolve4", "resolve6"],
+    "node:dns/promises": ["lookup", "resolve", "resolve4", "resolve6"],
     "node:child_process": ["exec", "execFile", "execFileSync", "execSync", "fork", "spawn", "spawnSync"],
   };
-  /** The original module with the listed functions wrapped, on the namespace and its default. */
-  const wrap = (id: string, actual: Record<string, unknown>) => {
-    const spies: Record<string, unknown> = {};
-    for (const name of SPIED[id] ?? []) {
-      spies[name] = vi.fn(actual[name] as (...args: unknown[]) => unknown);
+  const cache = new Map<string, Record<string, unknown>>();
+  /** The recording mocks for one module id - created once, reused per alias. */
+  const spiesFor = (id: string, actual: Record<string, unknown>) => {
+    let spies = cache.get(id);
+    if (spies === undefined) {
+      spies = {};
+      for (const name of SPIED[id] ?? []) {
+        // A typo would otherwise produce vi.fn(undefined) - still a mock, so
+        // every assertion keeps passing while that API goes unwatched.
+        if (typeof actual[name] !== "function") {
+          throw new Error(`spy target ${id}.${name} is not a function`);
+        }
+        spies[name] = vi.fn(actual[name] as (...args: unknown[]) => unknown);
+      }
+      cache.set(id, spies);
     }
+    return spies;
+  };
+  /** The `promises` property of `node:fs` / `node:dns`, carrying its alias's mocks. */
+  const alias = (id: string, actual: Record<string, unknown>) => {
+    const real = actual["promises"] as Record<string, unknown>;
+    return { promises: { ...real, ...spiesFor(id, real) } };
+  };
+  /** The original module with the listed functions wrapped, on the namespace and its default. */
+  const wrap = (
+    id: string,
+    actual: Record<string, unknown>,
+    extra: Record<string, unknown> = {},
+  ) => {
+    const spies = { ...spiesFor(id, actual), ...extra };
     const base = actual["default"] as Record<string, unknown> | undefined;
     return { ...actual, ...spies, default: { ...base, ...spies } };
   };
-  return { SPIED, wrap };
+  return { SPIED, alias, wrap };
 });
 type Original = () => Promise<Record<string, unknown>>;
-vi.mock("node:fs", async (original: Original) => wrap("node:fs", await original()));
+vi.mock("node:fs", async (original: Original) => {
+  const actual = await original();
+  return wrap("node:fs", actual, alias("node:fs/promises", actual));
+});
 vi.mock("node:fs/promises", async (original: Original) => wrap("node:fs/promises", await original()));
 vi.mock("node:http", async (original: Original) => wrap("node:http", await original()));
 vi.mock("node:https", async (original: Original) => wrap("node:https", await original()));
+vi.mock("node:http2", async (original: Original) => wrap("node:http2", await original()));
 vi.mock("node:net", async (original: Original) => wrap("node:net", await original()));
-vi.mock("node:dns", async (original: Original) => wrap("node:dns", await original()));
+vi.mock("node:tls", async (original: Original) => wrap("node:tls", await original()));
+vi.mock("node:dns", async (original: Original) => {
+  const actual = await original();
+  return wrap("node:dns", actual, alias("node:dns/promises", actual));
+});
+vi.mock("node:dns/promises", async (original: Original) =>
+  wrap("node:dns/promises", await original()),
+);
 vi.mock("node:child_process", async (original: Original) =>
   wrap("node:child_process", await original()),
 );
@@ -68,22 +125,43 @@ const MODULES: Record<string, Record<string, unknown>> = {
   "node:fs/promises": fsPromises,
   "node:http": http,
   "node:https": https,
+  "node:http2": http2,
   "node:net": net,
+  "node:tls": tls,
   "node:dns": dns,
+  "node:dns/promises": dnsPromises,
   "node:child_process": childProcess,
 };
 
 /** `module.fn` names whose spy recorded at least one call. */
 function calledSpies(): string[] {
-  return Object.entries(SPIED).flatMap(([id, names]) =>
-    names
-      .filter((name) => (MODULES[id]![name] as Mock).mock.calls.length > 0)
-      .map((name) => `${id}.${name}`),
-  );
+  return Object.entries(SPIED).flatMap(([id, names]) => {
+    const module = MODULES[id];
+    if (module === undefined) throw new Error(`SPIED lists ${id} but MODULES has no namespace`);
+    return names
+      .filter((name) => (module[name] as Mock).mock.calls.length > 0)
+      .map((name) => `${id}.${name}`);
+  });
 }
 
-const FIXTURE = resolve(dirname(fileURLToPath(import.meta.url)), "../../fixtures/doctor/sample");
+const FIXTURES = resolve(dirname(fileURLToPath(import.meta.url)), "../../fixtures/doctor");
+const FIXTURE = join(FIXTURES, "sample");
 const SECRET = "ghp_FAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKE01";
+
+/**
+ * The machine-scoped probes, pinned off. `RepoContext` documents these as the
+ * seam for exactly this ("tests point these at fixture paths. An empty array
+ * disables the probe"). Without them a contributor who has CODEX_HOME
+ * exported, a `~/.codex/requirements.toml`, an antigravity settings file or
+ * org-managed Claude settings gets extra artifacts - a red byte-exact golden
+ * on a clean checkout, with a diff that reads like a code bug.
+ */
+const HERMETIC: Partial<RepoContext> = {
+  env: {},
+  managedSettingsPaths: [],
+  requirementsTomlPaths: [],
+  antigravitySettingsPaths: [],
+};
 
 const tempDirs: string[] = [];
 function makeRepo(files: Record<string, string> = {}): string {
@@ -124,7 +202,25 @@ describe("gitmesh doctor - pipeline", () => {
     await assertGoldenCase(
       { inputRepoDir: join(FIXTURE, "input-repo"), expectedDir: join(FIXTURE, "expected") },
       async (root) => [
-        { path: "doctor.json", content: renderDoctorJson(await collectDoctorReport({ rootDir: root })) },
+        {
+          path: "doctor.json",
+          content: renderDoctorJson(await collectDoctorReport({ ...HERMETIC, rootDir: root })),
+        },
+      ],
+    );
+  });
+
+  it("matches the clean-repo golden --json byte-exactly", async () => {
+    await assertGoldenCase(
+      {
+        inputRepoDir: join(FIXTURES, "clean", "input-repo"),
+        expectedDir: join(FIXTURES, "clean", "expected"),
+      },
+      async (root) => [
+        {
+          path: "doctor.json",
+          content: renderDoctorJson(await collectDoctorReport({ ...HERMETIC, rootDir: root })),
+        },
       ],
     );
   });
@@ -132,7 +228,7 @@ describe("gitmesh doctor - pipeline", () => {
   it("never emits a secret value in any output mode", async () => {
     const dir = sampleCopy();
     for (const mode of [{}, { json: true }, { md: true }]) {
-      const { output } = await runDoctor({ dir, ...mode });
+      const { output } = await runDoctor({ dir, ...mode, context: HERMETIC });
       expect(output).toContain("GM001");
       expect(output).not.toContain(SECRET);
     }
@@ -144,17 +240,65 @@ describe("gitmesh doctor - pipeline", () => {
       "CLAUDE.md": "@AGENTS.md\n",
       "packages/app/AGENTS.md": "# App rules\n",
       "CLAUDE.local.md": "# Mine\n",
+      ".github/copilot-instructions.md": "# Rules\n\nUse pnpm.\n",
+      // Per-topic rule trees: each file is scoped by its own globs, so they
+      // are context, not copies of one document. Pairing them would diff
+      // unrelated files against each other, O(n^2) of them, and charge the
+      // score 5 points per pair.
+      ".cursor/rules/style.mdc": "Prefer named exports.\n",
+      ".claude/rules/testing.md": "Write the test first.\n",
+      ".github/instructions/ts.instructions.md": "---\napplyTo: '**/*.ts'\n---\nUse strict.\n",
     });
-    const { report } = await runDoctor({ dir });
-    expect(report.artifacts.map((a) => a.path)).toContain("packages/app/AGENTS.md");
-    expect(report.artifacts.map((a) => a.path)).toContain("CLAUDE.local.md");
-    expect(report.drift.documents.map((d) => d.label)).toEqual(["AGENTS.md", "CLAUDE.md"]);
+    const { report } = await runDoctor({ dir, context: HERMETIC });
+    const inventory = report.artifacts.map((a) => a.path);
+    expect(inventory).toContain("packages/app/AGENTS.md");
+    expect(inventory).toContain("CLAUDE.local.md");
+    expect(inventory).toContain(".cursor/rules/style.mdc");
+    expect([...report.drift.documents.map((d) => d.label)].sort()).toEqual([
+      ".github/copilot-instructions.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+    ]);
   });
+
+  it("resolves user content behind an env-var display path", async () => {
+    const codexHome = makeRepo({ "config.toml": 'startup_command = "gh auth token"\n' });
+    const rootDir = makeRepo();
+    // The codex detector labels this `$CODEX_HOME/config.toml` when the
+    // variable is set and `~/.codex/config.toml` when it is not. Both have to
+    // reach the content rules, or whether GM001 sees a token in that file
+    // depends on the environment rather than on the file.
+    const report = await collectDoctorReport({
+      ...HERMETIC,
+      rootDir,
+      userScope: true,
+      env: { CODEX_HOME: codexHome },
+    });
+    expect(report.artifacts).toContainEqual(
+      expect.objectContaining({
+        path: "$CODEX_HOME/config.toml",
+        content: 'startup_command = "gh auth token"\n',
+      }),
+    );
+  });
+
+  it.skipIf(process.platform === "win32" || process.getuid?.() === 0)(
+    "aborts rather than certify a file it is not allowed to read",
+    async () => {
+      const dir = makeRepo({ ".mcp.json": '{"mcpServers":{}}\n' });
+      chmodSync(join(dir, ".mcp.json"), 0);
+      // Reporting "no content" here would report the repo clean: every content
+      // rule reads undefined as "nothing to inspect".
+      await expect(runDoctor({ dir, context: HERMETIC })).rejects.toThrow(
+        /cannot read \.mcp\.json \(EACCES\)/,
+      );
+    },
+  );
 
   it.skipIf(!symlinksSupported)("reports a symlinked CLAUDE.md as a zero-drift group", async () => {
     const dir = makeRepo({ "AGENTS.md": "# Rules\n\nUse pnpm.\n" });
     symlinkSync("AGENTS.md", join(dir, "CLAUDE.md"));
-    const { report } = await runDoctor({ dir });
+    const { report } = await runDoctor({ dir, context: HERMETIC });
     expect(report.drift.symlinkGroups).toEqual([["AGENTS.md", "CLAUDE.md"]]);
     expect(report.drift.pairs).toEqual([]);
     expect(report.findings.map((f) => f.ruleId)).not.toContain("GM010");
@@ -164,12 +308,12 @@ describe("gitmesh doctor - pipeline", () => {
   it("reads user-scope artifacts only when asked", async () => {
     const home = makeRepo({ ".claude/CLAUDE.md": "# Personal\n" });
     const rootDir = makeRepo();
-    const on = await collectDoctorReport({ rootDir, userScope: true, homeDir: home });
+    const on = await collectDoctorReport({ ...HERMETIC, rootDir, userScope: true, homeDir: home });
     expect(on.artifacts).toContainEqual(
       expect.objectContaining({ path: "~/.claude/CLAUDE.md", scope: "user", content: "# Personal\n" }),
     );
     expect(on.drift.documents).toEqual([]);
-    const off = await collectDoctorReport({ rootDir, homeDir: home });
+    const off = await collectDoctorReport({ ...HERMETIC, rootDir, homeDir: home });
     expect(off.artifacts).toEqual([]);
   });
 
@@ -179,14 +323,14 @@ describe("gitmesh doctor - pipeline", () => {
     mkdirSync(nested, { recursive: true });
     expect(findRepoRoot(nested)).toBe(root);
     expect(findRepoRoot(makeRepo())).toMatch(/gitmesh-doctor-/);
-    const { report } = await runDoctor({ dir: nested });
+    const { report } = await runDoctor({ dir: nested, context: HERMETIC });
     expect(report.artifacts.map((a) => a.path)).toContain("AGENTS.md");
   });
 });
 
 describe("gitmesh doctor - exit codes and --fail-on", () => {
   it("exits 0 on a clean repository", async () => {
-    const { exitCode, output } = await runDoctor({ dir: makeRepo(), json: true });
+    const { exitCode, output } = await runDoctor({ dir: makeRepo(), json: true, context: HERMETIC });
     expect(exitCode).toBe(0);
     expect((JSON.parse(output) as DoctorJson).summary.score).toBe(100);
   });
@@ -197,16 +341,20 @@ describe("gitmesh doctor - exit codes and --fail-on", () => {
     ["info", 1],
     ["none", 0],
   ])("with only warnings, --fail-on %s exits %i", async (failOn, expected) => {
-    const { exitCode, report } = await runDoctor({ dir: makeRepo(WARNING_ONLY), failOn });
+    const { exitCode, report } = await runDoctor({
+      dir: makeRepo(WARNING_ONLY),
+      failOn,
+      context: HERMETIC,
+    });
     expect(report.findings.map((f) => f.severity)).toEqual(["warning"]);
     expect(exitCode).toBe(expected);
   });
 
   it("defaults to --fail-on warning and fails on errors at every level but none", async () => {
     const dir = sampleCopy();
-    expect((await runDoctor({ dir })).exitCode).toBe(1);
-    expect((await runDoctor({ dir, failOn: "error" })).exitCode).toBe(1);
-    expect((await runDoctor({ dir, failOn: "none" })).exitCode).toBe(0);
+    expect((await runDoctor({ dir, context: HERMETIC })).exitCode).toBe(1);
+    expect((await runDoctor({ dir, failOn: "error", context: HERMETIC })).exitCode).toBe(1);
+    expect((await runDoctor({ dir, failOn: "none", context: HERMETIC })).exitCode).toBe(0);
   });
 
   it("rejects bad usage so the command exits 2", async () => {
@@ -230,10 +378,19 @@ describe("gitmesh doctor - read-only guarantees (spies)", () => {
 
   it("never writes a file, opens a connection, or spawns a process", async () => {
     const dirs = [sampleCopy(), makeRepo(WARNING_ONLY), makeRepo()];
+    // `--user` is the only mode that reads outside the repo root, so it is the
+    // one that most needs to be held to this.
+    const home = makeRepo({ ".claude/CLAUDE.md": "# Personal\n", ".claude/settings.json": "{}\n" });
+    const modes = [
+      { color: true, context: HERMETIC },
+      { json: true, context: HERMETIC },
+      { md: true, context: HERMETIC },
+      { user: true, json: true, context: { ...HERMETIC, homeDir: home } },
+    ];
     const fetchSpy = vi.spyOn(globalThis, "fetch");
     vi.clearAllMocks();
     for (const dir of dirs) {
-      for (const mode of [{ color: true }, { json: true }, { md: true }]) {
+      for (const mode of modes) {
         await runDoctor({ dir, ...mode });
       }
     }

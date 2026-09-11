@@ -16,6 +16,10 @@ import tseslint from "typescript-eslint";
 const PIVOT_PACKAGE_GLOBS = [
   "lib/workspace-core/**/*.{ts,tsx,mts,cts,js,mjs,cjs}",
   "lib/workspace-adapters/**/*.{ts,tsx,mts,cts,js,mjs,cjs}",
+  // The new-product command surface lives inside the legacy `cli` package,
+  // whose manifest still carries @gitmesh/server, drizzle-orm and pg - so it
+  // needs the boundary rule more than the lib packages do, not less.
+  "cli/src/workspace/**/*.{ts,tsx,mts,cts,js,mjs,cjs}",
 ];
 
 const RESTRICTED_IMPORT_PATTERNS = [

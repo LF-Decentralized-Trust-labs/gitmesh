@@ -80,6 +80,10 @@ describe("createProgram (gitmesh mode)", () => {
     for (const name of [...STUB_NAMES, "doctor", "legacy"]) {
       expect(help).toContain(name);
     }
+    // doctor is the one implemented command: its description must not carry
+    // the stubs' "(not implemented yet)" suffix.
+    expect(help).toContain("Audit agent configuration across coding agents");
+    expect(help).not.toMatch(/doctor.*not implemented yet/);
   });
 
   it("renders legacy group help with legacy commands", () => {
@@ -119,5 +123,13 @@ describe("createProgram (gitmesh-agents mode)", () => {
     expect(help).toContain("setup");
     expect(commandNames(program)).not.toContain("legacy");
     expect(commandNames(program)).not.toContain("apply");
+    // `registerDoctorCommand` is called two lines below the gitmesh-agents
+    // early return in program.ts; hoisting it would silently add the new
+    // product surface to this frozen one. The name alone proves nothing --
+    // the legacy tree has always had its own `doctor` health check -- so this
+    // pins which of the two is mounted here.
+    expect(program.commands.find((c) => c.name() === "doctor")?.description()).toBe(
+      "Run diagnostic checks on your GitMesh Agents setup",
+    );
   });
 });

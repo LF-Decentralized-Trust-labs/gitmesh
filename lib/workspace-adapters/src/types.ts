@@ -92,6 +92,14 @@ export interface DetectedArtifact {
   symlinkTarget?: string;
   /** True when the artifact is a symlink that does not resolve to a file. */
   broken?: boolean;
+  /**
+   * Owning third-party manager (`ruler`, `rulesync`, …) when one claims the
+   * artifact (T1.7). Declared here, not only on `ThirdPartyManagerArtifact`,
+   * so consumers of the generic `detect()` return type can read it without an
+   * unchecked structural cast; `ThirdPartyManagerArtifact` narrows it to
+   * required.
+   */
+  manager?: string;
 }
 
 /** How an adapter can express a policy rule at a given tier. */

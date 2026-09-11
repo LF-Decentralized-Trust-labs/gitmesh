@@ -29,7 +29,7 @@ cd "$WORKDIR"
 npm init -y >/dev/null
 npm install --no-fund --no-audit --loglevel=error ./gitmesh-cli-*.tgz
 
-GITMESH="./node_modules/.bin/gitmesh"
+GITMESH="$WORKDIR/node_modules/.bin/gitmesh"
 
 echo "==> gitmesh --version"
 ACTUAL_VERSION="$("$GITMESH" --version)"
@@ -47,14 +47,36 @@ for subcommand in doctor init migrate apply check policy legacy; do
   fi
 done
 
-echo "==> gitmesh doctor --json audits the empty project and exits 0"
-set +e
-DOCTOR_OUTPUT="$("$GITMESH" doctor --json)"
-DOCTOR_EXIT=$?
-set -e
-if [ "$DOCTOR_EXIT" -ne 0 ] || ! grep -q '"schemaVersion": 1' <<<"$DOCTOR_OUTPUT"; then
-  echo "FAIL: gitmesh doctor --json exited $DOCTOR_EXIT without a schema v1 report" >&2
+# `doctor` audits the enclosing git root, so the audited tree has to be pinned:
+# without a `.git` here, a $TMPDIR that happens to sit inside a checkout (a
+# dotfiles repo, a workspace-rooted RUNNER_TEMP) would make this audit -- and
+# its exit code -- depend on that repo's contents.
+git init -q "$WORKDIR/clean"
+cd "$WORKDIR/clean"
+
+echo "==> gitmesh doctor --json audits a clean project and exits 0"
+if ! DOCTOR_OUTPUT="$("$GITMESH" doctor --json)"; then
+  echo "FAIL: gitmesh doctor --json exited non-zero on a repository with no agent config" >&2
+  echo "$DOCTOR_OUTPUT" | head -c 500 >&2
   exit 1
 fi
+if ! grep -q '"schemaVersion"' <<<"$DOCTOR_OUTPUT"; then
+  echo "FAIL: gitmesh doctor --json did not print a schema-versioned report; got:" >&2
+  echo "$DOCTOR_OUTPUT" | head -c 500 >&2
+  exit 1
+fi
+
+# The packaged binary must also *propagate* a non-zero exit: `doctor` sets
+# process.exitCode rather than calling process.exit, and that is the contract
+# the CI drift gate is built on. No unit test covers a real process exit.
+echo "==> gitmesh doctor exits 1 when a finding fires"
+printf '{"mcpServers":{"github":{"command":"npx","env":{"GITHUB_TOKEN":"ghp_%s"}}}}\n' \
+  "FAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKE01" >.mcp.json
+if "$GITMESH" doctor --json >/dev/null 2>&1; then
+  echo "FAIL: gitmesh doctor exited 0 on a repository with a plaintext-secret finding" >&2
+  exit 1
+fi
+rm -f .mcp.json
+cd "$WORKDIR"
 
 echo "PASS: gitmesh-cli@$EXPECTED_VERSION installs clean and runs"
