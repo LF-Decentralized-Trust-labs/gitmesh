@@ -14,6 +14,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:perf": "cross-env GITMESH_DOCTOR_PERF=1 vitest run --silent=false --reporter=verbose cli/src/__tests__/doctor-perf.test.ts",
     "db:up": "docker compose -f docker-compose.dev.yml up -d",
     "db:down": "docker compose -f docker-compose.dev.yml down",
     "db:logs": "docker compose -f docker-compose.dev.yml logs -f postgres",

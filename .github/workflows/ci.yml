@@ -43,6 +43,11 @@ jobs:
       - name: Run tests
         run: pnpm test:run
 
+      # T1.18: its own step so the 2s wall-clock assertion is measured on a
+      # quiet runner, not next to the parallel vitest workers above.
+      - name: Doctor performance guard
+        run: pnpm test:perf
+
       - name: Build
         run: pnpm build
 
