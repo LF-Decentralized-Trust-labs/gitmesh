@@ -28,6 +28,7 @@ export {
   riskRules,
   GM007_DEFAULT_THRESHOLD,
   makeGm007,
+  importsAgentsMd,
   type RiskSeverity,
   type RiskArtifactScope,
   type RiskArtifact,

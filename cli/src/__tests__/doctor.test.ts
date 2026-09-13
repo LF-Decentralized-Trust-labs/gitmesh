@@ -237,7 +237,7 @@ describe("gitmesh doctor - pipeline", () => {
   it("feeds only root-anchored instruction documents to the drift differ", async () => {
     const dir = makeRepo({
       "AGENTS.md": "# Rules\n\nUse pnpm.\n",
-      "CLAUDE.md": "@AGENTS.md\n",
+      "CLAUDE.md": "# Rules\n\nUse npm.\n",
       "packages/app/AGENTS.md": "# App rules\n",
       "CLAUDE.local.md": "# Mine\n",
       ".github/copilot-instructions.md": "# Rules\n\nUse pnpm.\n",
@@ -259,6 +259,19 @@ describe("gitmesh doctor - pipeline", () => {
       "AGENTS.md",
       "CLAUDE.md",
     ]);
+  });
+
+  it("keeps a bridged CLAUDE.md out of the differ: the #6235 shim is a pointer, not a copy", async () => {
+    // GM010's remediation is exactly this file; before the shim rule the
+    // differ charged a divergent pair (and 5 score points) for adopting it.
+    const dir = makeRepo({
+      "AGENTS.md": "# Rules\n\nUse pnpm.\n",
+      "CLAUDE.md": "@AGENTS.md\n\n- Claude-only: prefer the Edit tool.\n",
+    });
+    const { report } = await runDoctor({ dir, context: HERMETIC });
+    expect(report.drift.documents.map((d) => d.label)).toEqual(["AGENTS.md"]);
+    expect(report.drift.pairs).toEqual([]);
+    expect(report.findings.map((f) => f.ruleId)).not.toContain("GM010");
   });
 
   it("resolves user content behind an env-var display path", async () => {

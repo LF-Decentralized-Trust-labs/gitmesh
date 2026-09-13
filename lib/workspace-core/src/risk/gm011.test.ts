@@ -236,3 +236,32 @@ describe("GM011 - review-pass regressions", () => {
     ).toEqual([]);
   });
 });
+
+describe("GM011 - nested artifacts stay unjudged", () => {
+  const reviewer = artifact(
+    ".claude/agents/reviewer.md",
+    "subagent",
+    "---\nname: reviewer\n---\n\nReviews.\n",
+  );
+
+  it("never judges a nested CLAUDE.md: its references resolve against its own directory", () => {
+    // A vendored repo or monorepo subtree carries its own .claude/ tree the
+    // detector does not inventory, so "absent from the inventory" proves
+    // nothing there - this exact shape used to fire a false dangling-import.
+    const nested = artifact(
+      "vendor/sample/CLAUDE.md",
+      "instructions",
+      "See @.claude/rules/style.md and use subagent_type: local-helper.\n",
+    );
+    expect(run([nested, reviewer])).toEqual([]);
+  });
+
+  it("still judges the identical content at the repo root", () => {
+    const root = artifact(
+      "CLAUDE.md",
+      "instructions",
+      "See @.claude/rules/style.md and use subagent_type: local-helper.\n",
+    );
+    expect(run([root, reviewer])).toHaveLength(2);
+  });
+});

@@ -46,6 +46,15 @@ import type { RiskArtifact, RuleContext, RuleFinding, RiskRule } from "./risk.js
  *    least one subagent: a repo with none plausibly relies on user-scope
  *    or plugin agents the doctor cannot see.
  *
+ * Both reference checks judge only artifacts inside the root-inventoried
+ * namespace: root-level files and the `.claude/` trees. A nested
+ * CLAUDE.md (a vendored repo, a monorepo subtree, a test fixture) resolves
+ * its relative imports against its *own* directory, whose `.claude/` tree
+ * the detector does not inventory - absence stops being decidable there,
+ * and the same holds for subagent names, which such a subtree defines in
+ * its own `.claude/agents/`. Erring silent beats a false "dangling" on a
+ * config that works.
+ *
  * Both reference scans run on unfenced lines only (shared §10.4 fence
  * rules): a fenced example documenting the syntax never counts, the GM006
  * precedent. Project + local scopes; managed probes carry no content and
@@ -196,6 +205,12 @@ function danglingReferences({ matched, input }: RuleContext): RuleFinding[] {
   const findings: RuleFinding[] = [];
   for (const { kind, path, content } of matched) {
     if (kind === "settings" || content === undefined) {
+      continue;
+    }
+    // Root-inventoried namespace only (see the rule doc): a nested file's
+    // references resolve against its own directory, which the inventory
+    // does not cover, so absence is not decidable for it.
+    if (path.includes("/") && !path.startsWith(".claude/")) {
       continue;
     }
     for (const { line } of unfencedLines(content)) {

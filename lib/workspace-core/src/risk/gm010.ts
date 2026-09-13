@@ -75,6 +75,16 @@ export const gm010: RiskRule = {
 /** An `@AGENTS.md` / `@./AGENTS.md` import token on its own or in a line. */
 const IMPORT_RE = /(^|\s)@(\.\/)?AGENTS\.md(\s|$)/m;
 
+/**
+ * True when `content` carries the `@AGENTS.md` bridge token - the same
+ * lenient match this rule accepts as a bridge, exported so the doctor's
+ * drift input applies one definition of "bridged": a CLAUDE.md that is the
+ * #6235 shim is a pointer to AGENTS.md, not an independent copy to diff.
+ */
+export function importsAgentsMd(content: string): boolean {
+  return IMPORT_RE.test(content);
+}
+
 function bridged(claudes: readonly RiskArtifact[], agents: readonly RiskArtifact[]): boolean {
   const contents = claudes.flatMap((artifact) => (artifact.content === undefined ? [] : [artifact.content]));
   return (

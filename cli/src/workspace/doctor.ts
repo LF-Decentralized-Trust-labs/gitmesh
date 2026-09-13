@@ -18,6 +18,7 @@ import {
 import { safeStat } from "@gitmesh/workspace-adapters/detect-fs";
 import {
   computeDriftReport,
+  importsAgentsMd,
   renderDoctorJson,
   renderDoctorMarkdown,
   renderDoctorTty,
@@ -118,6 +119,19 @@ function isDriftDocument({ scope, kind, path }: DetectedArtifact): boolean {
 }
 
 /**
+ * A CLAUDE.md carrying the `@AGENTS.md` import token is the #6235 shim
+ * GM010 recommends (pivot §8.2): a pointer to AGENTS.md plus Claude-only
+ * extras, not an independent copy - so it stays out of the pairwise differ,
+ * the same reasoning that makes a symlinked CLAUDE.md zero drift (§10.4).
+ * Diffing the shim charged the score for adopting doctor's own remediation.
+ * Resolving the import and diffing the merged document is the normalizer's
+ * lane (E3) and can supersede this exclusion.
+ */
+function isAgentsMdShim(path: string, content: string): boolean {
+  return path === "CLAUDE.md" && importsAgentsMd(content);
+}
+
+/**
  * File content, or `undefined` when there is nothing to read: a presence
  * probe, or a path that vanished mid-run. A file we are not *allowed* to
  * open is a different thing entirely - every content rule reads `undefined`
@@ -161,7 +175,12 @@ export async function collectDoctorReport(repo: RepoContext): Promise<DoctorRepo
       if (abs !== undefined) {
         if (!contents.has(abs)) contents.set(abs, readText(abs, path));
         artifact.content = contents.get(abs);
-        if (artifact.content !== undefined && isDriftDocument(detected) && !documents.has(path)) {
+        if (
+          artifact.content !== undefined &&
+          isDriftDocument(detected) &&
+          !isAgentsMdShim(path, artifact.content) &&
+          !documents.has(path)
+        ) {
           documents.set(path, {
             path,
             content: artifact.content,
