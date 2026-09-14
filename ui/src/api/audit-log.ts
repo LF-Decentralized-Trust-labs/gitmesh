@@ -26,4 +26,7 @@ export const auditLogApi = {
   forIssue: (issueId: string) => api.get<ActivityEvent[]>(`/issues/${issueId}/audit-log`),
   runsForIssue: (issueId: string) => api.get<RunForIssue[]>(`/issues/${issueId}/runs`),
   issuesForRun: (runId: string) => api.get<IssueForRun[]>(`/heartbeat-runs/${runId}/issues`),
+  /** Download audit events with policyVersion / policyOutcome (#436). */
+  exportUrl: (projectId: string, format: "json" | "csv" = "json") =>
+    `/api/projects/${projectId}/audit-log/export?format=${format}`,
 };
