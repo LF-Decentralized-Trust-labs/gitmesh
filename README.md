@@ -1,16 +1,18 @@
 <div align="center">
 
 <picture>
-   <source srcset="public/light_logo.png" media="(prefers-color-scheme: dark)">
-   <img src="public/dark_logo.png" alt="GitMesh Logo" width="250">
+   <source srcset="https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/gitmesh/main/public/light_logo.png" media="(prefers-color-scheme: dark)">
+   <img src="https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/gitmesh/main/public/dark_logo.png" alt="GitMesh Logo" width="250">
 </picture>
 
 # GitMesh
 
-[![OpenSource License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
+**Audit and govern every coding agent from your repo.**
+
+[![OpenSource License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/LF-Decentralized-Trust-labs/gitmesh.svg?style=for-the-badge&logo=git)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/graphs/contributors)
 [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF-Silver%20Best%20Practices-silver.svg?style=for-the-badge&logo=opensourceinitiative)](https://www.bestpractices.dev/projects/10972)
-<img src="public/mossp.png" alt="Mintlify Open Source Program" width="180" style="border-radius: 12px;" />
+<img src="https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/gitmesh/main/public/mossp.png" alt="Mintlify Open Source Program" width="180" style="border-radius: 12px;" />
 
 [![Join Weekly Dev Call](https://img.shields.io/badge/Join_Weekly_Dev_Call-000000?style=flat&logo=zoom&logoColor=white)](https://zoom-lfx.platform.linuxfoundation.org/meeting/96608771523?password=211b9c60-b73a-4545-8913-75ef933f9365)
 
@@ -18,143 +20,97 @@
 
 ---
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/gitmesh/main/public/doctor-demo.svg" alt="gitmesh doctor auditing a repository: inventory across nine adapters, cross-tool drift, and two findings" width="900">
+</div>
+
 ## What is GitMesh?
 
-**GitMesh** is an open-source multi-agent orchestration runtime and governed MCP server for open source projects. It runs AI agent teams (Triage, PR Review, Docs, Security, Community, Onboarding, and Release) against your repository, with every connected tool (Claude Code, Copilot, Cursor, Codex, Gemini CLI, and others) governed by a single maintainer-defined Policy-as-Code layer via OPA.
+Every coding agent reads its own configuration from your repository, and no two agree on where it lives or what it may do. Instructions get copied between `AGENTS.md`, `CLAUDE.md` and `GEMINI.md` and drift apart. MCP servers are hand-copied between four files. Nobody has audited what those agents are permitted to do.
 
-The orchestration engine provides atomic task checkout, persistent agent context, heartbeat scheduling, and budget enforcement. Governance is distributed over MCP and ACP, so any compatible tool is covered. Adoption requires one YAML file and one CI step.
+**GitMesh is the agent workspace compiler.** One git-versioned source of truth - `AGENTS.md` plus `.gitmesh/` - audited, compiled and enforced across every coding agent a team uses: Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode, Devin, Cline, Roo, and the long tail.
 
-### Core Capabilities
+It is a single CLI (and, later, a GitHub Action). No server, no login, no database, no daemon, no new file format to learn. The entry command writes nothing.
 
-- **Multi-Agent Orchestration**: Pre-defined OSS agent roles (Triage, PR Review, Docs, Security, Community, Onboarding, Release) with configurable heartbeat schedules, token budgets, and permission scopes
-- **Policy-as-Code via OPA**: Maintainers define governance rules in simple YAML that auto-compiles to Rego. No agent merges a PR, modifies CI/CD files, or publishes a security advisory without human approval
-- **GitHub/GitLab Native Sync**: Bidirectional issue and PR synchronization via webhooks. Agent actions (label, comment, review) push directly to the forge
-- **MCP Server**: Any MCP-compatible IDE (VS Code, Cursor, JetBrains) connects once and every AI tool is automatically governed by the project's policy
-- **ACP Orchestrator**: JSON-RPC 2.0 agent-to-agent coordination. Multiple agents work simultaneously without conflicts, double work, or runaway costs
-- **Immutable Audit Log**: Every action logged with actor, policy version, and outcome (allowed/blocked). Filterable and exportable as JSON/CSV
-- **Project Templates**: Pre-configured agent teams for CLI tools, JS libraries, DevOps projects, CNCF sandboxes, and solo maintainers
+## Quickstart
 
-### Three-View Dashboard
+Node.js 20 or newer, inside any git repository:
 
-| View | Purpose |
-|------|---------|
-| **Active Agents** | Agent status, budget consumption, current work. Pause, terminate, or reconfigure |
-| **Pending Approvals** | Mobile-first approval queue for merges, CVE disclosures, and issue closures |
-| **Audit Log** | Chronological action history with policy outcome filtering |
-
----
-
-## Installation
-
-### Prerequisites
-
-- **Node.js 20+**
-- **pnpm 9+** (the setup script can install it via Corepack if missing)
-- **Docker**: optional, only needed if you run PostgreSQL in Docker instead of using the embedded database
-
-### One-command setup (macOS / Linux / Windows)
-
-From the repo root:
-
-| Platform | Command |
-| -------- | ------- |
-| macOS / Linux | `./setup.sh` |
-| Windows (PowerShell) | `./setup.ps1` |
-| Windows (cmd) | `setup.cmd` |
-
-These wrappers run `scripts/setup.mjs`, which checks Node, ensures pnpm, copies `.env.example` → `.env` when missing, installs dependencies, and builds the workspace.
-
-Useful flags (all platforms):
-
-```bash
-node scripts/setup.mjs --start          # install + build + pnpm dev
-node scripts/setup.mjs --with-docker-db # also start Docker Compose Postgres on localhost:5433
+```console
+$ npx gitmesh-cli@next doctor
 ```
 
-### Manual setup
+The npm package is **`gitmesh-cli`** and the installed binary is **`gitmesh`**; the unscoped npm name `gitmesh` belongs to an unrelated project ([ADR-005](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/doc/adr/ADR-005-npm-package-naming.md)).
 
-```bash
-git clone https://github.com/LF-Decentralized-Trust-labs/gitmesh.git
-cd gitmesh
-pnpm install --no-frozen-lockfile   # first clone; CI uses frozen lockfile
-pnpm dev                            # API + UI, see below
-```
+`gitmesh doctor` reads the agent configuration committed in the repository across eleven registered adapters in one pass - instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings - diffs the instruction copies different agents read, and reports risk findings with stable ids. It **never writes a file, never opens a network connection and never runs a subprocess**; the test suite holds every release to that.
 
-### Database (embedded vs external)
+| Flag | Effect |
+|---|---|
+| `--fail-on <severity>` | severity that makes the run exit `1`: `error`, `warning` (default), `info`, or `none` to never fail |
+| `--json` | versioned machine-readable report |
+| `--md` | Markdown report for a PR comment or job summary |
+| `--user` | also inventory user-scope files (`~/.claude/CLAUDE.md`, `~/.codex/config.toml`, ...) |
 
-GitMesh uses **PostgreSQL** (via Drizzle). For local development you have two common paths:
+Exit codes are the CI contract: `0` clean, `1` findings at or above the threshold, `2` the run itself failed. Full walkthrough: [docs/doctor/quickstart.md](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/quickstart.md).
 
-**1. Embedded PostgreSQL (default, no extra install)**
+## What doctor reports
 
-- **Do not set** `DATABASE_URL` (leave it unset, or keep it commented out in `.env`).
-- The dev server starts an **embedded** PostgreSQL instance and stores data under  
-  `~/.gitmesh-agents/instances/default/db/` (overridable with `GITMESH_HOME` / `GITMESH_INSTANCE_ID`).
-- This works for **most** developers on a normal machine with disk space and a writable home directory.
-- It is **not universal**: unusual environments (strict permissions, missing native binaries for your OS/arch, incomplete installs) may fail. In those cases use path **2**.
+| Id | Severity | Finding |
+|---|---|---|
+| [GM001](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm001.md) | error | Plaintext secret or token in an MCP config, settings, hooks or config file |
+| [GM002](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm002.md) | warning | No deny/ask protection for `.env` files in an agent that can express one |
+| [GM003](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm003.md) | error | Bypass-permissions, auto-approve or danger-full-access mode in committed config |
+| [GM004](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm004.md) | warning | Skill with executable content and no recognized pin |
+| [GM005](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm005.md) | warning | Same MCP server defined with different urls or credentials across tools |
+| [GM006](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm006.md) | warning | Generated-looking file hand-edited: broken `gitmesh:managed` markers |
+| [GM007](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm007.md) | warning | Instruction file exceeds the effective-context threshold |
+| [GM008](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm008.md) | info | Orphan config for an agent unseen in repository history |
+| [GM009](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm009.md) | warning | Inconsistent local-vs-shared hygiene: `.gitignore` vs committed status |
+| [GM010](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm010.md) | warning | `CLAUDE.md` without an `AGENTS.md` bridge, or vice versa |
+| [GM011](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/gm011.md) | warning | Semantic contradictions inside one tool's own config |
 
-**2. External PostgreSQL (`DATABASE_URL`)**
+Secret values are always redacted: a finding names the file, line and key, never the value. Which files doctor reads for each agent is listed in the [coverage matrix](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/coverage-matrix.md).
 
-- Set `DATABASE_URL` to a real server (local Docker, cloud, etc.).
-- Apply migrations when needed:  
-  `DATABASE_URL='postgres://...' pnpm db:migrate`  
-  (same connection string the app uses).
-- If you copy `.env.example` to `.env` and **uncomment** a URL such as  
-  `postgres://gitmesh:gitmesh@localhost:5433/gitmesh`, you must **run Postgres on that host and port** first (for example `pnpm db:up`, or `node scripts/setup.mjs --with-docker-db`). Otherwise the app will fail to connect (for example `ECONNREFUSED` on port 5433).
+## Status
 
-Authoritative detail: [doc/SETUP.md](doc/SETUP.md), [doc/DEVELOPING.md](doc/DEVELOPING.md), [doc/DATABASE.md](doc/DATABASE.md).
+GitMesh ships in layers. Each one is useful alone, and only what is marked available exists today.
 
-### Start the platform
+| Command | What it does | Status |
+|---|---|---|
+| `gitmesh doctor` | audit, cross-tool drift, risk findings - read-only | **available** (`gitmesh-cli@next`) |
+| `gitmesh init` / `migrate` | import existing configs (incl. Ruler, rulesync, `.agents/agents.json`) into one source | planned |
+| `gitmesh apply` | compile that source into each agent's native files | planned |
+| `gitmesh check` | fail CI when generated files drift from source | planned |
+| `gitmesh policy` | compile one policy into each agent's own permission model, with a generated coverage report | planned |
+| `gitmesh receipt` | signed, offline-verifiable record of workspace state | later |
 
-```bash
-pnpm dev
-```
+The plan behind these layers, with its evidence and its kill criteria, is [`doc/pivot/pivot.md`](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/doc/pivot/pivot.md).
 
-In development, the **API and the maintainer UI share one origin**:
+## What GitMesh does not do
 
-- **http://localhost:3100**: REST API (`/api/...`) and UI
+- **It does not enforce anything itself.** Doctor reports; each agent's own permission model enforces. GitMesh never claims uniform enforcement across agents, and never calls an instruction a guardrail.
+- **It does not scan content for prompt injection, tool poisoning or malicious skills.** That lane belongs to [Snyk Agent Scan and Cisco's scanner](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/scanners.md); GitMesh checks structure and hygiene.
+- **It does not fight the manager you already use.** Ruler, rulesync, `.agents/agents.json`, symlink managers, `skills-lock.json` and mcp-lock records are detected, labeled `managed by X`, and left alone.
+- **It is not the only auditor.** Claude Code's `/doctor`, cc-health-check, agents-lint and AgentLint each audit one tool or one file class well; GitMesh audits the whole multi-vendor workspace. Every check they publish is mapped in [docs/comparisons.md](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/comparisons.md).
 
-For a single run without file watching:
+## Documentation
 
-```bash
-pnpm dev:once
-```
+- [Quickstart](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/quickstart.md) - run doctor and read its report
+- [Findings GM001-GM011](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/findings/overview.md) - what each rule checks and how to clear it
+- [Coverage matrix](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/coverage-matrix.md) - what doctor inventories per agent today
+- [Scanners](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/doctor/scanners.md) - where doctor stops and content-security scanners begin
+- [Comparisons](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/comparisons.md) - gitmesh doctor and its neighbors, check by check
 
-Optional: `pnpm gitmesh-agents run`: onboarding, `doctor --repair`, and start when checks pass.
+## Legacy: the GitMesh Agents runtime
 
-### Docker images
-
-- **`Dockerfile`**: production-style image; persistent state under `GITMESH_HOME` (volume `/gitmesh-agents`), embedded PostgreSQL by default in typical deployments. See **`doc/DOCKER.md`**.
-- **`Dockerfile.e2e`**: installs/runs `gitmesh-agents` from npm for E2E-style bootstrap inside a container.
-
-### Configuration
-
-See **`.env.example`** for a full template. Highlights:
-
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | When set, uses that PostgreSQL server; when unset, embedded PostgreSQL is used (see [Database (embedded vs external)](#database-embedded-vs-external) above). |
-| `PORT` | HTTP port (often `3100`). |
-
-Deployment mode, auth, and GitHub integration are documented in **`.env.example`** and **`doc/DEVELOPING.md`**.
-
----
-
-## Adoption Path
-
-| Stage | What Happens | Time |
-|-------|-------------|------|
-| **1. Zero-config entry** | Add `gitmesh/agent-gate` to CI; contributions are policy-checked immediately | 5 min |
-| **2. First agent** | Add `.gitmesh/agents.yaml`, enable Triage Agent, approve onboarding | 15 min |
-| **3. Connect tools** | Each developer adds GitMesh MCP server URL to their IDE config once | 2 min/dev |
-| **4. Expand the team** | Enable PR Review, Docs, Security agents as the project grows | On demand |
-| **5. Publish a template** | Share your agent configuration for other projects to adopt | Optional |
-
----
+The multi-agent orchestration runtime, governed MCP server, PostgreSQL control plane and dashboard that GitMesh shipped before the pivot are still in this repository and still run, in maintenance mode, under `gitmesh legacy`. Their documentation moved to [docs/legacy/](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/legacy/overview.md); the `gitmesh-agents` package name stays as the legacy alias. Nothing in the new CLI path needs a server or a database.
 
 ## Contributing
 
 [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=lf-decentralized-trust-labs&repos=https://github.com/LF-Decentralized-Trust-labs/gitmesh)](https://insights.linuxfoundation.org/project/lf-decentralized-trust-labs/repository/lf-decentralized-trust-labs-gitmesh)
 [![Governance Sync](https://img.shields.io/github/actions/workflow/status/LF-Decentralized-Trust-labs/gitmesh/gov-sync.yml?label=Governance%20Sync)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/actions/workflows/gov-sync.yml)
+
+Adapters are the on-ramp: one interface, golden fixtures, one doc page per agent.
 
 1. Fork the repository
 2. Create a branch: `git checkout -b type/branch-name`
@@ -162,7 +118,7 @@ Deployment mode, auth, and GitHub integration are documented in **`.env.example`
 4. Push the branch: `git push origin type/branch-name`
 5. Open a pull request
 
-See the [Contributing Guide](CONTRIBUTING.md) for the full workflow.
+See the [Contributing Guide](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/CONTRIBUTING.md) for the full workflow and [AGENTS.md](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/AGENTS.md) for how coding agents should work in this repository.
 
 ---
 
@@ -209,7 +165,7 @@ See the [Contributing Guide](CONTRIBUTING.md) for the full workflow.
 
 ## License
 
-Licensed under the **Apache License 2.0**. See the [`LICENSE`](LICENSE) file in this repository for the full text.
+Licensed under the **Apache License 2.0**. See the [`LICENSE`](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/LICENSE) file in this repository for the full text.
 
 ---
 

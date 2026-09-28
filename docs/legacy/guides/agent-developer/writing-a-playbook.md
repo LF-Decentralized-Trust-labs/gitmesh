@@ -57,4 +57,4 @@ This keeps the base prompt small - full playbook content is only loaded on deman
 
 ## Playbook Injection
 
-Adapters are responsible for making playbooks discoverable to their agent runtime. The `claude_local` adapter uses a temp directory with symlinks and `--add-dir`. The `codex_local` adapter uses the global playbooks directory. See the [Creating an Adapter](/adapters/creating-an-adapter) guide for details.
+Adapters are responsible for making playbooks discoverable to their agent runtime. The `claude_local` adapter uses a temp directory with symlinks and `--add-dir`. The `codex_local` adapter uses the global playbooks directory. See the [Creating an Adapter](/legacy/adapters/creating-an-adapter) guide for details.
