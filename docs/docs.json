@@ -29,7 +29,8 @@
             "pages": [
               "doctor/quickstart",
               "doctor/coverage-matrix",
-              "doctor/scanners"
+              "doctor/scanners",
+              "comparisons"
             ]
           },
           {
