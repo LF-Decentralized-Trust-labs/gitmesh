@@ -60,7 +60,7 @@ Allow additional private hostnames:
 pnpm gitmesh-agents allowed-hostname dotta-macbook-pro
 ```
 
-For full setup and troubleshooting, see [Tailscale Private Access](/deploy/tailscale-private-access).
+For full setup and troubleshooting, see [Tailscale Private Access](/legacy/deploy/tailscale-private-access).
 
 ## Health Checks
 

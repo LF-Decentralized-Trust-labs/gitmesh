@@ -45,6 +45,6 @@ Once GitMesh Agents is running:
 5. Set budgets and assign initial tasks
 6. Hit go - agents start their heartbeats and the project runs
 
-<Card title="Core Concepts" href="/start/core-concepts">
+<Card title="Core Concepts" href="/legacy/start/core-concepts">
   Learn the key concepts behind GitMesh Agents
 </Card>

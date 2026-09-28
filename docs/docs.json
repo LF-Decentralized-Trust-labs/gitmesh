@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "GitMesh Agents",
-  "description": "The open-source control plane for AI agents in software projects",
+  "name": "GitMesh",
+  "description": "Audit and govern every coding agent from your repo: one source of truth for instructions, tools, and guardrails, compiled to each agent's native config",
   "theme": "mint",
   "colors": {
     "primary": "#2563EB",
@@ -52,125 +52,101 @@
         ]
       },
       {
-        "tab": "Get Started",
+        "tab": "Legacy runtime",
         "groups": [
           {
             "group": "Introduction",
             "pages": [
-              "start/what-is-gitmesh-agents",
-              "start/quickstart",
-              "start/core-concepts",
-              "start/architecture",
-              "agents-runtime"
+              "legacy/overview",
+              "legacy/start/what-is-gitmesh-agents",
+              "legacy/start/quickstart",
+              "legacy/start/core-concepts",
+              "legacy/start/architecture",
+              "legacy/agents-runtime"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Guides",
-        "groups": [
+          },
           {
             "group": "Project Operator",
             "pages": [
-              "guides/board-operator/dashboard",
-              "guides/board-operator/creating-a-project",
-              "guides/board-operator/managing-agents",
-              "guides/board-operator/org-structure",
-              "guides/board-operator/managing-tasks",
-              "guides/board-operator/approvals",
-              "guides/board-operator/costs-and-budgets",
-              "guides/board-operator/audit-log"
+              "legacy/guides/board-operator/dashboard",
+              "legacy/guides/board-operator/creating-a-project",
+              "legacy/guides/board-operator/managing-agents",
+              "legacy/guides/board-operator/org-structure",
+              "legacy/guides/board-operator/managing-tasks",
+              "legacy/guides/board-operator/approvals",
+              "legacy/guides/board-operator/costs-and-budgets",
+              "legacy/guides/board-operator/audit-log"
             ]
           },
           {
             "group": "Agent Developer",
             "pages": [
-              "guides/agent-developer/how-agents-work",
-              "guides/agent-developer/heartbeat-protocol",
-              "guides/agent-developer/writing-a-playbook",
-              "guides/agent-developer/task-workflow",
-              "guides/agent-developer/comments-and-communication",
-              "guides/agent-developer/handling-approvals",
-              "guides/agent-developer/cost-reporting"
+              "legacy/guides/agent-developer/how-agents-work",
+              "legacy/guides/agent-developer/heartbeat-protocol",
+              "legacy/guides/agent-developer/writing-a-playbook",
+              "legacy/guides/agent-developer/task-workflow",
+              "legacy/guides/agent-developer/comments-and-communication",
+              "legacy/guides/agent-developer/handling-approvals",
+              "legacy/guides/agent-developer/cost-reporting"
             ]
           },
           {
             "group": "Configuration",
             "pages": [
-              "guides/agents-yaml",
-              "guides/writing-policies",
-              "guides/connecting-to-github",
-              "guides/tekton-setup"
+              "legacy/guides/agents-yaml",
+              "legacy/guides/writing-policies",
+              "legacy/guides/connecting-to-github",
+              "legacy/guides/tekton-setup"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Deploy",
-        "groups": [
+          },
           {
             "group": "Deployment",
             "pages": [
-              "deploy/overview",
-              "deploy/local-development",
-              "deploy/tailscale-private-access",
-              "deploy/docker",
-              "deploy/deployment-modes",
-              "deploy/database",
-              "deploy/secrets",
-              "deploy/storage",
-              "deploy/environment-variables"
+              "legacy/deploy/overview",
+              "legacy/deploy/local-development",
+              "legacy/deploy/tailscale-private-access",
+              "legacy/deploy/docker",
+              "legacy/deploy/deployment-modes",
+              "legacy/deploy/database",
+              "legacy/deploy/secrets",
+              "legacy/deploy/storage",
+              "legacy/deploy/environment-variables"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Adapters",
-        "groups": [
+          },
           {
             "group": "Agent Adapters",
             "pages": [
-              "adapters/overview",
-              "adapters/claude-local",
-              "adapters/codex-local",
-              "adapters/process",
-              "adapters/http",
-              "adapters/creating-an-adapter"
+              "legacy/adapters/overview",
+              "legacy/adapters/claude-local",
+              "legacy/adapters/codex-local",
+              "legacy/adapters/process",
+              "legacy/adapters/http",
+              "legacy/adapters/creating-an-adapter"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "groups": [
+          },
           {
             "group": "REST API",
             "pages": [
-              "api/overview",
-              "api/authentication",
-              "api/projects",
-              "api/agents",
-              "api/issues",
-              "api/approvals",
-              "api/milestones-and-subprojects",
-              "api/costs",
-              "api/secrets",
-              "api/audit-log",
-              "api/dashboard",
-              "api/forge-webhooks"
+              "legacy/api/overview",
+              "legacy/api/authentication",
+              "legacy/api/projects",
+              "legacy/api/agents",
+              "legacy/api/issues",
+              "legacy/api/approvals",
+              "legacy/api/milestones-and-subprojects",
+              "legacy/api/costs",
+              "legacy/api/secrets",
+              "legacy/api/audit-log",
+              "legacy/api/dashboard",
+              "legacy/api/forge-webhooks"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "CLI",
-        "groups": [
+          },
           {
             "group": "CLI Reference",
             "pages": [
-              "cli/overview",
-              "cli/setup-commands",
-              "cli/control-plane-commands"
+              "legacy/cli/overview",
+              "legacy/cli/setup-commands",
+              "legacy/cli/control-plane-commands"
             ]
           }
         ]
