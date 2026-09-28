@@ -18,12 +18,12 @@ When a heartbeat fires, GitMesh Agents:
 
 | Adapter | Type Key | Description |
 |---------|----------|-------------|
-| [Claude Local](/adapters/claude-local) | `claude_local` | Runs Claude Code CLI locally |
-| [Codex Local](/adapters/codex-local) | `codex_local` | Runs OpenAI Codex CLI locally |
+| [Claude Local](/legacy/adapters/claude-local) | `claude_local` | Runs Claude Code CLI locally |
+| [Codex Local](/legacy/adapters/codex-local) | `codex_local` | Runs OpenAI Codex CLI locally |
 | OpenCode Local | `opencode_local` | Runs OpenCode CLI locally (multi-provider `provider/model`) |
 | Gateway | `gateway` | Sends wake payloads to an Gateway webhook |
-| [Process](/adapters/process) | `process` | Executes arbitrary shell commands |
-| [HTTP](/adapters/http) | `http` | Sends webhooks to external agents |
+| [Process](/legacy/adapters/process) | `process` | Executes arbitrary shell commands |
+| [HTTP](/legacy/adapters/http) | `http` | Sends webhooks to external agents |
 
 ## Adapter Architecture
 
@@ -57,4 +57,4 @@ Three registries consume these modules:
 - **Need a coding agent?** Use `claude_local`, `codex_local`, or `opencode_local`
 - **Need to run a script or command?** Use `process`
 - **Need to call an external service?** Use `http`
-- **Need something custom?** [Create your own adapter](/adapters/creating-an-adapter)
+- **Need something custom?** [Create your own adapter](/legacy/adapters/creating-an-adapter)

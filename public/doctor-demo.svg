@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1131" height="774" viewBox="0 0 1131 774" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#e6edf3" role="img" aria-label="Terminal recording of npx gitmesh-cli@next doctor auditing a repository">
+  <rect width="1131" height="774" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <circle cx="24" cy="18" r="5" fill="#ff5f57"/>
+  <circle cx="42" cy="18" r="5" fill="#febc2e"/>
+  <circle cx="60" cy="18" r="5" fill="#28c840"/>
+  <text x="565.5" y="22" text-anchor="middle" fill="#8b949e" font-size="11">gitmesh doctor</text>
+  <text x="22" y="53"><tspan fill="#8b949e" xml:space="preserve">$</tspan><tspan  xml:space="preserve"> npx gitmesh-cli@next doctor</tspan></text>
+  <text x="22" y="72"><tspan font-weight="bold" xml:space="preserve">gitmesh doctor</tspan></text>
+  <text x="22" y="110"><tspan font-weight="bold" xml:space="preserve">Inventory (12 artifacts, 9 adapters)</tspan></text>
+  <text x="22" y="129"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">agentsmd</tspan></text>
+  <text x="22" y="148"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="167"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">claude-code</tspan></text>
+  <text x="22" y="186"><tspan  xml:space="preserve">    .claude/settings.json  </tspan><tspan fill="#8b949e" xml:space="preserve">settings    </tspan></text>
+  <text x="22" y="205"><tspan  xml:space="preserve">    .mcp.json              </tspan><tspan fill="#8b949e" xml:space="preserve">mcp-config  </tspan></text>
+  <text x="22" y="224"><tspan  xml:space="preserve">    CLAUDE.md              </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="243"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">cline</tspan></text>
+  <text x="22" y="262"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="281"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">codex</tspan></text>
+  <text x="22" y="300"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="319"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">copilot</tspan></text>
+  <text x="22" y="338"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="357"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">cursor</tspan></text>
+  <text x="22" y="376"><tspan  xml:space="preserve">    .cursor/rules/style.mdc  </tspan><tspan fill="#8b949e" xml:space="preserve">rule        </tspan></text>
+  <text x="22" y="395"><tspan  xml:space="preserve">    AGENTS.md                </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="414"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">devin</tspan></text>
+  <text x="22" y="433"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="452"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">opencode</tspan></text>
+  <text x="22" y="471"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="490"><tspan  xml:space="preserve">  </tspan><tspan fill="#79c0ff" xml:space="preserve">roo</tspan></text>
+  <text x="22" y="509"><tspan  xml:space="preserve">    AGENTS.md  </tspan><tspan fill="#8b949e" xml:space="preserve">instructions</tspan></text>
+  <text x="22" y="547"><tspan font-weight="bold" xml:space="preserve">Drift (1 instruction document, 0 divergent pairs)</tspan></text>
+  <text x="22" y="566"><tspan fill="#8b949e" xml:space="preserve">  fewer than two instruction documents, nothing to compare</tspan></text>
+  <text x="22" y="604"><tspan font-weight="bold" xml:space="preserve">Findings (1 error, 1 warning, 0 info)</tspan></text>
+  <text x="22" y="623"><tspan  xml:space="preserve">  </tspan><tspan fill="#ff7b72" xml:space="preserve">error</tspan></text>
+  <text x="22" y="642"><tspan  xml:space="preserve">    </tspan><tspan font-weight="bold" xml:space="preserve">GM001</tspan><tspan  xml:space="preserve">  .mcp.json  Plaintext GitHub token in "GITHUB_TOKEN" (line 6); move it out of the file and reference it from the environment.</tspan></text>
+  <text x="22" y="661"><tspan  xml:space="preserve">  </tspan><tspan fill="#e3b341" xml:space="preserve">warning</tspan></text>
+  <text x="22" y="680"><tspan  xml:space="preserve">    </tspan><tspan font-weight="bold" xml:space="preserve">GM002</tspan><tspan  xml:space="preserve">  (cursor)  No beforeReadFile hook guards secret files; add one to .cursor/hooks.json that blocks .env reads.</tspan></text>
+  <text x="22" y="718"><tspan font-weight="bold" xml:space="preserve">Score</tspan><tspan  xml:space="preserve"> </tspan><tspan fill="#e3b341" xml:space="preserve">75/100</tspan></text>
+  <text x="22" y="756"><tspan fill="#8b949e" xml:space="preserve"># exit code 1: findings at or above --fail-on</tspan></text>
+</svg>
