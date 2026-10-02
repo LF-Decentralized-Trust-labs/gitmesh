@@ -178,3 +178,75 @@ export function scanForSecrets(content: string): SecretHit[] {
   });
   return hits;
 }
+
+/**
+ * A PEM private-key block, `BEGIN` line through its `END` line (or the end
+ * of the text when the block is cut off). The token table flags only the
+ * `BEGIN` line, which is all a line-level finding needs; text that quotes
+ * the block needs the whole span gone.
+ */
+const PEM_BLOCK_RE = /-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----[\s\S]*?(?:-----END (?:[A-Z ]+ )?PRIVATE KEY-----|$)/g;
+
+/**
+ * A credential-named word, then `:` or `=`, then a value - header lines
+ * (`Authorization: Bearer …`, `X-Api-Key: …`), prose (`password: …`) and
+ * flags (`--token=…`). An auth scheme stays with the name so the line still
+ * reads; the value runs to the next space, quote or bracket.
+ */
+const CUE_VALUE_RE =
+  /\b([\w-]*(?:token|secret|passw(?:or)?d|api[_-]?key|credential|private[_-]?key|authorization|cookie)["']?\s*[:=]\s*(?:(?:Bearer|Basic|Token)\s+)?)([^\s"'`,;()[\]{}<>]+)/gi;
+
+/** A value behind an auth scheme with no header name (`Bearer 9f8e…`). */
+const SCHEME_VALUE_RE = /\b((?:Bearer|Basic|Token)\s+)([A-Za-z0-9._~+/=-]{8,})/g;
+
+/** A curl-style `-u user:password` / `--user=user:password` argument. */
+const BASIC_AUTH = String.raw`((?:^|\s)(?:-u|--user)[\s=]+[^\s:"']+:)([^\s"']+)`;
+const BASIC_AUTH_RE = new RegExp(BASIC_AUTH, "g");
+
+/** A value worth masking where a credential is named: not a stand-in, and not a plain short word. */
+function secretish(value: string): boolean {
+  return value.length >= 6 && !PLACEHOLDER_RE.test(value) && (/\d/.test(value) || value.length >= 12);
+}
+
+/**
+ * True when `text` may carry a credential: a GM001 hit, a credential-named
+ * word, a `user:password` argument, or a random-looking word or path
+ * segment. Meant for short config strings a finding would otherwise quote
+ * verbatim (a permission entry), so it is deliberately broad: a false
+ * positive costs a less specific message, a miss leaks a secret (hard
+ * rule 5).
+ */
+export function mayHoldSecret(text: string): boolean {
+  return (
+    scanForSecrets(text).length > 0 ||
+    KEY_RE.test(text) ||
+    /cookie/i.test(text) ||
+    new RegExp(BASIC_AUTH).test(text) ||
+    text.split(/[\s"'`(),;:@/=]+/).some(looksRandom)
+  );
+}
+
+/**
+ * `text` with credentials masked, for quoting free text (instruction-file
+ * blocks in the drift report): private-key blocks collapse to one marker,
+ * lines GM001 flags are replaced whole (`[redacted <reason>]`), and values
+ * after a credential name, an auth scheme or a `-u user:` argument become
+ * `[redacted]`. Narrower than `mayHoldSecret` on purpose: prose is full of
+ * long identifiers (hashes, UUIDs) that are not secrets, so only positions
+ * that name a credential are masked.
+ */
+export function redactSecrets(text: string): string {
+  const lines = text.replace(PEM_BLOCK_RE, "[redacted private key]").split("\n");
+  for (const { line, reason } of scanForSecrets(lines.join("\n"))) {
+    lines[line - 1] = `[redacted ${reason}]`;
+  }
+  const mask = (match: string, lead: string, value: string): string =>
+    secretish(value) ? `${lead}[redacted]` : match;
+  return lines
+    .join("\n")
+    .replace(CUE_VALUE_RE, mask)
+    .replace(SCHEME_VALUE_RE, (match, lead: string, value: string) =>
+      /\d/.test(value) ? `${lead}[redacted]` : match,
+    )
+    .replace(BASIC_AUTH_RE, (_match, lead: string) => `${lead}[redacted]`);
+}

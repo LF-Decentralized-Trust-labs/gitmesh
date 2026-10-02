@@ -8,7 +8,7 @@
   {
     "ruleId": "GM003",
     "severity": "error",
-    "message": "approval_policy = \"never\" in .codex/config.toml auto-approves every Codex action; use \"on-request\" or \"untrusted\".",
+    "message": "approval_policy = \"never\" in .codex/config.toml auto-approves every Codex action; use \"on-request\".",
     "path": ".codex/config.toml"
   },
   {
