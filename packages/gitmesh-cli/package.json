@@ -1,6 +1,6 @@
 {
   "name": "gitmesh-cli",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "GitMesh - audit and govern every coding agent from your repo. One source of truth for instructions, tools, and guardrails: doctored, compiled to each agent's native config, drift-checked in CI.",
   "type": "module",
   "bin": {
