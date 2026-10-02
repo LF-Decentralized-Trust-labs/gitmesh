@@ -1,6 +1,6 @@
 import { isRecord, parseJsonc } from "../jsonc.js";
 import { unfencedLines } from "../normalizer/grammar.js";
-import { scanForSecrets } from "./gm001.js";
+import { mayHoldSecret } from "./gm001.js";
 import type { RiskArtifact, RuleContext, RuleFinding, RiskRule } from "./risk.js";
 
 /**
@@ -139,9 +139,14 @@ const DESTRUCTIVE_RES: readonly RegExp[] = [
   /^curl\b.*\|/i,
 ];
 
-/** A quoted entry for a finding message, redacted on any GM001 secret hit. */
+/**
+ * A quoted entry for a finding message, masked whole when it may carry a
+ * credential (hard rule 5). GM001's scanner alone is not enough here: it
+ * knows vendor token shapes and quoted pairs, and an allow entry like
+ * `Bash(curl -H "Authorization: Bearer …" …)` is neither.
+ */
 function displayEntry(entry: string): string {
-  if (scanForSecrets(entry).length === 0) {
+  if (!mayHoldSecret(entry)) {
     return entry;
   }
   const tool = /^([A-Za-z]\w*)\(/.exec(entry)?.[1];

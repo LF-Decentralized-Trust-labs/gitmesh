@@ -130,6 +130,31 @@ describe("doctor renderers - guarantees", () => {
     }
   });
 
+  it("redacts a whole private-key block and a named password in drift block text in every mode", () => {
+    const keyBody = "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAAB";
+    const password = "Xk9fP2mQ7vR4tL8wZ3";
+    const report: DoctorReport = {
+      ...EMPTY,
+      drift: computeDriftReport([
+        {
+          path: "AGENTS.md",
+          content:
+            `Staging DB password: ${password}\n\n` +
+            "```pem\n-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+            `${keyBody}\n-----END OPENSSH PRIVATE KEY-----\n` +
+            "```\n",
+        },
+        { path: "GEMINI.md", content: "Ship.\n" },
+      ]),
+    };
+    for (const render of Object.values(RENDERERS)) {
+      expect(render(report)).not.toContain(keyBody);
+      expect(render(report)).not.toContain("END OPENSSH PRIVATE KEY");
+      expect(render(report)).not.toContain(password);
+    }
+    expect(RENDERERS.json(report)).toContain("[redacted private key]");
+  });
+
   it("colors only decorate: plain output is the colored output without escapes", () => {
     const ESC = String.fromCharCode(27);
     const colored = renderDoctorTty(REPORT, { color: true });

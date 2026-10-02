@@ -99,7 +99,9 @@ const CODEX_MODES: readonly { pattern: RegExp; message: (path: string) => string
   {
     pattern: /^approval_policy\s*=\s*(?:"never"|'never')\s*(?:#.*)?$/,
     message: (path) =>
-      `approval_policy = "never" in ${path} auto-approves every Codex action; use "on-request" or "untrusted".`,
+      // Not "untrusted": Codex retired it (openai/codex 942af84, 2026-08-19)
+      // and now refuses to load a config that sets it.
+      `approval_policy = "never" in ${path} auto-approves every Codex action; use "on-request".`,
   },
 ];
 

@@ -17,7 +17,7 @@
  */
 
 import type { DriftBlockRef, DriftReport, PairDrift } from "../drift/index.js";
-import { scanForSecrets } from "../risk/gm001.js";
+import { redactSecrets } from "../risk/gm001.js";
 import type { RiskArtifact, RiskFinding, RiskSeverity } from "../risk/index.js";
 
 /** An inventoried artifact plus its third-party manager, when one owns it. */
@@ -118,13 +118,14 @@ export function blockPreview(text: string): string {
   return `${firstLine.slice(0, 60)}${cut ? "..." : ""}`;
 }
 
-/** A block safe to print: lines GM001 flags are replaced; the hash still identifies it. */
+/**
+ * A block safe to print: GM001-flagged lines replaced, private-key blocks and
+ * values behind a credential name masked (`redactSecrets`); the hash still
+ * identifies the original block.
+ */
 export function redactBlock(block: DriftBlockRef): DriftBlockRef {
-  const hits = scanForSecrets(block.text);
-  if (hits.length === 0) return block;
-  const lines = block.text.split("\n");
-  for (const { line, reason } of hits) lines[line - 1] = `[redacted ${reason}]`;
-  return { kind: block.kind, text: lines.join("\n"), hash: block.hash };
+  const text = redactSecrets(block.text);
+  return text === block.text ? block : { kind: block.kind, text, hash: block.hash };
 }
 
 export function plural(count: number, noun: string): string {
