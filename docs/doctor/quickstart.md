@@ -1,22 +1,22 @@
 ---
 title: "Quickstart: gitmesh doctor"
 sidebarTitle: Quickstart
-description: "Audit every coding agent's configuration in your repository in 90 seconds - Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode and more - with one read-only command."
+description: "Audit every coding agent's configuration in your repository with one read-only command: Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode and more."
 ---
 
-`gitmesh doctor` reads the agent configuration committed in a repository (instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings) across eleven registered adapters (ten agent and format families plus the third-party-manager detector) in one pass, diffs the instruction copies different agents read, and reports risk findings with stable ids (GM001-GM011). It never writes a file, never opens a network connection, and never runs a subprocess.
+`gitmesh doctor` reads the agent configuration in a repository (instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings) for every agent in the [coverage matrix](/doctor/coverage-matrix) in one pass, diffs the instruction copies different agents read, and reports risk findings with stable ids (GM001-GM011). It never writes a file, never opens a network connection, and never runs a subprocess.
 
 ## 1. Run it (10 seconds)
 
 From any directory inside a git repository:
 
-```console
-$ npx gitmesh-cli@next doctor
+```bash
+npx gitmesh-cli@next doctor
 ```
 
 Node.js 20 or newer is the only prerequisite. The npm package is `gitmesh-cli` and the installed binary is `gitmesh`; the unscoped npm name `gitmesh` belongs to an unrelated project, so `npx gitmesh` runs something else.
 
-Pass a path to audit another checkout: `npx gitmesh-cli@next doctor ../other-repo`. Doctor always scans the enclosing git root of the directory it is given.
+Pass a path to audit another checkout: `npx gitmesh-cli@next doctor ../other-repo`. Doctor scans the enclosing git root of the directory it is given, or the directory itself when it is not inside a git repository.
 
 ## 2. Read the report (60 seconds)
 
@@ -60,14 +60,14 @@ Findings (1 error, 1 warning, 0 info)
 Score 75/100
 ```
 
-- **Inventory** lists every artifact each adapter would read, grouped by adapter. One file can appear under several adapters: eight adapters claim a root `AGENTS.md`. Artifacts owned by a third-party manager (Ruler, rulesync, symlink managers, skills-lock, mcp-lock) are labeled `managed by X` and are never a finding.
-- **Drift** compares the one instruction document each agent reads at the repository root (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, `.github/copilot-instructions.md`, ...) block by block after normalization. A symlinked copy, or a `CLAUDE.md` that imports `@AGENTS.md`, is one source rather than a divergent pair. Here the shim is recognized, so there is nothing to compare.
-- **Findings** are risk rules with stable ids; each id has its own page under [findings](/findings/overview). Secret values are always redacted: a finding names the file, line and key, never the value.
-- **Score** starts at 100 and subtracts 20 per error, 5 per warning and 5 per divergent instruction pair. Informational findings cost nothing.
+- **Inventory** lists every artifact each adapter would read, grouped by adapter. One file can appear under several adapters: here eight adapters list the root `AGENTS.md`. Artifacts owned by a third-party manager (Ruler, rulesync, agents-json, the agentsync family, symlink managers, skills-lock, mcp-lock) are labeled `managed by X`. Being managed is never itself a finding, but the files are still checked: a token in `.ruler/mcp.json` is still [GM001](/findings/gm001).
+- **Drift** compares the instruction documents at the repository root (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.github/copilot-instructions.md`, ...) block by block after normalization. Nested and per-topic files (`packages/app/AGENTS.md`, `.cursor/rules/`) are not compared. A symlinked copy, or a `CLAUDE.md` that imports `@AGENTS.md`, is one source rather than a divergent pair. Here the shim is recognized, so there is nothing to compare. Roo's per-mode `.roorules-<mode>` files also sit at the root, so this release compares them too, including with each other.
+- **Findings** are risk rules with stable ids; each id has its own page under [findings](/findings/overview). A GM001 finding names the file, the line and, when there is one, the key of a secret, never its value. Other parts of the report quote configuration text; read [what the report can quote](/findings/overview#guarantees-shared-by-every-rule) before posting output publicly.
+- **Score** starts at 100 and subtracts 20 per error, 5 per warning and 5 per divergent instruction pair, never going below 0. Informational findings cost nothing.
 
 ## 3. Fix, re-run, gate CI (20 seconds)
 
-Move the token into the environment (`"GITHUB_TOKEN": "${GITHUB_TOKEN}"`), add the Cursor hook or accept the warning, and run doctor again.
+Move the token into the environment (`"GITHUB_TOKEN": "${GITHUB_TOKEN}"`, which Claude Code expands from your shell when it starts the server), add the Cursor hook or accept the warning, and run doctor again.
 
 The exit code is the CI contract:
 
@@ -75,19 +75,21 @@ The exit code is the CI contract:
 |---|---|
 | `0` | no finding at or above `--fail-on` |
 | `1` | at least one finding at or above `--fail-on` (default `warning`) |
-| `2` | the run itself failed: a missing directory, a config file the auditor may not read, an invalid `--fail-on` value |
+| `2` | the run itself failed: a missing directory, a file doctor found but may not read, an invalid `--fail-on` value, `--json` combined with `--md` |
 
-`--fail-on error`, `warning`, `info` or `none` picks the threshold; `none` reports and never fails. A minimal GitHub Actions step:
+A directory doctor may not list is skipped without an error in this release, so its files are neither inventoried nor reported.
+
+`--fail-on error`, `warning`, `info` or `none` picks the threshold; `none` reports and never fails. There is no way to suppress an accepted finding in this release, so a `warning` gate stays red until every warning is fixed. A minimal GitHub Actions step that gates on errors only:
 
 ```yaml
 - run: npx gitmesh-cli@next doctor --fail-on error
 ```
 
-`--md` prints the same report as Markdown for a PR comment or job summary. `--json` prints a versioned machine-readable report (`schemaVersion: 1`). `--user` adds the user-scope artifacts in your home directory (`~/.claude/CLAUDE.md`, `~/.codex/config.toml`, ...) to the inventory; rules about repository hygiene ([GM002](/findings/gm002), [GM003](/findings/gm003), [GM008](/findings/gm008), [GM009](/findings/gm009), [GM010](/findings/gm010)) look only at repository files, while [GM001](/findings/gm001), [GM006](/findings/gm006) and [GM007](/findings/gm007) apply to user-scope files too.
+`--md` prints the same report as Markdown for a PR comment or job summary. `--json` prints a versioned machine-readable report (`schemaVersion: 1`). `--user` adds two user-scope files to the inventory: `~/.claude/CLAUDE.md` and Codex's `config.toml` (under `~/.codex`, or `CODEX_HOME` when it is set). [GM001](/findings/gm001), [GM006](/findings/gm006) and [GM007](/findings/gm007) check user-scope files; every other rule judges repository files only. A few machine-level presence probes run even without `--user` (org-managed Claude settings, Codex's `requirements.toml`, the Antigravity CLI settings file, a set `CODEX_HOME`). They are listed without content, but they can make [GM002](/findings/gm002) count an agent as present, so the same repository can report differently on two machines.
 
 ## What doctor will never do
 
-- Write or modify any file, not even a cache. `gitmesh apply` is a separate, explicit command.
+- Write or modify any file, not even a cache. `gitmesh apply` (not released yet) will be a separate, explicit command.
 - Make a network call or send telemetry. The test suite holds every release to zero writes, zero network and zero subprocesses.
 - Scan content for prompt injection or malicious payloads. That is a different job; see [scanners](/doctor/scanners).
 - Claim to block anything at runtime. Doctor reports; each agent's own permission model enforces.
