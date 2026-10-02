@@ -22,6 +22,36 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "Doctor",
+        "groups": [
+          {
+            "group": "gitmesh doctor",
+            "pages": [
+              "doctor/quickstart",
+              "doctor/coverage-matrix",
+              "doctor/scanners"
+            ]
+          },
+          {
+            "group": "Findings",
+            "pages": [
+              "findings/overview",
+              "findings/gm001",
+              "findings/gm002",
+              "findings/gm003",
+              "findings/gm004",
+              "findings/gm005",
+              "findings/gm006",
+              "findings/gm007",
+              "findings/gm008",
+              "findings/gm009",
+              "findings/gm010",
+              "findings/gm011"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Get Started",
         "groups": [
           {
