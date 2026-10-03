@@ -316,6 +316,43 @@ export function forgeWebhookRoutes(db: Db) {
    * POST /api/forge/webhook/gitlab
    * Handle incoming GitLab webhook payloads.
    */
+  async function validateGitLabToken(
+    db: Db,
+    projectId: string,
+    tokenHeader: string | undefined,
+  ): Promise<boolean> {
+    if (!tokenHeader) return false;
+
+    const rows = await db
+      .select({
+        webhookSecret: forgeWebhooks.webhookSecret,
+      })
+      .from(forgeWebhooks)
+      .where(
+        and(
+          eq(forgeWebhooks.projectId, projectId),
+          eq(forgeWebhooks.active, true),
+        ),
+      );
+
+    if (rows.length === 0) return false;
+
+    for (const row of rows) {
+      if (!row.webhookSecret) continue;
+
+      const expected = Buffer.from(row.webhookSecret);
+      const actual = Buffer.from(tokenHeader);
+
+      if (
+        expected.length === actual.length &&
+        crypto.timingSafeEqual(expected, actual)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
   router.post("/forge/webhook/gitlab", async (req, res) => {
     try {
       const gitlabEvent = req.headers["x-gitlab-event"] as string;
@@ -326,7 +363,12 @@ export function forgeWebhookRoutes(db: Db) {
         res.status(200).json({ ignored: true, reason: "Unhandled event type" });
         return;
       }
-
+      const tokenHeader = req.headers["x-gitlab-token"] as string | undefined;
+      const valid = await validateGitLabToken(db, event.projectId, tokenHeader);
+      if (!valid) {
+        res.status(401).json({ error: "Invalid webhook token" });
+        return;
+      }
       await storeWebhookDelivery(db, event.projectId, "gitlab", req.body as Record<string, unknown>, "received");
       const result = await forgeSync.processEvent(event);
       await storeWebhookDelivery(db, event.projectId, "gitlab", req.body as Record<string, unknown>, "processed");
@@ -355,6 +397,47 @@ export function forgeWebhookRoutes(db: Db) {
    * Handle incoming Forgejo webhook payloads.
    * Forgejo uses Gitea-compatible webhook format.
    */
+  async function validateForgejoSignature(
+    db: Db,
+    projectId: string,
+    rawBody: Buffer,
+    signatureHeader: string | undefined,
+  ): Promise<boolean> {
+    if (!signatureHeader) return false;
+
+    const rows = await db
+      .select({ webhookSecret: forgeWebhooks.webhookSecret })
+      .from(forgeWebhooks)
+      .where(
+        and(
+          eq(forgeWebhooks.projectId, projectId),
+          eq(forgeWebhooks.active, true),
+        ),
+      );
+
+    if (rows.length === 0 || !rows[0].webhookSecret) {
+      return false;
+    }
+
+    const secret = rows[0].webhookSecret;
+
+    const hexSig = signatureHeader.startsWith("sha256=")
+      ? signatureHeader.substring(7)
+      : signatureHeader;
+
+    const expected = Buffer.from(hexSig, "hex");
+
+    const actual = crypto
+      .createHmac("sha256", secret)
+      .update(rawBody)
+      .digest();
+
+    if (expected.length !== actual.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(expected, actual);
+  }
   router.post("/forge/webhook/forgejo", async (req, res) => {
     try {
       const forgejoEvent = req.headers["x-forgejo-event"] ?? req.headers["x-gitea-event"];
@@ -363,6 +446,39 @@ export function forgeWebhookRoutes(db: Db) {
 
       if (!event) {
         res.status(200).json({ ignored: true, reason: "Unhandled event type" });
+        return;
+      }
+
+      const rawBody = (
+        req as Request & {
+          rawBody?: Buffer;
+        }
+      ).rawBody;
+
+      const signatureHeader = req.headers["x-gitea-signature"];
+
+      const signatureValue = Array.isArray(signatureHeader)
+        ? signatureHeader[0]
+        : signatureHeader;
+
+      if (!rawBody) {
+        res.status(400).json({
+          error: "Webhook raw body unavailable",
+        });
+        return;
+      }
+
+      const valid = await validateForgejoSignature(
+        db,
+        event.projectId,
+        rawBody,
+        signatureValue,
+      );
+
+      if (!valid) {
+        res.status(401).json({
+          error: "Invalid webhook signature",
+        });
         return;
       }
 
@@ -529,8 +645,8 @@ function mapGitHubEvent(eventName: string, payload: Record<string, unknown>): Fo
       const issue = (payload as Record<string, unknown>).issue as Record<string, unknown>;
       const eventType = action === "opened" ? "issue_opened"
         : action === "closed" ? "issue_closed"
-        : action === "reopened" ? "issue_reopened"
-        : null;
+          : action === "reopened" ? "issue_reopened"
+            : null;
       if (!eventType || !issue) return null;
       return {
         ...base,
@@ -560,8 +676,8 @@ function mapGitHubEvent(eventName: string, payload: Record<string, unknown>): Fo
       const pr = (payload as Record<string, unknown>).pull_request as Record<string, unknown>;
       const eventType = action === "opened" ? "pr_opened"
         : action === "closed" && (pr as Record<string, unknown>)?.merged ? "pr_merged"
-        : action === "closed" ? "pr_closed"
-        : null;
+          : action === "closed" ? "pr_closed"
+            : null;
       if (!eventType || !pr) return null;
       return {
         ...base,
@@ -606,8 +722,8 @@ function mapGitLabEvent(eventName: string, payload: Record<string, unknown>): Fo
       const action = attrs.action as string;
       const eventType = action === "open" ? "issue_opened"
         : action === "close" ? "issue_closed"
-        : action === "reopen" ? "issue_reopened"
-        : null;
+          : action === "reopen" ? "issue_reopened"
+            : null;
       if (!eventType) return null;
       return {
         ...base,
@@ -636,8 +752,8 @@ function mapGitLabEvent(eventName: string, payload: Record<string, unknown>): Fo
       const action = attrs.action as string;
       const eventType = action === "open" ? "pr_opened"
         : action === "close" ? "pr_closed"
-        : action === "merge" ? "pr_merged"
-        : null;
+          : action === "merge" ? "pr_merged"
+            : null;
       if (!eventType) return null;
       return {
         ...base,
@@ -680,8 +796,8 @@ function mapForgejoEvent(eventName: string, payload: Record<string, unknown>): F
       const issue = (payload as Record<string, unknown>).issue as Record<string, unknown>;
       const eventType = action === "opened" ? "issue_opened"
         : action === "closed" ? "issue_closed"
-        : action === "reopened" ? "issue_reopened"
-        : null;
+          : action === "reopened" ? "issue_reopened"
+            : null;
       if (!eventType || !issue) return null;
       return {
         ...base,
@@ -711,8 +827,8 @@ function mapForgejoEvent(eventName: string, payload: Record<string, unknown>): F
       const pr = (payload as Record<string, unknown>).pull_request as Record<string, unknown>;
       const eventType = action === "opened" ? "pr_opened"
         : action === "closed" && (pr as Record<string, unknown>)?.merged ? "pr_merged"
-        : action === "closed" ? "pr_closed"
-        : null;
+          : action === "closed" ? "pr_closed"
+            : null;
       if (!eventType || !pr) return null;
       return {
         ...base,
