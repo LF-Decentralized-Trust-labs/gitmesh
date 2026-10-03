@@ -417,6 +417,25 @@ export function AuditLog() {
 
         <div className="flex-1" />
 
+        {selectedProjectId && (
+          <span className="flex items-center gap-2 text-text-tertiary">
+            export
+            <a
+              className="underline hover:text-foreground"
+              href={auditLogApi.exportUrl(selectedProjectId, "json")}
+            >
+              json
+            </a>
+            <span>·</span>
+            <a
+              className="underline hover:text-foreground"
+              href={auditLogApi.exportUrl(selectedProjectId, "csv")}
+            >
+              csv
+            </a>
+          </span>
+        )}
+
         {/* Verifiability strip - informational, single line, top-right. */}
         <span className="text-text-tertiary">
           every signed row is verifiable - click the shield to copy a verify command.
