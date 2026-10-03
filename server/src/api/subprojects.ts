@@ -281,6 +281,20 @@ export function subprojectRoutes(db: Db) {
         isPrimary: Boolean(body.isPrimary),
       })
       .returning();
+
+    const actor = getActorInfo(req);
+    await logActivity(db, {
+      projectId: resolvedProjectId,
+      actorType: actor.actorType,
+      actorId: actor.actorId,
+      agentId: actor.agentId,
+      runId: actor.runId,
+      action: "workspace.created",
+      entityType: "workspace",
+      entityId: created.id,
+      details: { subprojectId: existing.id, name: created.name },
+    });
+
     res.status(201).json(created);
   });
 
@@ -314,6 +328,20 @@ export function subprojectRoutes(db: Db) {
       res.status(404).json({ error: "Workspace not found" });
       return;
     }
+
+    const actor = getActorInfo(req);
+    await logActivity(db, {
+      projectId: resolvedProjectId,
+      actorType: actor.actorType,
+      actorId: actor.actorId,
+      agentId: actor.agentId,
+      runId: actor.runId,
+      action: "workspace.updated",
+      entityType: "workspace",
+      entityId: updated.id,
+      details: { subprojectId: existing.id },
+    });
+
     res.json(updated);
   });
 
@@ -337,6 +365,20 @@ export function subprojectRoutes(db: Db) {
       res.status(404).json({ error: "Workspace not found" });
       return;
     }
+
+    const actor = getActorInfo(req);
+    await logActivity(db, {
+      projectId: resolvedProjectId,
+      actorType: actor.actorType,
+      actorId: actor.actorId,
+      agentId: actor.agentId,
+      runId: actor.runId,
+      action: "workspace.deleted",
+      entityType: "workspace",
+      entityId: deleted.id,
+      details: { subprojectId: existing.id, name: deleted.name },
+    });
+
     res.json(deleted);
   });
 
