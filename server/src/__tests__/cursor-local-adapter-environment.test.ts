@@ -10,8 +10,10 @@ import {
 } from "./_helpers/adapter-test-harness.js";
 
 async function writeFakeAgentCommand(binDir: string): Promise<string> {
-  const commandPath = path.join(binDir, "agent");
-  const script = `#!/usr/bin/env node
+  const isWindows = process.platform === "win32";
+
+  const jsPath = path.join(binDir, "agent.js");
+  const jsScript = `
 const fs = require("node:fs");
 const outPath = process.env.GITMESH_TEST_ARGS_PATH;
 if (outPath) {
@@ -27,9 +29,19 @@ console.log(JSON.stringify({
   result: "hello",
 }));
 `;
-  await fs.writeFile(commandPath, script, "utf8");
-  await fs.chmod(commandPath, 0o755);
-  return commandPath;
+  await fs.writeFile(jsPath, jsScript, "utf8");
+
+  if (isWindows) {
+    // On Windows, create agent.cmd that delegates to agent.js
+    const cmdPath = path.join(binDir, "agent.cmd");
+    await fs.writeFile(cmdPath, `@echo off\nnode "%~dp0agent.js" %*\n`, "utf8");
+    return cmdPath;
+  } else {
+    const commandPath = path.join(binDir, "agent");
+    await fs.writeFile(commandPath, `#!/usr/bin/env node\n` + jsScript, "utf8");
+    await fs.chmod(commandPath, 0o755);
+    return commandPath;
+  }
 }
 
 interface CursorEnvCtx {
