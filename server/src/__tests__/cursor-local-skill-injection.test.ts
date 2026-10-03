@@ -91,7 +91,11 @@ describe("cursor local adapter playbook injection", () => {
           if (target.endsWith(`${path.sep}fail-playbook`)) {
             throw new Error("simulated link failure");
           }
-          await fs.symlink(source, target);
+          await fs.symlink(
+            source,
+            target,
+            process.platform === "win32" ? "junction" : undefined,
+          );
         },
       },
     );
