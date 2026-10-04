@@ -63,5 +63,5 @@ Context is stored at `~/.gitmesh-agents/context.json`.
 
 The CLI has two categories:
 
-1. **[Setup commands](/cli/setup-commands)**: instance bootstrap, diagnostics, configuration
-2. **[Control-plane commands](/cli/control-plane-commands)**: issues, agents, approvals, activity
+1. **[Setup commands](/legacy/cli/setup-commands)**: instance bootstrap, diagnostics, configuration
+2. **[Control-plane commands](/legacy/cli/control-plane-commands)**: issues, agents, approvals, activity

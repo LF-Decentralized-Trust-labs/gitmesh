@@ -9,7 +9,7 @@ This document describes the maintainer-facing **GitMesh Agents** web interface: 
 - [`doc/v1-spec.md`](v1-spec.md) - V1 product and data model contract  
 - [`doc/DEVELOPING.md`](DEVELOPING.md) - Developer setup and commands  
 - [`doc/DEPLOYMENT-MODES.md`](DEPLOYMENT-MODES.md) - `local_trusted`, `authenticated`, exposure  
-- [`docs/guides/connecting-to-github.md`](../docs/guides/connecting-to-github.md) - Forge/GitHub connectivity (guide may be partial while the feature evolves)
+- [`docs/legacy/guides/connecting-to-github.md`](../docs/legacy/guides/connecting-to-github.md) - Forge/GitHub connectivity (guide may be partial while the feature evolves)
 
 ---
 
