@@ -21,7 +21,11 @@
 ---
 
 <div align="center">
-  <img src="public/doctor-demo.svg" alt="gitmesh doctor auditing a repository: inventory across nine adapters, cross-tool drift, and two findings" width="900">
+  <!-- Rendered from a real doctor run by scripts/render-doctor-demo.mjs; re-run it when doctor's output changes. -->
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="public/doctor-demo.svg">
+    <img src="public/doctor-demo.gif" alt="Terminal recording of npx gitmesh-cli@next doctor on a sample repository: 12 artifacts across nine adapters, no drift to compare, a GM001 error for a plaintext GitHub token in .mcp.json, a GM002 warning for Cursor, score 75/100, exit code 1" width="813">
+  </picture>
 </div>
 
 ## What is GitMesh?
