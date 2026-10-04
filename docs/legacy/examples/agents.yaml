@@ -4,7 +4,7 @@
 # GitMesh reads this file to configure which agents run on your project,
 # their schedules, budgets, and triggers.
 #
-# See: https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/guides/agents-yaml.md
+# See: https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/docs/legacy/guides/agents-yaml.md
 
 agents:
   - name: Issue Triage

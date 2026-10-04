@@ -26,32 +26,32 @@
 
 ## What is GitMesh?
 
-Every coding agent reads its own configuration from your repository, and no two agree on where it lives or what it may do. Instructions get copied between `AGENTS.md`, `CLAUDE.md` and `GEMINI.md` and drift apart. MCP servers are hand-copied between four files. Nobody has audited what those agents are permitted to do.
+Every coding agent reads its own configuration from your repository, and no two agree on where it lives or what it may do. Instructions get copied between `AGENTS.md`, `CLAUDE.md` and `GEMINI.md` and drift apart. MCP servers are hand-copied into a different file for each agent. Nobody has audited what those agents are permitted to do.
 
-**GitMesh is the agent workspace compiler.** One git-versioned source of truth - `AGENTS.md` plus `.gitmesh/` - audited, compiled and enforced across every coding agent a team uses: Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode, Devin, Cline, Roo, and the long tail.
+**GitMesh is the agent workspace compiler.** One git-versioned source of truth for instructions, tools and guardrails - `AGENTS.md` plus `.gitmesh/` - audited, compiled to each agent's native config, drift-checked in CI, and enforced through each agent's own mechanisms, which differ from agent to agent (the [coverage matrix](docs/doctor/coverage-matrix.md) will show what each one can enforce). Only the audit ships today: `gitmesh doctor` reads Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode, Devin, Cline and Roo configuration in one pass. The [status table](#status) lists what comes next.
 
-It is a single CLI (and, later, a GitHub Action). No server, no login, no database, no daemon, no new file format to learn. The entry command writes nothing.
+It is a single CLI (and, later, a GitHub Action). No server, no login, no database, no daemon, and no new instruction format: instructions stay in `AGENTS.md`. The entry command writes nothing.
 
 ## Quickstart
 
-Node.js 20 or newer, inside any git repository:
+Node.js 20 or newer, from any directory inside a git repository:
 
-```console
-$ npx gitmesh-cli@next doctor
+```bash
+npx gitmesh-cli@next doctor
 ```
 
 The npm package is **`gitmesh-cli`** and the installed binary is **`gitmesh`**; the unscoped npm name `gitmesh` belongs to an unrelated project ([ADR-005](doc/adr/ADR-005-npm-package-naming.md)).
 
-`gitmesh doctor` reads the agent configuration committed in the repository across eleven registered adapters in one pass - instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings - diffs the instruction copies different agents read, and reports risk findings with stable ids. It **never writes a file, never opens a network connection and never runs a subprocess**; the test suite holds every release to that.
+`gitmesh doctor` reads the agent configuration in the repository's working tree across eleven registered adapters in one pass - instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings - diffs the instruction copies different agents read, and reports risk findings with stable ids. It **never writes a file, never opens a network connection and never runs a subprocess**; the test suite holds every release to that. Pass a directory to audit another checkout: `npx gitmesh-cli@next doctor ../other-repo` scans that directory's git root.
 
 | Flag | Effect |
 |---|---|
 | `--fail-on <severity>` | severity that makes the run exit `1`: `error`, `warning` (default), `info`, or `none` to never fail |
 | `--json` | versioned machine-readable report |
 | `--md` | Markdown report for a PR comment or job summary |
-| `--user` | also inventory user-scope files (`~/.claude/CLAUDE.md`, `~/.codex/config.toml`, ...) |
+| `--user` | also inventory two user-scope files: `~/.claude/CLAUDE.md` and Codex's `config.toml` (in `~/.codex`, or `$CODEX_HOME` when set) |
 
-Exit codes are the CI contract: `0` clean, `1` findings at or above the threshold, `2` the run itself failed. Full walkthrough: [docs/doctor/quickstart.md](docs/doctor/quickstart.md).
+Exit codes are the CI contract: `0` no finding at or above `--fail-on`, `1` at least one, `2` the run itself failed. No finding can be suppressed in this release, so a gate on the default `warning` stays red until every warning is fixed; `--fail-on error` gates on errors only. Full walkthrough: [docs/doctor/quickstart.md](docs/doctor/quickstart.md).
 
 ## What doctor reports
 
@@ -59,17 +59,19 @@ Exit codes are the CI contract: `0` clean, `1` findings at or above the threshol
 |---|---|---|
 | [GM001](docs/findings/gm001.md) | error | Plaintext secret or token in an MCP config, settings, hooks or config file |
 | [GM002](docs/findings/gm002.md) | warning | No deny/ask protection for `.env` files in an agent that can express one |
-| [GM003](docs/findings/gm003.md) | error | Bypass-permissions, auto-approve or danger-full-access mode in committed config |
+| [GM003](docs/findings/gm003.md) | error | Bypass-permissions, auto-approve or danger-full-access mode in shared config |
 | [GM004](docs/findings/gm004.md) | warning | Skill with executable content and no recognized pin |
 | [GM005](docs/findings/gm005.md) | warning | Same MCP server defined with different urls or credentials across tools |
 | [GM006](docs/findings/gm006.md) | warning | Generated-looking file hand-edited: broken `gitmesh:managed` markers |
-| [GM007](docs/findings/gm007.md) | warning | Instruction file exceeds the effective-context threshold |
+| [GM007](docs/findings/gm007.md) | warning | Instruction file exceeds the 40,000-character threshold |
 | [GM008](docs/findings/gm008.md) | info | Orphan config for an agent unseen in repository history |
 | [GM009](docs/findings/gm009.md) | warning | Inconsistent local-vs-shared hygiene: `.gitignore` vs committed status |
 | [GM010](docs/findings/gm010.md) | warning | `CLAUDE.md` without an `AGENTS.md` bridge, or vice versa |
 | [GM011](docs/findings/gm011.md) | warning | Semantic contradictions inside one tool's own config |
 
-Secret values are always redacted: a finding names the file, line and key, never the value. Which files doctor reads for each agent is listed in the [coverage matrix](docs/doctor/coverage-matrix.md).
+GM008 and GM009 are implemented but [silent in this release](docs/findings/overview.md#rules-that-are-silent-today): doctor does not yet read the repository history or the tracked and ignored file status they need.
+
+A GM001 finding names the file, the line and, when there is one, the key of a secret, never any part of its value. Other parts of the report quote configuration text, and a secret with no credential signal around it, such as a password in prose, is printed as written: read [what the report can quote](docs/findings/overview.md#guarantees-shared-by-every-rule) before posting output publicly. Which files doctor reads for each agent is listed in the [coverage matrix](docs/doctor/coverage-matrix.md).
 
 ## Status
 
@@ -79,7 +81,7 @@ GitMesh ships in layers. Each one is useful alone, and only what is marked avail
 |---|---|---|
 | `gitmesh doctor` | audit, cross-tool drift, risk findings - read-only | **available** (`gitmesh-cli@next`) |
 | `gitmesh init` / `migrate` | import existing configs (incl. Ruler, rulesync, `.agents/agents.json`) into one source | planned |
-| `gitmesh apply` | compile that source into each agent's native files | planned |
+| `gitmesh apply` | compile that source into each agent's native files, rewriting only content inside `gitmesh:managed` markers | planned |
 | `gitmesh check` | fail CI when generated files drift from source | planned |
 | `gitmesh policy` | compile one policy into each agent's own permission model, with a generated coverage report | planned |
 | `gitmesh receipt` | signed, offline-verifiable record of workspace state | later |
@@ -90,7 +92,7 @@ The plan behind these layers, with its evidence and its kill criteria, is [`doc/
 
 - **It does not enforce anything itself.** Doctor reports; each agent's own permission model enforces. GitMesh never claims uniform enforcement across agents, and never calls an instruction a guardrail.
 - **It does not scan content for prompt injection, tool poisoning or malicious skills.** That lane belongs to [Snyk Agent Scan and Cisco's scanner](docs/doctor/scanners.md); GitMesh checks structure and hygiene.
-- **It does not fight the manager you already use.** Ruler, rulesync, `.agents/agents.json`, symlink managers, `skills-lock.json` and mcp-lock records are detected, labeled `managed by X`, and left alone.
+- **It does not fight the manager you already use.** Ruler, rulesync, `.agents/agents.json`, symlink managers, `skills-lock.json` and mcp-lock records are detected and labeled `managed by X`; being managed is never itself a finding. Their files are still checked, so a token in `.ruler/mcp.json` is still GM001.
 - **It is not the only auditor.** Claude Code's `/doctor`, cc-health-check, agents-lint and AgentLint each audit one tool or one file class well; GitMesh audits the whole multi-vendor workspace.
 
 ## Documentation
@@ -102,14 +104,14 @@ The plan behind these layers, with its evidence and its kill criteria, is [`doc/
 
 ## Legacy: the GitMesh Agents runtime
 
-The multi-agent orchestration runtime, governed MCP server, PostgreSQL control plane and dashboard that GitMesh shipped before the pivot are still in this repository and still run, in maintenance mode, under `gitmesh legacy`. Their documentation moved to [docs/legacy/](docs/legacy/overview.md); the `gitmesh-agents` package name stays as the legacy alias. Nothing in the new CLI path needs a server or a database.
+The multi-agent orchestration runtime, governed MCP server, PostgreSQL control plane and dashboard that GitMesh shipped before the pivot are still in this repository, in maintenance mode. They are not part of the `gitmesh-cli` package and are not published to npm: run them from a checkout of this repository (`pnpm install`, then `pnpm gitmesh legacy <command>`). Setup is in [doc/SETUP.md](doc/SETUP.md) and [doc/DEVELOPING.md](doc/DEVELOPING.md), with [doc/DATABASE.md](doc/DATABASE.md) and [doc/DOCKER.md](doc/DOCKER.md) for the database and container options; the rest of their documentation moved to [docs/legacy/](docs/legacy/overview.md). Nothing in the new CLI path needs a server or a database.
 
 ## Contributing
 
 [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=lf-decentralized-trust-labs&repos=https://github.com/LF-Decentralized-Trust-labs/gitmesh)](https://insights.linuxfoundation.org/project/lf-decentralized-trust-labs/repository/lf-decentralized-trust-labs-gitmesh)
 [![Governance Sync](https://img.shields.io/github/actions/workflow/status/LF-Decentralized-Trust-labs/gitmesh/gov-sync.yml?label=Governance%20Sync)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/actions/workflows/gov-sync.yml)
 
-Adapters are the on-ramp: one interface, golden fixtures, one doc page per agent.
+Adapters are the on-ramp: one directory per agent under [`lib/workspace-adapters/`](lib/workspace-adapters/), one interface, and golden fixtures for every detector.
 
 1. Fork the repository
 2. Create a branch: `git checkout -b type/branch-name`
