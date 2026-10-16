@@ -90,7 +90,7 @@ A directory doctor may not list is skipped without an error in this release, so 
 ## What doctor will never do
 
 - Write or modify any file, not even a cache. `gitmesh apply` (not released yet) will be a separate, explicit command.
-- Make a network call or send telemetry. The test suite holds every release to zero writes, zero network and zero subprocesses.
+- Make a network call or send telemetry. There is no opt-in for telemetry either (ADR-006), and the test suite holds every release to zero writes, zero network and zero subprocesses.
 - Scan content for prompt injection or malicious payloads. That is a different job; see [scanners](/doctor/scanners).
 - Claim to block anything at runtime. Doctor reports; each agent's own permission model enforces.
 

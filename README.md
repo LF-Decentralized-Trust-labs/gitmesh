@@ -95,6 +95,7 @@ The plan behind these layers, with its evidence and its kill criteria, is [`doc/
 ## What GitMesh does not do
 
 - **It does not enforce anything itself.** Doctor reports; each agent's own permission model enforces. GitMesh never claims uniform enforcement across agents, and never calls an instruction a guardrail.
+- **It does not phone home.** No telemetry, usage pings, crash reports or update checks, and no opt-in that turns any of them on ([ADR-006](doc/adr/ADR-006-no-telemetry.md)). Every pull request and every release runs each top-level command of the packaged CLI under a spy that fails CI on the first network call, DNS query or subprocess.
 - **It does not scan content for prompt injection, tool poisoning or malicious skills.** That lane belongs to [Snyk Agent Scan and Cisco's scanner](docs/doctor/scanners.md); GitMesh checks structure and hygiene.
 - **It does not fight the manager you already use.** Ruler, rulesync, `.agents/agents.json`, symlink managers, `skills-lock.json` and mcp-lock records are detected and labeled `managed by X`; being managed is never itself a finding. Their files are still checked, so a token in `.ruler/mcp.json` is still GM001.
 - **It is not the only auditor.** Claude Code's `/doctor`, cc-health-check, agents-lint and AgentLint each audit one tool or one file class well; GitMesh audits the whole multi-vendor workspace.
