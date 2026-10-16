@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "edition": {
+    "search": "is:public fork:false archived:false mirror:false sort:stars-desc stars:>=1000",
+    "requiredFile": "AGENTS.md",
+    "limit": 500,
+    "discoveredOn": "2026-10-16",
+    "gitmeshVersion": "0.4.0"
+  },
+  "repositories": {
+    "selected": 500,
+    "scanned": 500,
+    "unavailable": 0,
+    "failed": 0
+  },
+  "agents": {
+    "withOwnConfig": 382,
+    "perRepository": {
+      "0": 119,
+      "1": 195,
+      "2": 113,
+      "3": 49,
+      "4+": 24
+    },
+    "byAgent": {
+      "antigravity": {
+        "repositories": 36,
+        "instructions": 22,
+        "mcp": 0,
+        "skills": 8,
+        "commands": 0,
+        "settings": 10
+      },
+      "claude-code": {
+        "repositories": 330,
+        "instructions": 283,
+        "mcp": 21,
+        "skills": 127,
+        "commands": 45,
+        "settings": 104
+      },
+      "cline": {
+        "repositories": 4,
+        "instructions": 4,
+        "mcp": 0,
+        "skills": 0,
+        "commands": 1,
+        "settings": 1
+      },
+      "codex": {
+        "repositories": 136,
+        "instructions": 0,
+        "mcp": 0,
+        "skills": 131,
+        "commands": 6,
+        "settings": 15
+      },
+      "copilot": {
+        "repositories": 102,
+        "instructions": 90,
+        "mcp": 5,
+        "skills": 0,
+        "commands": 15,
+        "settings": 1
+      },
+      "cursor": {
+        "repositories": 35,
+        "instructions": 25,
+        "mcp": 7,
+        "skills": 0,
+        "commands": 3,
+        "settings": 6
+      },
+      "devin": {
+        "repositories": 2,
+        "instructions": 1,
+        "mcp": 0,
+        "skills": 1,
+        "commands": 0,
+        "settings": 0
+      },
+      "opencode": {
+        "repositories": 26,
+        "instructions": 0,
+        "mcp": 0,
+        "skills": 9,
+        "commands": 11,
+        "settings": 20
+      },
+      "roo": {
+        "repositories": 3,
+        "instructions": 2,
+        "mcp": 0,
+        "skills": 0,
+        "commands": 0,
+        "settings": 1
+      }
+    },
+    "sharedFiles": {
+      ".cursorrules": 10,
+      ".windsurfrules": 2
+    }
+  },
+  "instructions": {
+    "nestedAgentsMd": 170,
+    "withAnotherRootFile": 295,
+    "withDivergedCopy": 34,
+    "rootFiles": {
+      ".clinerules": {
+        "repositories": 1,
+        "symlink": 1,
+        "import": 0,
+        "identical": 0,
+        "diverged": 0,
+        "pointer": 0,
+        "separate": 0,
+        "unreadable": 0
+      },
+      ".cursorrules": {
+        "repositories": 10,
+        "symlink": 3,
+        "import": 0,
+        "identical": 1,
+        "diverged": 0,
+        "pointer": 0,
+        "separate": 6,
+        "unreadable": 0
+      },
+      ".github/copilot-instructions.md": {
+        "repositories": 82,
+        "symlink": 7,
+        "import": 0,
+        "identical": 2,
+        "diverged": 12,
+        "pointer": 10,
+        "separate": 48,
+        "unreadable": 3
+      },
+      ".roorules": {
+        "repositories": 1,
+        "symlink": 1,
+        "import": 0,
+        "identical": 0,
+        "diverged": 0,
+        "pointer": 0,
+        "separate": 0,
+        "unreadable": 0
+      },
+      ".windsurfrules": {
+        "repositories": 2,
+        "symlink": 0,
+        "import": 0,
+        "identical": 1,
+        "diverged": 1,
+        "pointer": 0,
+        "separate": 0,
+        "unreadable": 0
+      },
+      "AGENT.md": {
+        "repositories": 1,
+        "symlink": 1,
+        "import": 0,
+        "identical": 0,
+        "diverged": 0,
+        "pointer": 0,
+        "separate": 0,
+        "unreadable": 0
+      },
+      "CLAUDE.md": {
+        "repositories": 257,
+        "symlink": 94,
+        "import": 92,
+        "identical": 2,
+        "diverged": 26,
+        "pointer": 19,
+        "separate": 24,
+        "unreadable": 0
+      },
+      "GEMINI.md": {
+        "repositories": 18,
+        "symlink": 6,
+        "import": 2,
+        "identical": 0,
+        "diverged": 0,
+        "pointer": 6,
+        "separate": 4,
+        "unreadable": 0
+      }
+    }
+  },
+  "drift": {
+    "compared": 144,
+    "drifting": 140
+  },
+  "mcp": {
+    "repositories": 28,
+    "severalAgents": 4
+  },
+  "skills": {
+    "repositories": 189,
+    "severalAgents": 81,
+    "sameSkillSeveralAgents": 78,
+    "sameSkillCopied": 11
+  },
+  "managers": {
+    "ruler": 1,
+    "skills-lock": 21,
+    "symlinks": 145
+  },
+  "findings": {
+    "GM001": {
+      "severity": "error",
+      "repositories": 0,
+      "findings": 0
+    },
+    "GM002": {
+      "severity": "warning",
+      "repositories": 500,
+      "findings": 827
+    },
+    "GM003": {
+      "severity": "error",
+      "repositories": 1,
+      "findings": 1
+    },
+    "GM004": {
+      "severity": "warning",
+      "repositories": 164,
+      "findings": 1397
+    },
+    "GM005": {
+      "severity": "warning",
+      "repositories": 0,
+      "findings": 0
+    },
+    "GM006": {
+      "severity": "warning",
+      "repositories": 0,
+      "findings": 0
+    },
+    "GM007": {
+      "severity": "warning",
+      "repositories": 34,
+      "findings": 67
+    },
+    "GM008": {
+      "severity": "info",
+      "repositories": 0,
+      "findings": 0
+    },
+    "GM009": {
+      "severity": "warning",
+      "repositories": 0,
+      "findings": 0
+    },
+    "GM010": {
+      "severity": "warning",
+      "repositories": 321,
+      "findings": 321
+    },
+    "GM011": {
+      "severity": "warning",
+      "repositories": 0,
+      "findings": 0
+    }
+  },
+  "scores": {
+    "median": 85,
+    "buckets": {
+      "100": 0,
+      "90-99": 210,
+      "75-89": 179,
+      "50-74": 62,
+      "0-49": 49
+    }
+  }
+}

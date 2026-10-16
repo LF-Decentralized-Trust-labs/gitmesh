@@ -1,0 +1,3011 @@
+{
+  "schemaVersion": 1,
+  "discoveredOn": "2026-10-16",
+  "selection": {
+    "search": "is:public fork:false archived:false mirror:false sort:stars-desc stars:>=1000",
+    "requiredFile": "AGENTS.md",
+    "limit": 500
+  },
+  "repositories": [
+    {
+      "repo": "openclaw/openclaw",
+      "commit": "6598d8b24abc70bf1638af911e34ffdf5d0075d6",
+      "stars": 392135,
+      "license": "MIT"
+    },
+    {
+      "repo": "obra/superpowers",
+      "commit": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+      "stars": 300156,
+      "license": "MIT"
+    },
+    {
+      "repo": "mattpocock/skills",
+      "commit": "49dd158d1076134a641b33efb035946536778336",
+      "stars": 293201,
+      "license": "MIT"
+    },
+    {
+      "repo": "affaan-m/ECC",
+      "commit": "76aaa77df6adc5b889e689007bf99b9a4f74af34",
+      "stars": 280639,
+      "license": "MIT"
+    },
+    {
+      "repo": "morluto/rea",
+      "commit": "d72d856f58d4747c5eb4307426e80d20934e017c",
+      "stars": 277396,
+      "license": "MIT"
+    },
+    {
+      "repo": "NousResearch/hermes-agent",
+      "commit": "e5eb6b36fe78eb012cefd1f5f436cd458411b8b3",
+      "stars": 254215,
+      "license": "MIT"
+    },
+    {
+      "repo": "deepseek-ai/deepseek-harness",
+      "commit": "86a402200d95fecef4529d969836f1fe13c6cb0d",
+      "stars": 250677,
+      "license": "MIT"
+    },
+    {
+      "repo": "TheAlgorithms/Python",
+      "commit": "adccf0cf0ca1cdc5f28fa8d244bac89efa18d0f6",
+      "stars": 225295,
+      "license": "MIT"
+    },
+    {
+      "repo": "anomalyco/opencode",
+      "commit": "37e3912d8ea5814593b8591bdc85f91cb69949e2",
+      "stars": 214038,
+      "license": "MIT"
+    },
+    {
+      "repo": "ultraworkers/claw-code",
+      "commit": "6d7412d958ebc338722e112d08c5e46d7cd458e1",
+      "stars": 194923,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/vscode",
+      "commit": "59ef8a091da1c9d6745792866c163745ee6fc29b",
+      "stars": 193739,
+      "license": "MIT"
+    },
+    {
+      "repo": "firecrawl/firecrawl",
+      "commit": "386330419c6924cc5d733e59abca9b857241acc4",
+      "stars": 191983,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "avelino/awesome-go",
+      "commit": "9084f305adfe8a9677a706cbac851a7b1af5fe77",
+      "stars": 188647,
+      "license": "MIT"
+    },
+    {
+      "repo": "ollama/ollama",
+      "commit": "d9b86018cba1d222fd28e28f42e5cdc15a060f39",
+      "stars": 183379,
+      "license": "MIT"
+    },
+    {
+      "repo": "twbs/bootstrap",
+      "commit": "cc127d888efbca82ec829cbb0733d8908f00f8c8",
+      "stars": 174921,
+      "license": "MIT"
+    },
+    {
+      "repo": "huggingface/transformers",
+      "commit": "9fb4b5a9458a83a0bb9d8ddb6d4443a7bd146a62",
+      "stars": 167749,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "DietrichGebert/ponytail",
+      "commit": "84740e3d344b69b4a133201fa519eb37a62a2b2a",
+      "stars": 164639,
+      "license": "MIT"
+    },
+    {
+      "repo": "langflow-ai/langflow",
+      "commit": "972d56c47d3830d17060ee85cfaad152df823041",
+      "stars": 155727,
+      "license": "MIT"
+    },
+    {
+      "repo": "clash-verge-rev/clash-verge-rev",
+      "commit": "dc5a8a5ff443c020a3dec79c2b46bc1f55411d95",
+      "stars": 151718,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "langchain-ai/langchain",
+      "commit": "c088db971097f0f12c7b8c30d473e8dbde09c823",
+      "stars": 147904,
+      "license": "MIT"
+    },
+    {
+      "repo": "yangshun/tech-interview-handbook",
+      "commit": "e1d28e8886c0b6ff3e50da991ce0e895134ddc59",
+      "stars": 143035,
+      "license": "MIT"
+    },
+    {
+      "repo": "vercel/next.js",
+      "commit": "a6d4c15991fd2f69c14eea4e8b655b596bc162bf",
+      "stars": 143029,
+      "license": "MIT"
+    },
+    {
+      "repo": "github/spec-kit",
+      "commit": "f6e72bc8523de8ec8368129cbdea78d45f27cef8",
+      "stars": 141470,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/PowerToys",
+      "commit": "0b305162b77fa1f2e05b347d7c00cb5d8c3e0d4f",
+      "stars": 139368,
+      "license": "MIT"
+    },
+    {
+      "repo": "Comfy-Org/ComfyUI",
+      "commit": "bdc63e72f5ab29fde448c161db3057827148c0ef",
+      "stars": 137771,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "garrytan/gstack",
+      "commit": "47d639abffa882b8cbb641d7d1dedf08ecada9ec",
+      "stars": 136605,
+      "license": "MIT"
+    },
+    {
+      "repo": "excalidraw/excalidraw",
+      "commit": "4c37956ba5f04ec342a9d9d5891a38f22c5b7b4e",
+      "stars": 133957,
+      "license": "MIT"
+    },
+    {
+      "repo": "ggml-org/llama.cpp",
+      "commit": "3dbcb7fca56ab4769bd4af684a432e2331bc9ace",
+      "stars": 131339,
+      "license": "MIT"
+    },
+    {
+      "repo": "kubernetes/kubernetes",
+      "commit": "5195aff44dec1fa075110cae002767a05df29b8e",
+      "stars": 128311,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "Graphify-Labs/graphify",
+      "commit": "10130e79ed9caf8f60d998073e097531eaa1a395",
+      "stars": 127010,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "react/react-native",
+      "commit": "e04aaf62f70491c803f0e0653075ec088c7c88f4",
+      "stars": 126689,
+      "license": "MIT"
+    },
+    {
+      "repo": "rustdesk/rustdesk",
+      "commit": "53996e3c404ea5083df0775057e4149e49102084",
+      "stars": 125965,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "microsoft/generative-ai-for-beginners",
+      "commit": "d45da91247ecb91e5346caacdd5a5fb9c5b9d85e",
+      "stars": 121447,
+      "license": "MIT"
+    },
+    {
+      "repo": "rust-lang/rust",
+      "commit": "3e014ee7cfe452be04a6b454cfb965ea3507e217",
+      "stars": 120399,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "browser-use/browser-use",
+      "commit": "e0a70fbe31c8e9cebcf42648f43e306a1c484421",
+      "stars": 118139,
+      "license": "MIT"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "4954d760504c11df9b2cbdc040346107b6a8153d",
+      "stars": 115563,
+      "license": "MIT"
+    },
+    {
+      "repo": "JuliusBrussee/caveman",
+      "commit": "d262ab3882952a59312ff3537cd86d894523c5ab",
+      "stars": 112792,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "supabase/supabase",
+      "commit": "17f21bf6a89adb515fc0494b43aea186753c7b12",
+      "stars": 111624,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "fatedier/frp",
+      "commit": "954f918d0cabdf09cc5c15030ef6d7dc2914198f",
+      "stars": 109941,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "axios/axios",
+      "commit": "326843a3902d73c9f6af9bad7b55e2412566a251",
+      "stars": 109302,
+      "license": "MIT"
+    },
+    {
+      "repo": "addyosmani/agent-skills",
+      "commit": "aeac41d4d005999432bb7312f7ff06383a91d59d",
+      "stars": 107134,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/terminal",
+      "commit": "44b440bf043522ec06014b2cff30d0f52ca30b68",
+      "stars": 105178,
+      "license": "MIT"
+    },
+    {
+      "repo": "paperclipai/paperclip",
+      "commit": "78b833c4958465b5e345b0e337018011b00dab72",
+      "stars": 102864,
+      "license": "MIT"
+    },
+    {
+      "repo": "nexu-io/open-design",
+      "commit": "9b5dc619d0482749b3af8b98f43d14ab65d9dc30",
+      "stars": 101414,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "angular/angular",
+      "commit": "92e5aa8f154096a756757d0e295cde4299788650",
+      "stars": 101061,
+      "license": "MIT"
+    },
+    {
+      "repo": "ant-design/ant-design",
+      "commit": "d9d01594fa64ff0dec183244702207b82925b3d6",
+      "stars": 99786,
+      "license": "MIT"
+    },
+    {
+      "repo": "mui/material-ui",
+      "commit": "c444e1df4647f7a66556a20555d32986939c1cf8",
+      "stars": 99226,
+      "license": "MIT"
+    },
+    {
+      "repo": "ruvnet/RuView",
+      "commit": "a1ca023ee872683d160250d47ae3d4d228af55a0",
+      "stars": 98243,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/playwright",
+      "commit": "034f230cc68b286055186f4d9783188536f2f3cf",
+      "stars": 97825,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "microsoft/Web-Dev-For-Beginners",
+      "commit": "78085398be0dea7abaaf5eda914817f46f6ddbbc",
+      "stars": 96963,
+      "license": "MIT"
+    },
+    {
+      "repo": "nvm-sh/nvm",
+      "commit": "b1b3a0038c0666c7436cb5d383608b4b72c8300b",
+      "stars": 95551,
+      "license": "MIT"
+    },
+    {
+      "repo": "localsend/localsend",
+      "commit": "d01fdb14c978fa8b2b13e29a50cc0feaefe5c1b9",
+      "stars": 94515,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "vllm-project/vllm",
+      "commit": "fa75d3456d60a5ffe923818c4b495295675b38e1",
+      "stars": 93895,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "stablyai/orca",
+      "commit": "224a139de31197ab530bfa7f136b70cbbb060d3f",
+      "stars": 93779,
+      "license": "MIT"
+    },
+    {
+      "repo": "louislam/uptime-kuma",
+      "commit": "b092505f894d66669b67f46e1da72b51016eceab",
+      "stars": 92523,
+      "license": "MIT"
+    },
+    {
+      "repo": "infiniflow/ragflow",
+      "commit": "2b8c97cbae662e44ca1111673dddfe5d777206f0",
+      "stars": 92308,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "home-assistant/core",
+      "commit": "ca0f2e7802aff483899c1e54064d0b3c1e6050bb",
+      "stars": 91546,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "microsoft/ML-For-Beginners",
+      "commit": "de2d4e12236445198213a0711855e348e7253cd4",
+      "stars": 91519,
+      "license": "MIT"
+    },
+    {
+      "repo": "storybookjs/storybook",
+      "commit": "323f10d623978e97e5596d3ba80f353d1266a850",
+      "stars": 91316,
+      "license": "MIT"
+    },
+    {
+      "repo": "OpenHands/OpenHands",
+      "commit": "8238b7af825b8639191b9d7b4c6b080d4a93f388",
+      "stars": 91020,
+      "license": "MIT"
+    },
+    {
+      "repo": "astral-sh/uv",
+      "commit": "b8d3eb9afd7846749511c94e2c54e22fe68f025f",
+      "stars": 90803,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "gohugoio/hugo",
+      "commit": "85fb23f1c23a0acc9c9094dc033c19ec2c0d2a2b",
+      "stars": 90132,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "koala73/worldmonitor",
+      "commit": "a4af9d393ed3a0bd90a487f959731762ec62908a",
+      "stars": 88530,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "sveltejs/svelte",
+      "commit": "40bb08482f4857d91221638dec544a532bc35389",
+      "stars": 88384,
+      "license": "MIT"
+    },
+    {
+      "repo": "tt-a1i/archify",
+      "commit": "8ce476fcd59476ffe4abff43f3dba5906ab7b0a2",
+      "stars": 84182,
+      "license": "MIT"
+    },
+    {
+      "repo": "bytedance/deer-flow",
+      "commit": "ec07de9618b4194533fea3d8bf8a2e4fbcca5385",
+      "stars": 83932,
+      "license": "MIT"
+    },
+    {
+      "repo": "jesseduffield/lazygit",
+      "commit": "cab9e7decad0efe65bb9d0f6ab0cafdec82be826",
+      "stars": 83217,
+      "license": "MIT"
+    },
+    {
+      "repo": "pbakaus/impeccable",
+      "commit": "5bf0a069dc857e1b5f4b090e004d9d5b231416ca",
+      "stars": 81730,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "netdata/netdata",
+      "commit": "f0b18b590a3883bc2fe07eeb9741c3ca808983cd",
+      "stars": 80971,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "abi/screenshot-to-code",
+      "commit": "a8139779f7c5ae231b7f2a86fa7f83ddc5f7badc",
+      "stars": 80404,
+      "license": "MIT"
+    },
+    {
+      "repo": "caddyserver/caddy",
+      "commit": "af7620dcc8a3b2edeaa8adc5d2850115286f4658",
+      "stars": 78036,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "grafana/grafana",
+      "commit": "b9ef74d2cba80978d853a116e4e4885c56371c16",
+      "stars": 77306,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "microsoft/ai-agents-for-beginners",
+      "commit": "6c3a5e13e9298615b3517aa20e792edd841c0506",
+      "stars": 77253,
+      "license": "MIT"
+    },
+    {
+      "repo": "diegosouzapw/OmniRoute",
+      "commit": "be1d878aab7e5cb0c9ba64ffeaf0cbc0cb1148b6",
+      "stars": 77114,
+      "license": "MIT"
+    },
+    {
+      "repo": "openai/openai-cookbook",
+      "commit": "5bd6cb40b6b84b69b2032d810610aa85064102df",
+      "stars": 76638,
+      "license": "MIT"
+    },
+    {
+      "repo": "ruvnet/ruflo",
+      "commit": "1882006a02487590c8c66a7eec8d7504f6af33c3",
+      "stars": 75290,
+      "license": "MIT"
+    },
+    {
+      "repo": "apache/superset",
+      "commit": "5c5061b1c8e41c0c55119d67ccefe42d869b9afc",
+      "stars": 75163,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "career-ops-hq/career-ops",
+      "commit": "c3230d12a5e94e9c00840410c75e8d89753218f0",
+      "stars": 75095,
+      "license": "MIT"
+    },
+    {
+      "repo": "thedaviddias/Front-End-Checklist",
+      "commit": "e8d14d049010e2ce25afcd5e8609dfcbbe63e47e",
+      "stars": 74476,
+      "license": "MIT"
+    },
+    {
+      "repo": "colbymchenry/codegraph",
+      "commit": "0893606ed503d24d5500789b512170130cf7d1ec",
+      "stars": 74228,
+      "license": "MIT"
+    },
+    {
+      "repo": "moby/moby",
+      "commit": "c5c09961ba9aa3db0aacae52b6a54fd7aee3dee4",
+      "stars": 72190,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "Fission-AI/OpenSpec",
+      "commit": "f80d860fc510ba4f51180c8ddde35b91b32de657",
+      "stars": 72083,
+      "license": "MIT"
+    },
+    {
+      "repo": "ansible/ansible",
+      "commit": "b458cf1c9d5189614e10e56256263597eb9ce3b0",
+      "stars": 70985,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "tw93/Mole",
+      "commit": "bbb1182aa9f50cf0b592b0416c41cc42479c1b08",
+      "stars": 70595,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "cline/cline",
+      "commit": "01b8a9724da905423e636396d7fb4acdf47796bb",
+      "stars": 70388,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "rohitg00/ai-engineering-from-scratch",
+      "commit": "1a8c4fd5f5b3012e50e111f694b4d84df8a4eb1e",
+      "stars": 69907,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/AI-For-Beginners",
+      "commit": "392d0df1b2647cbee104942390551f1ed9e072c8",
+      "stars": 69840,
+      "license": "MIT"
+    },
+    {
+      "repo": "debpalash/VoiceStudio",
+      "commit": "28d18023436229830debe8e65faf3eba4426f31b",
+      "stars": 69632,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "docling-project/docling",
+      "commit": "5f4509767647721a8ec011ce6a3a6a39b19bb1f0",
+      "stars": 68965,
+      "license": "MIT"
+    },
+    {
+      "repo": "usestrix/strix",
+      "commit": "972f5097c2bfaf8f1dd8b55744ab8861f0d6b6e5",
+      "stars": 68874,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "calesthio/OpenMontage",
+      "commit": "e45f5b12bd46440b04f3675af9a77d0718e6a254",
+      "stars": 68686,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "openinterpreter/openinterpreter",
+      "commit": "ac1fcc8fe57aba51fcc3c79afd57a0883237fe87",
+      "stars": 68583,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "scikit-learn/scikit-learn",
+      "commit": "d0e22aee7bbef7b310a2f08227c214ff6df9a526",
+      "stars": 67720,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "apache/echarts",
+      "commit": "34f4d927eafe251f26f63afd3aeefa30f2feba30",
+      "stars": 67519,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "mem0ai/mem0",
+      "commit": "0724291bd864cf807e88ee8981c8226644e8fb42",
+      "stars": 67265,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "prometheus/prometheus",
+      "commit": "8750eb5462d4c161dbe288428e92742efb526247",
+      "stars": 66581,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "facebook/docusaurus",
+      "commit": "a3f451ff0e1a4cdf77dbbd2ce52e26878c6a44a9",
+      "stars": 66500,
+      "license": "MIT"
+    },
+    {
+      "repo": "ZhuLinsen/daily_stock_analysis",
+      "commit": "bba8bf51bdbd3badc75a832c52ede058ef5ab871",
+      "stars": 66441,
+      "license": "MIT"
+    },
+    {
+      "repo": "webpack/webpack",
+      "commit": "ed7012df2ead7695d66a1fff294a9f01b2d84ecc",
+      "stars": 65976,
+      "license": "MIT"
+    },
+    {
+      "repo": "warpdotdev/warp",
+      "commit": "3e2b62975ada8119f495f136f22474e1b26fa278",
+      "stars": 65473,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "traefik/traefik",
+      "commit": "62b1f935f7612dbb730504e8210d8cffe2f4aef7",
+      "stars": 65243,
+      "license": "MIT"
+    },
+    {
+      "repo": "scrapy/scrapy",
+      "commit": "fbfc89ae7b72531a97fb4ef6d65ef3af392aa45c",
+      "stars": 64844,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "heygen-com/hyperframes",
+      "commit": "8be76fc86cda5b2a77d0ee23b65f582e85376042",
+      "stars": 64772,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "mvanhorn/last30days-skill",
+      "commit": "0341304f8ecb307ca0a939e48ecd002761ef23b2",
+      "stars": 64459,
+      "license": "MIT"
+    },
+    {
+      "repo": "ChrisTitusTech/winutil",
+      "commit": "07ccd8e2e755a706f31569808b31f5b77acad6a9",
+      "stars": 64302,
+      "license": "MIT"
+    },
+    {
+      "repo": "eternity4719/HowToLiveBetter",
+      "commit": "5f210ca953b7b538c042ad8515d5c355b766a194",
+      "stars": 64140,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "repo": "2dust/v2rayNG",
+      "commit": "e1b73f2fa8487dfc303da52d109719c1e32386b4",
+      "stars": 64057,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "usememos/memos",
+      "commit": "e051129f1db828b8462e6af71b04917376e8700a",
+      "stars": 63833,
+      "license": "MIT"
+    },
+    {
+      "repo": "storytold/photocraft",
+      "commit": "2a952f164c0b4cf936b1c6497db10dd095341c00",
+      "stars": 63815,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "topjohnwu/Magisk",
+      "commit": "87e72a582e019ae1bb3e65c90c259e994ecd66fa",
+      "stars": 63286,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "coollabsio/coolify",
+      "commit": "1f08c625646f37b654985033e42bcfe3290590d4",
+      "stars": 63036,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "marktext/marktext",
+      "commit": "45b2cedb5be2902d32b064f9127914d48de00cef",
+      "stars": 62695,
+      "license": "MIT"
+    },
+    {
+      "repo": "ultralytics/ultralytics",
+      "commit": "501a59775bd6b2157deb5255792aa3c69c336be0",
+      "stars": 62555,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "hugohe3/ppt-master",
+      "commit": "8070d3df1f6f54b5fb60a9ae66e79c664f050212",
+      "stars": 62537,
+      "license": "MIT"
+    },
+    {
+      "repo": "ghostty-org/ghostty",
+      "commit": "b3dc3d794513c11633e7c3347935693957744e83",
+      "stars": 62269,
+      "license": "MIT"
+    },
+    {
+      "repo": "tw93/Pake",
+      "commit": "65d0fc9ff33e6c0ebcdf8a38a61d62b04659a553",
+      "stars": 62126,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "penpot/penpot",
+      "commit": "122d4ebcd38913cb8499122445829489f3eb0269",
+      "stars": 61187,
+      "license": "MPL-2.0"
+    },
+    {
+      "repo": "nuxt/nuxt",
+      "commit": "f1d555065d13353e520b390e10972cd24cca7e00",
+      "stars": 60955,
+      "license": "MIT"
+    },
+    {
+      "repo": "makeplane/plane",
+      "commit": "ac0d55de30eb2876209016744e025c95647dffe4",
+      "stars": 60914,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "rclone/rclone",
+      "commit": "d369079a1448c487d09d85bfe11382e16ea4e345",
+      "stars": 60321,
+      "license": "MIT"
+    },
+    {
+      "repo": "spring-projects/spring-framework",
+      "commit": "3a73c04eae39c272c6d4d9263755ff0824c4cfb4",
+      "stars": 60290,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "crewAIInc/crewAI",
+      "commit": "6115839576d68d2e83b9f7f31e6c55d471e1fc64",
+      "stars": 59755,
+      "license": "MIT"
+    },
+    {
+      "repo": "MemPalace/mempalace",
+      "commit": "9b0cebf66d9796214fe03e3992d98e5f579f1400",
+      "stars": 59590,
+      "license": "MIT"
+    },
+    {
+      "repo": "rails/rails",
+      "commit": "3cc3a3c11fe64edeb176c165c5cd5c9231e2ae11",
+      "stars": 58840,
+      "license": "MIT"
+    },
+    {
+      "repo": "go-gitea/gitea",
+      "commit": "70a5ff725c12374367af52487412be7398c00766",
+      "stars": 58530,
+      "license": "MIT"
+    },
+    {
+      "repo": "ultralytics/yolov5",
+      "commit": "f9578796b8a64889aa9e66dc06914d19f40d338e",
+      "stars": 58180,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "appwrite/appwrite",
+      "commit": "65b0d2008636b9280774af050e9234f9fe0aa4c0",
+      "stars": 57697,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "blader/humanizer",
+      "commit": "225a6f39ac85f76ee48dbad772ea4abe4ed6c9d8",
+      "stars": 57362,
+      "license": "MIT"
+    },
+    {
+      "repo": "ayghri/i-have-adhd",
+      "commit": "1ecea1993b7fce257ffbd686c070948b5e07eda6",
+      "stars": 57333,
+      "license": "MIT"
+    },
+    {
+      "repo": "FuelLabs/fuel-core",
+      "commit": "ffd6563763582f8b0d9073a7cc115b57002ee684",
+      "stars": 56799,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "remix-run/react-router",
+      "commit": "9da0ec9f3e68053d8deb6c6ee4a8d36f809f9335",
+      "stars": 56614,
+      "license": "MIT"
+    },
+    {
+      "repo": "chen08209/FlClash",
+      "commit": "03f955382409a4a7ac1f3f92e46d9fcc6d39f106",
+      "stars": 56041,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "TryGhost/Ghost",
+      "commit": "9bf4f539186988fa7f4a6e8802f33669fc11e83f",
+      "stars": 55544,
+      "license": "MIT"
+    },
+    {
+      "repo": "router-for-me/CLIProxyAPI",
+      "commit": "355fd10e76b82e03ba6625acc583b900286e4bf2",
+      "stars": 55395,
+      "license": "MIT"
+    },
+    {
+      "repo": "aaif-goose/goose",
+      "commit": "44c2ed53b26e5b8ea087af2be1839ade2af7d57e",
+      "stars": 55331,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "coreyhaines31/marketingskills",
+      "commit": "365b412152b9542499ca1439426f7fc3cc92bb65",
+      "stars": 54960,
+      "license": "MIT"
+    },
+    {
+      "repo": "ggml-org/whisper.cpp",
+      "commit": "0c7be696371069e0baa2515ed7aa08d5a5473aa6",
+      "stars": 54426,
+      "license": "MIT"
+    },
+    {
+      "repo": "mozilla/pdf.js",
+      "commit": "dda8b72806ea97d1fd4ed121b081311a34898110",
+      "stars": 54008,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "ChromeDevTools/chrome-devtools-mcp",
+      "commit": "6606011ab3cdbc018904554dceae6ad6c5477fde",
+      "stars": 53627,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "expo/expo",
+      "commit": "98db1eb8e5006b557d84b5927271d968b697ed82",
+      "stars": 52755,
+      "license": "MIT"
+    },
+    {
+      "repo": "CherryHQ/cherry-studio",
+      "commit": "ff5eea88d241e2d368705d5a82ca1b3d3aa6b286",
+      "stars": 52672,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "dbeaver/dbeaver",
+      "commit": "b27cd8046fed70146c1bc28c92143fd1294a0dcc",
+      "stars": 52079,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "ethereum/go-ethereum",
+      "commit": "6d9b792191cee1ba2279d1e5b2d1364e40dbfd05",
+      "stars": 51404,
+      "license": "LGPL-3.0"
+    },
+    {
+      "repo": "roboflow/supervision",
+      "commit": "dcc74a078658c395917fab4678a21c743a5de482",
+      "stars": 51220,
+      "license": "MIT"
+    },
+    {
+      "repo": "justjavac/wechat-miniapp-radar",
+      "commit": "fd7363bee3bb0e458d9b6a9f5f2305092a751865",
+      "stars": 51182,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "cypress-io/cypress",
+      "commit": "b7e9929be2ca59de285497e20fde463624c8bb53",
+      "stars": 51047,
+      "license": "MIT"
+    },
+    {
+      "repo": "K-Dense-AI/scientific-agent-skills",
+      "commit": "a1043ef544e3a100c28e70a736b6cf32554d0677",
+      "stars": 50801,
+      "license": "MIT"
+    },
+    {
+      "repo": "ClickHouse/ClickHouse",
+      "commit": "8aa46590c607e9e35f54fe6885727bf857543a48",
+      "stars": 50445,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "TanStack/query",
+      "commit": "ee47993724e5b71e65d9f38ae416367d2dd18395",
+      "stars": 50440,
+      "license": "MIT"
+    },
+    {
+      "repo": "moeru-ai/airi",
+      "commit": "9b27b007b500f3ad1160e936767d80aad94c07e3",
+      "stars": 50424,
+      "license": "MIT"
+    },
+    {
+      "repo": "vectorize-io/hindsight",
+      "commit": "9a499b1759084a86598eff8af30ed59f7354e76c",
+      "stars": 50176,
+      "license": "MIT"
+    },
+    {
+      "repo": "pandas-dev/pandas",
+      "commit": "8eded316d50e33cc6e0e57bc596b4ba4d6923ff8",
+      "stars": 50134,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "astral-sh/ruff",
+      "commit": "5fd851808b7ec109f114fac1d0996a76be464a46",
+      "stars": 50109,
+      "license": "MIT"
+    },
+    {
+      "repo": "QuantumNous/new-api",
+      "commit": "d032204733db31208f10bac118b6e683aab3bf29",
+      "stars": 50064,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "Homebrew/brew",
+      "commit": "dbdc9b534eead3bbc7c741956e8893fac4b6914e",
+      "stars": 50025,
+      "license": "BSD-2-Clause"
+    },
+    {
+      "repo": "mudler/LocalAI",
+      "commit": "62fa19b833dddb2a4291e67bfc39966e9c16748d",
+      "stars": 49566,
+      "license": "MIT"
+    },
+    {
+      "repo": "JuliaLang/julia",
+      "commit": "7afcf771467f2a2e3f327b61d95b0abfd96e1a82",
+      "stars": 49207,
+      "license": "MIT"
+    },
+    {
+      "repo": "HKUDS/nanobot",
+      "commit": "6f04038d218ffe81f01a4de2e6889f4a62c0ee6d",
+      "stars": 49076,
+      "license": "MIT"
+    },
+    {
+      "repo": "calcom/cal.diy",
+      "commit": "54343aa685ae8f33159d2f485ec4a57bad5c574a",
+      "stars": 49047,
+      "license": "MIT"
+    },
+    {
+      "repo": "discourse/discourse",
+      "commit": "802125b979b5bb848a7cfc52409ef3176ffd4d82",
+      "stars": 47980,
+      "license": "GPL-2.0"
+    },
+    {
+      "repo": "exo-explore/exo",
+      "commit": "bc412e2230f395e652c23426a5eb88dfa515769b",
+      "stars": 47914,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "moment/moment",
+      "commit": "c2a703a4d84aa57ee2722ff8fb4a8016279fb3c4",
+      "stars": 47896,
+      "license": "MIT"
+    },
+    {
+      "repo": "gogs/gogs",
+      "commit": "dbbd717e923694c36f41b0360515b4374bbe6ee0",
+      "stars": 47871,
+      "license": "MIT"
+    },
+    {
+      "repo": "sickn33/agentic-awesome-skills",
+      "commit": "a3072641b750a1fb2f6ce695a5f984ea3d4c3ec1",
+      "stars": 47700,
+      "license": "MIT"
+    },
+    {
+      "repo": "prisma/orm",
+      "commit": "f66a491d91149ccf24e042cb7fb9b36aba362c41",
+      "stars": 47696,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "MadsLorentzen/ai-job-search",
+      "commit": "407dc34a2c4951e4ea3b047eaccdf2e4081a139a",
+      "stars": 47648,
+      "license": "MIT"
+    },
+    {
+      "repo": "alibaba/open-code-review",
+      "commit": "8eb83340a487b1150af00701b94f01af97e4b4d6",
+      "stars": 47434,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "apache/airflow",
+      "commit": "6997dc76fe50fc2027081d6c303db44e96bfd57f",
+      "stars": 47189,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "siyuan-note/siyuan",
+      "commit": "7a7430d8a3cf362e23de004a454ddabe651dc778",
+      "stars": 46796,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "cli/cli",
+      "commit": "3d7967df5a94052b0554898ffa02526f0f90b8c9",
+      "stars": 46661,
+      "license": "MIT"
+    },
+    {
+      "repo": "DIYgod/RSSHub",
+      "commit": "8aeca4cf7360a21651bf332d8363b4c1d45c003e",
+      "stars": 46543,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "milvus-io/milvus",
+      "commit": "cfb20bced0bc710fc3c0282032ea85cd04df4354",
+      "stars": 46397,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "files-community/Files",
+      "commit": "6b721e819e4006670c5926325450fef9157aa6b4",
+      "stars": 46008,
+      "license": "MIT"
+    },
+    {
+      "repo": "streamlit/streamlit",
+      "commit": "e9812c9e638e2ed841b5bc2deb90eff18fca4613",
+      "stars": 46004,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "LibreChat-AI/LibreChat",
+      "commit": "e1dfc10449ff713faffacd60273fddcfe2c0a698",
+      "stars": 45780,
+      "license": "MIT"
+    },
+    {
+      "repo": "mitmproxy/mitmproxy",
+      "commit": "77355977e5ea540b51ed029a40ed1dc2f1c2ba7b",
+      "stars": 45662,
+      "license": "MIT"
+    },
+    {
+      "repo": "ColorlibHQ/AdminLTE",
+      "commit": "e13df78a4d0c287e5fa57308e293f63e44e9dd0f",
+      "stars": 45655,
+      "license": "MIT"
+    },
+    {
+      "repo": "grpc/grpc",
+      "commit": "8791d6b1ccb6a694a7369ff21dff3a4228eb8ebf",
+      "stars": 45380,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "payloadcms/payload",
+      "commit": "73d3dd897381a851ff1708bbde19444d1a0c5b43",
+      "stars": 45280,
+      "license": "MIT"
+    },
+    {
+      "repo": "logseq/logseq",
+      "commit": "bd8b78f2486dfae4f89b5506df4892a721914176",
+      "stars": 45252,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "omacom/omarchy",
+      "commit": "51bfd1dbaa1b5f790e19623faf2745945d40c796",
+      "stars": 44918,
+      "license": "MIT"
+    },
+    {
+      "repo": "juanfont/headscale",
+      "commit": "fc97593bcea76c92fb3ad41a5b95076684ddc85a",
+      "stars": 44679,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "mifi/lossless-cut",
+      "commit": "2610158c7861e0b96e2020cebcdd3c539ff33830",
+      "stars": 44613,
+      "license": "GPL-2.0"
+    },
+    {
+      "repo": "ccxt/ccxt",
+      "commit": "586535110fa32c1f94d7e614d3095a106d4e3c2c",
+      "stars": 44395,
+      "license": "MIT"
+    },
+    {
+      "repo": "reactive-resume/reactive-resume",
+      "commit": "7d272a0d818f32c31e4a72f905d34dd373396eb4",
+      "stars": 44363,
+      "license": "MIT"
+    },
+    {
+      "repo": "herdrdev/herdr",
+      "commit": "143bf5fd4781d164260c63fe28e7dc08054ad32f",
+      "stars": 44266,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "apache/spark",
+      "commit": "a98f67abf9367d2ece88a1242f2979e5564b9e55",
+      "stars": 44216,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "colinhacks/zod",
+      "commit": "680d19f7d1e042e55934209caeb79bc843b94f44",
+      "stars": 44138,
+      "license": "MIT"
+    },
+    {
+      "repo": "vercel-labs/agent-browser",
+      "commit": "dac13bb87468fe9d74a040d862720f6cc17a9565",
+      "stars": 44063,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "babel/babel",
+      "commit": "0ca5fdaab734b2b755136ca12b79fc71d5f8e012",
+      "stars": 44053,
+      "license": "MIT"
+    },
+    {
+      "repo": "ray-project/ray",
+      "commit": "2a0483daaad1d1157b53f2ace738540a1db44ee4",
+      "stars": 44040,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "gradio-app/gradio",
+      "commit": "de986c72372e233ffaaa7abe1b93608d4d115065",
+      "stars": 43773,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "HeyPuter/puter",
+      "commit": "2b254b88924dc9a6f58f05423358cc0f593da46d",
+      "stars": 43735,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "langchain-ai/langgraph",
+      "commit": "e77a5cb08c1f3ff306d997dd76fc7169afdab5ea",
+      "stars": 43341,
+      "license": "MIT"
+    },
+    {
+      "repo": "deepspeedai/DeepSpeed",
+      "commit": "3b7de876f0192204ffa677136d8d92e9240ad914",
+      "stars": 43235,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "gkd-kit/gkd",
+      "commit": "eba5d8eff690a26f3b88c9ec49db07b54b916532",
+      "stars": 42907,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "sxyazi/yazi",
+      "commit": "22897a64e23530ce7d3bee6c2ad3f356cf8e68e9",
+      "stars": 42859,
+      "license": "MIT"
+    },
+    {
+      "repo": "agno-agi/agno",
+      "commit": "7f5dcdf53d0caf6c10381f2e2cd8c6acbca46fb8",
+      "stars": 42762,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "LizardByte/Sunshine",
+      "commit": "3d890eadc467980b266bf8a1016e622de5cd6f6a",
+      "stars": 42265,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "fastlane/fastlane",
+      "commit": "452f0b4e0c7129d9e99dc6a1aa4b8780ebd334f5",
+      "stars": 42248,
+      "license": "MIT"
+    },
+    {
+      "repo": "zhaoxuya520/reverse-skill",
+      "commit": "cab634bd855fc287f6e420c1f36fd1a6b9245960",
+      "stars": 42207,
+      "license": "MIT"
+    },
+    {
+      "repo": "duckdb/duckdb",
+      "commit": "e08224d653fcade680e471709e9a9035223989df",
+      "stars": 42192,
+      "license": "MIT"
+    },
+    {
+      "repo": "tinyhumansai/openhuman",
+      "commit": "1c009ca5559dcf08ae023862ed83c7d39534f468",
+      "stars": 42096,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "AstrBotDevs/AstrBot",
+      "commit": "9441402872f65fffc35685b0ead5bd3337033cb2",
+      "stars": 41971,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "apache/dubbo",
+      "commit": "ae809de2fc81b408194240965eb20bf27e6971df",
+      "stars": 41586,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "HKUDS/DeepTutor",
+      "commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+      "stars": 41476,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "vim/vim",
+      "commit": "5a9a0518b153b8571ff4d55c5727b72341080cef",
+      "stars": 41144,
+      "license": "Vim"
+    },
+    {
+      "repo": "codewhale-hq/Codewhale",
+      "commit": "0b2f5022f495ee562e9d667cb6b0f712e931f3e1",
+      "stars": 41094,
+      "license": "MIT"
+    },
+    {
+      "repo": "ToolJet/ToolJet",
+      "commit": "aa67409c2ab28caab2c6166f46cf71763274d8b8",
+      "stars": 41094,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "styled-components/styled-components",
+      "commit": "379477dabb6875cc7d332269db5da61282d225e9",
+      "stars": 41091,
+      "license": "MIT"
+    },
+    {
+      "repo": "wshobson/agents",
+      "commit": "044b4b21f083948e69ec878a7b07c8d0951a6ffa",
+      "stars": 40881,
+      "license": "MIT"
+    },
+    {
+      "repo": "nushell/nushell",
+      "commit": "818d4ac0644a03e857062b024c136c5d27ba0ea5",
+      "stars": 40670,
+      "license": "MIT"
+    },
+    {
+      "repo": "pingcap/tidb",
+      "commit": "4cee7f20849923b9ee1ca71b01e6811d0537cadd",
+      "stars": 40645,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "schollz/croc",
+      "commit": "986f9776615c1b5a7ab2d368d34c471c9a7a8791",
+      "stars": 40608,
+      "license": "MIT"
+    },
+    {
+      "repo": "php/php-src",
+      "commit": "de6f052c367d51e5a02d400c7b68c82035804b9a",
+      "stars": 40446,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "lfnovo/open-notebook",
+      "commit": "a0f6f3081ae06328f0a451b3a3ef2959ca25721d",
+      "stars": 40236,
+      "license": "MIT"
+    },
+    {
+      "repo": "gofiber/fiber",
+      "commit": "fcc95e79d57847ccca2a831b9f43a4aa74c9aaa4",
+      "stars": 40211,
+      "license": "MIT"
+    },
+    {
+      "repo": "HKUDS/LightRAG",
+      "commit": "aaebfe1bb8d55deb6a4304d357a3bf4c92fcd40a",
+      "stars": 40157,
+      "license": "MIT"
+    },
+    {
+      "repo": "github/awesome-copilot",
+      "commit": "cb64ad12e32737ae764becd6885462e9b4c7cb00",
+      "stars": 40068,
+      "license": "MIT"
+    },
+    {
+      "repo": "Kong/insomnia",
+      "commit": "566b7e75a889161583c899f77c2892fa8f2ecf1e",
+      "stars": 40048,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "Yeachan-Heo/oh-my-claudecode",
+      "commit": "44c27308912cc4e95cc5f5d13543b64845ece432",
+      "stars": 39946,
+      "license": "MIT"
+    },
+    {
+      "repo": "halo-dev/halo",
+      "commit": "de2a6c3c1e36b12a4f267fd5f9f4b0830b3acfda",
+      "stars": 39944,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "The-Vibe-Company/quivr",
+      "commit": "1f72133e27e1cc0a7a05fb35a93df0f9e33136c4",
+      "stars": 39588,
+      "license": "MIT"
+    },
+    {
+      "repo": "DioxusLabs/dioxus",
+      "commit": "847fbd08d6cd7edafafabf4bca2097b5345cd04f",
+      "stars": 39411,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "spacedriveapp/spacedrive",
+      "commit": "4d41a379f612e23ac43a66ffd67df52ca77f57d4",
+      "stars": 39193,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "RSSNext/Folo",
+      "commit": "148b453af2cf3436e8853e21af8feeb9b91fef6f",
+      "stars": 39106,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "hyprwm/Hyprland",
+      "commit": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb",
+      "stars": 38886,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "ant-design/ant-design-pro",
+      "commit": "ecee481bbb955aaeeaf3f46240fc35136bbed584",
+      "stars": 38857,
+      "license": "MIT"
+    },
+    {
+      "repo": "ueberdosis/tiptap",
+      "commit": "1f93f61d875a17bc15f289ceac664050ed4b2b9d",
+      "stars": 38738,
+      "license": "MIT"
+    },
+    {
+      "repo": "docker/compose",
+      "commit": "7b36d08dd0d30da3abc1e646baec8751f0bcb0b2",
+      "stars": 38368,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "CopilotKit/CopilotKit",
+      "commit": "6e4cb6ad9ce32881636edaa212b7dbb440f0a0c3",
+      "stars": 38049,
+      "license": "MIT"
+    },
+    {
+      "repo": "vlang/v",
+      "commit": "c36172591e766668cf8aa7cc307f05764b6a0d49",
+      "stars": 38012,
+      "license": "MIT"
+    },
+    {
+      "repo": "AlexsJones/llmfit",
+      "commit": "eb8db3835157d1c300ffa9050ac58f63df11617c",
+      "stars": 37971,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/Data-Science-For-Beginners",
+      "commit": "4d2ac427ad6f022e73a75c4f46a28bbb7978ec3f",
+      "stars": 37611,
+      "license": "MIT"
+    },
+    {
+      "repo": "alibaba/arthas",
+      "commit": "5fe5f068972f947e6a583dc5fd3636dbe2bfffe7",
+      "stars": 37583,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "keycloak/keycloak",
+      "commit": "eae20e964b2e23cfd8f4ed18b599343ebb056e8f",
+      "stars": 37386,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "huggingface/pytorch-image-models",
+      "commit": "637f8191614a4be38e144ab2f870f69cbc03ad30",
+      "stars": 37219,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "nextcloud/server",
+      "commit": "390916a312034c556a4b3579ee825d37b42c8238",
+      "stars": 37132,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "veggiemonk/awesome-docker",
+      "commit": "83cf001f32514ad310bae06483e6dd4522abd329",
+      "stars": 37044,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "JCodesMore/ai-website-cloner-template",
+      "commit": "ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb",
+      "stars": 36848,
+      "license": "MIT"
+    },
+    {
+      "repo": "pnpm/pnpm",
+      "commit": "1d909993c4edc08b0136755bd9a43a8afb2882ea",
+      "stars": 36816,
+      "license": "MIT"
+    },
+    {
+      "repo": "doocs/leetcode",
+      "commit": "0f7f906f09b527ac79e475cf44e951f3df51fd17",
+      "stars": 36691,
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "repo": "blakeblackshear/frigate",
+      "commit": "62ca5b25ea0a69bc4922e65ff8a26206e5e7336e",
+      "stars": 36641,
+      "license": "MIT"
+    },
+    {
+      "repo": "wailsapp/wails",
+      "commit": "91a74c45e6fce92ac284d1713b156a70d477965a",
+      "stars": 36571,
+      "license": "MIT"
+    },
+    {
+      "repo": "lightpanda-io/browser",
+      "commit": "91de03fa8e65dcab4e83a8c3eea239f40deaa4bf",
+      "stars": 36567,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "gchq/CyberChef",
+      "commit": "bf3616305a40718c09dfa783d0bbddb524c214e7",
+      "stars": 36130,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "lerna/lerna",
+      "commit": "b00fa0321a42947bb4113bc7906021f04131d0db",
+      "stars": 36037,
+      "license": "MIT"
+    },
+    {
+      "repo": "block/buzz",
+      "commit": "93ffc37cbdb7ced6a07eca11744931cdffb82e20",
+      "stars": 36028,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "alan2207/bulletproof-react",
+      "commit": "9506629ed003a561c6627735480cce4994244bb4",
+      "stars": 35979,
+      "license": "MIT"
+    },
+    {
+      "repo": "utmapp/UTM",
+      "commit": "4d73aaf0d284f1c22e3e1c1072e729988e134268",
+      "stars": 35918,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "esengine/DeepSeek-Reasonix",
+      "commit": "74f8239944734bd01cb3d486f7615a6313eb63f1",
+      "stars": 35813,
+      "license": "MIT"
+    },
+    {
+      "repo": "can1357/oh-my-pi",
+      "commit": "a536558dc21634462c1b2647676953204569779c",
+      "stars": 35597,
+      "license": "MIT"
+    },
+    {
+      "repo": "sahat/hackathon-starter",
+      "commit": "d7a20cce5e41f45f14eaf400af874f86817aea0d",
+      "stars": 35250,
+      "license": "MIT"
+    },
+    {
+      "repo": "vercel-labs/skills",
+      "commit": "13e4063a1cf913f5606d57d42ab83a86f5001e04",
+      "stars": 35150,
+      "license": "MIT"
+    },
+    {
+      "repo": "jdx/mise",
+      "commit": "f7ea0afeef53f6137455fc319c8a4810835e924f",
+      "stars": 35054,
+      "license": "MIT"
+    },
+    {
+      "repo": "virgiliojr94/book-to-skill",
+      "commit": "a24e62f4d8caf2ee433f6e48d9073800f56f906e",
+      "stars": 35010,
+      "license": "MIT"
+    },
+    {
+      "repo": "rustfs/rustfs",
+      "commit": "741de6f81c4837ccc15f2b6028f8cd97ff00a406",
+      "stars": 34994,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "huggingface/diffusers",
+      "commit": "d42ebf9c6e0b46103b74283f5324357a67acaa04",
+      "stars": 34728,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "backstage/backstage",
+      "commit": "044cd5c3cbe5e1d2f30aff0392b62e23a7704b23",
+      "stars": 34627,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "SeleniumHQ/selenium",
+      "commit": "46cfab1f7db48e22d7e1a63c6ea43c7950485b02",
+      "stars": 34553,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "google-research/timesfm",
+      "commit": "e51928e27119cb17bebc005be2696b75e0a9e688",
+      "stars": 34525,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "mukul975/Anthropic-Cybersecurity-Skills",
+      "commit": "54a798831d2266a3ca61ce68a7acb80b81160d57",
+      "stars": 34521,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "swc-project/swc",
+      "commit": "8ce7daa2cd0a304c02c9bd66399a6c74dbe651dc",
+      "stars": 34203,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "motiondivision/motion",
+      "commit": "a7df1f379561f6b4030e94c1d93f4fcd25b3493a",
+      "stars": 34181,
+      "license": "MIT"
+    },
+    {
+      "repo": "apache/kafka",
+      "commit": "f7a6dfe076929c3b761bfb9fbb97f786ff9503e8",
+      "stars": 34029,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "cjpais/Handy",
+      "commit": "9e57a0d7929fcc6417ea0d6e54c1b57f62635edd",
+      "stars": 33905,
+      "license": "MIT"
+    },
+    {
+      "repo": "tinygrad/tinygrad",
+      "commit": "dc9af790e2d5da2f1587ff0388ceeb035a6ac08d",
+      "stars": 33760,
+      "license": "MIT"
+    },
+    {
+      "repo": "OWASP/CheatSheetSeries",
+      "commit": "72865b1e3b5754246a101778dc00b37f9c233373",
+      "stars": 33650,
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "repo": "shadps4-emu/shadPS4",
+      "commit": "5aa7ffa3f4f21bba827d7865ed8f69f98f993542",
+      "stars": 33622,
+      "license": "GPL-2.0"
+    },
+    {
+      "repo": "iOfficeAI/AionUi",
+      "commit": "c140550d04e44f3d6f8a9830b40ae56e4689a977",
+      "stars": 33571,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "alibaba/nacos",
+      "commit": "1511b5a85f744acb0ad54e8213b1f4d82674799c",
+      "stars": 33459,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "remix-run/remix",
+      "commit": "b65325d9e79dee9b77465f791a40302cd2865e89",
+      "stars": 33410,
+      "license": "MIT"
+    },
+    {
+      "repo": "telegramdesktop/tdesktop",
+      "commit": "b16daff6df63e8a812bc2b52a04ff243f67a7d3f",
+      "stars": 33257,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "binarywang/WxJava",
+      "commit": "b73861bcbc8865c90fab328b9cbef2b6a9a7b122",
+      "stars": 33160,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "NandhaKishorM/laya",
+      "commit": "4ac226d5ee88ed6df8db288a05c766d7a34ee682",
+      "stars": 33084,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "podman-container-tools/podman",
+      "commit": "aa8f8452ab7eaa0f367319cac87d87f1f5577ded",
+      "stars": 33051,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "zeroclaw-labs/zeroclaw",
+      "commit": "7a1e3f8c44f849d28b80e8b74bb1a0dce2ba929d",
+      "stars": 32985,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "topoteretes/cognee",
+      "commit": "f154b32a9e544dac73e7ddf2010327cf9988edcd",
+      "stars": 32377,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "conductor-oss/conductor",
+      "commit": "c52919afd0ec2ffde0196afbab10762d2d48ed28",
+      "stars": 32320,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "filamentphp/filament",
+      "commit": "a019855a7261d19225c974236071b680822abe39",
+      "stars": 32275,
+      "license": "MIT"
+    },
+    {
+      "repo": "BigPizzaV3/CodexPlusPlus",
+      "commit": "42feefdd5bcb6a2659c20bd4379b75bdabb7f9e4",
+      "stars": 32230,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "facebook/rocksdb",
+      "commit": "a215c38a8ed34848edc152f7435eabc128208111",
+      "stars": 32201,
+      "license": "GPL-2.0"
+    },
+    {
+      "repo": "tirth8205/code-review-graph",
+      "commit": "d72e8fbf7ef571b668c26a4222a284bf7792e7a1",
+      "stars": 32181,
+      "license": "MIT"
+    },
+    {
+      "repo": "hasura/graphql-engine",
+      "commit": "38533f60078ff451c1c1ffe139678b40201bcf1a",
+      "stars": 32132,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "FujiwaraChoki/MoneyPrinterV2",
+      "commit": "a734fa924adb9ffe5ab8472aa5526e469e42a8b5",
+      "stars": 32125,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "atuinsh/atuin",
+      "commit": "4ca8b77c8a526b8c294eb864a2b74c95c685c983",
+      "stars": 32003,
+      "license": "MIT"
+    },
+    {
+      "repo": "k1tbyte/Wand-Enhancer",
+      "commit": "c6ae7a3ad49388ab9ad0ef6e06d235b59cc573cb",
+      "stars": 32000,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "grafana/k6",
+      "commit": "3afb7be136269c18cface16e2751b9fddd42b90a",
+      "stars": 31945,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "openai/openai-python",
+      "commit": "230a923faba5574ebdc5b45a505a26b6bad79f61",
+      "stars": 31859,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "mantinedev/mantine",
+      "commit": "e243f7f999b3250c0babe6c6aa6dba9bcb4aa836",
+      "stars": 31837,
+      "license": "MIT"
+    },
+    {
+      "repo": "getzep/graphiti",
+      "commit": "d50741d1bf463cbe3859eb73914cbff1b66839e6",
+      "stars": 31803,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "ScrapeGraphAI/Scrapegraph-ai",
+      "commit": "194055e203afce41ed4e70365dbc416bad756115",
+      "stars": 31801,
+      "license": "MIT"
+    },
+    {
+      "repo": "ReactiveX/rxjs",
+      "commit": "54796b38a57e6309f9861e174737479bb3f63f61",
+      "stars": 31696,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "googleworkspace/cli",
+      "commit": "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd",
+      "stars": 31536,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "fabricjs/fabric.js",
+      "commit": "90d2c71ecee44bae1915fed3e9423f53b9cb1889",
+      "stars": 31502,
+      "license": "MIT"
+    },
+    {
+      "repo": "78/xiaozhi-esp32",
+      "commit": "6cb01531c2ae961eb3fd64c5e97f65d20a597f7e",
+      "stars": 31228,
+      "license": "MIT"
+    },
+    {
+      "repo": "vercel/turborepo",
+      "commit": "74c9fbca766f3313a48dc7d989b57ba2aa0d4b53",
+      "stars": 31208,
+      "license": "MIT"
+    },
+    {
+      "repo": "transloadit/uppy",
+      "commit": "a17c84d0497b8902f84226a5d3dd49431bed71f3",
+      "stars": 31027,
+      "license": "MIT"
+    },
+    {
+      "repo": "anywhere-labs/dsh-desktop",
+      "commit": "30fe7bd9bc3f6921f2c56fdb3bde8bedf0902136",
+      "stars": 31017,
+      "license": "MIT"
+    },
+    {
+      "repo": "nanocoai/nanoclaw",
+      "commit": "19698fe2b007b6fa6c0283583df8d3d37a3000fa",
+      "stars": 30956,
+      "license": "MIT"
+    },
+    {
+      "repo": "heroui-inc/heroui",
+      "commit": "a75a7ea203a5980c5808edce924749c38d7d5038",
+      "stars": 30948,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "garrytan/gbrain",
+      "commit": "ed6a28bbb1f6a987711c3803da42b0a8999bb5d9",
+      "stars": 30914,
+      "license": "MIT"
+    },
+    {
+      "repo": "ComposioHQ/composio",
+      "commit": "c1ffdd009b187aa623fd0c24b241f34ec592c331",
+      "stars": 30579,
+      "license": "MIT"
+    },
+    {
+      "repo": "opentofu/opentofu",
+      "commit": "105b18bb846f80760ee983c8e49044b2bd30f0a4",
+      "stars": 30510,
+      "license": "MPL-2.0"
+    },
+    {
+      "repo": "helm/helm",
+      "commit": "1d4505ca6a28ebb5d97c1c35bbe71522f02744c0",
+      "stars": 30326,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "langchain-ai/deepagents",
+      "commit": "7f474e1527dd8b014d53ebb6aa66321a54798ced",
+      "stars": 30322,
+      "license": "MIT"
+    },
+    {
+      "repo": "better-auth/better-auth",
+      "commit": "e5b971444a28efd8cafb1ffb39160661a15bb56c",
+      "stars": 30319,
+      "license": "MIT"
+    },
+    {
+      "repo": "statelyai/xstate",
+      "commit": "858273e52d10de3661fa84188b93f6b6e2cf3eab",
+      "stars": 30308,
+      "license": "MIT"
+    },
+    {
+      "repo": "nautechsystems/nautilus_trader",
+      "commit": "5b1b5b8c5ad9ddf784827d55723dd26ddeaf8d08",
+      "stars": 30117,
+      "license": "LGPL-3.0"
+    },
+    {
+      "repo": "openai/openai-agents-python",
+      "commit": "17d994bd3045dae71acda676a4ef4762ed8ecd94",
+      "stars": 30068,
+      "license": "MIT"
+    },
+    {
+      "repo": "square/leakcanary",
+      "commit": "9589bcd1f4f5a22ac9e704162c868698a32304ff",
+      "stars": 30003,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "sampotts/plyr",
+      "commit": "af42d594180b6fdf24bfe8275307921f2987173c",
+      "stars": 29996,
+      "license": "MIT"
+    },
+    {
+      "repo": "trycua/cua",
+      "commit": "1e24889703db8a5b75f075ed493ef40bcf8df8ab",
+      "stars": 29900,
+      "license": "MIT"
+    },
+    {
+      "repo": "huggingface/smolagents",
+      "commit": "96f33faaf028479119ec8d34507b47694cf14e34",
+      "stars": 29870,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "simstudioai/sim",
+      "commit": "595e62e3167abbfb55f9233baeabec535057456a",
+      "stars": 29831,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "apolloconfig/apollo",
+      "commit": "42d4d827ebb95189c99e2ca85baffcd8594784ef",
+      "stars": 29822,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "opendataloader-project/opendataloader-pdf",
+      "commit": "be602db5750d62dd695ce566defa1e3de3b4af72",
+      "stars": 29720,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "karakeep-app/karakeep",
+      "commit": "c7c1b32ea3b45dd60bde41fd56c7649dd4dc4a65",
+      "stars": 29696,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "storytold/artcraft",
+      "commit": "d4e4ac69bbd93d237eaf5d0260bc6a5ff3a5e373",
+      "stars": 29648,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "kestra-io/kestra",
+      "commit": "ab92114d8cfdfda9625d2295a6d9d9ff19e5b80d",
+      "stars": 29638,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "rohitg00/agentmemory",
+      "commit": "36eb328e12970c84e6031fd75b8ab77b977cd281",
+      "stars": 29562,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "actualbudget/actual",
+      "commit": "d5d6035a8f5867717a80635d270fbe64e370ea08",
+      "stars": 29527,
+      "license": "MIT"
+    },
+    {
+      "repo": "chroma-core/chroma",
+      "commit": "fd725c5cd3b2919dc733cca517ecb4062286cb16",
+      "stars": 29511,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "alibaba/page-agent",
+      "commit": "9eb6b6646500264d9034dd466a4270cb9fc1ef1e",
+      "stars": 29456,
+      "license": "MIT"
+    },
+    {
+      "repo": "nrwl/nx",
+      "commit": "a9122400a9720ff60dfccda668a662bcc73cb3bf",
+      "stars": 29413,
+      "license": "MIT"
+    },
+    {
+      "repo": "slymnoyann/hey.xyz",
+      "commit": "44dee0c1223b9202699915fd3e92e670fd8e34e6",
+      "stars": 29352,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "envoyproxy/envoy",
+      "commit": "bc3dc71cdc6745df0f0e4df6f5c02d68e19a09a8",
+      "stars": 29071,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "GitbookIO/gitbook",
+      "commit": "d839d9dc5720837fe19eb45280170a737047f10b",
+      "stars": 29065,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "grafana/loki",
+      "commit": "b13a0ab8f4478faa7c07423b10516d592fe79d84",
+      "stars": 29029,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "reflex-dev/reflex",
+      "commit": "f10cff47af161a556f63d1535ed092ad8a917482",
+      "stars": 28951,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "h4ckf0r0day/obscura",
+      "commit": "81e55fcdeec18c46fa9a4b792d4f187bd269e5a8",
+      "stars": 28949,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "yamadashy/repomix",
+      "commit": "55c6de6aebde4c38877fbcaf005c4cc396bf6e2d",
+      "stars": 28858,
+      "license": "MIT"
+    },
+    {
+      "repo": "ml-explore/mlx",
+      "commit": "5c582abc5eef2b2f92345d6a7ef7791ca550e5cb",
+      "stars": 28805,
+      "license": "MIT"
+    },
+    {
+      "repo": "ArchiveBox/ArchiveBox",
+      "commit": "749f590012a099125f33a4afb04a139ddb2b2fea",
+      "stars": 28789,
+      "license": "MIT"
+    },
+    {
+      "repo": "invoke-ai/InvokeAI",
+      "commit": "861210e33fb3cea6dfd1eaf47b37bd82fe05afc7",
+      "stars": 28672,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "QwenLM/qwen-code",
+      "commit": "87dcc4a7080b9052479e9206d2b17b7c5d8e32e4",
+      "stars": 28513,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "TanStack/table",
+      "commit": "95c4768496c07b45b1e65d8e33c3291ac66eae9b",
+      "stars": 28493,
+      "license": "MIT"
+    },
+    {
+      "repo": "mlflow/mlflow",
+      "commit": "7d2713204b8d330c712da7383589a58cd43b0ac7",
+      "stars": 28405,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "BloopAI/vibe-kanban",
+      "commit": "d5cbb5380fa0b32e98ef9b8d987f63decce4be3a",
+      "stars": 28376,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "bagisto/bagisto",
+      "commit": "809744180e0b3512f9c424caa6156aa9cb70ef6d",
+      "stars": 28240,
+      "license": "MIT"
+    },
+    {
+      "repo": "locustio/locust",
+      "commit": "2054782053a8b32ae4185f241e0e208b509f1b5d",
+      "stars": 28213,
+      "license": "MIT"
+    },
+    {
+      "repo": "huggingface/lerobot",
+      "commit": "297774fca4e3ad0aa34e7425fbf937111637e77b",
+      "stars": 28212,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "alibaba/druid",
+      "commit": "fa8dc9912637a2f729eef9f55356621fec18d40e",
+      "stars": 28164,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "PrefectHQ/fastmcp",
+      "commit": "e2fcc412001ff7414095c5dc282f94c70299a612",
+      "stars": 28097,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "b303d494dfb436784d5022cfb82e5503f3769f18",
+      "stars": 27925,
+      "license": "MIT"
+    },
+    {
+      "repo": "hcengineering/platform",
+      "commit": "698b287e6fc427205fb59846cb0ea1609bf99415",
+      "stars": 27915,
+      "license": "EPL-2.0"
+    },
+    {
+      "repo": "pingdotgg/t3code",
+      "commit": "2577baf8b0dc541283fa93d6919b0e354effadf4",
+      "stars": 27844,
+      "license": "MIT"
+    },
+    {
+      "repo": "element-plus/element-plus",
+      "commit": "2595b0344c0fd5d1f0aeb0cff0985beae7047824",
+      "stars": 27810,
+      "license": "MIT"
+    },
+    {
+      "repo": "recharts/recharts",
+      "commit": "483835a5274a24b3685243050bd8d5de2cdfe2a9",
+      "stars": 27632,
+      "license": "MIT"
+    },
+    {
+      "repo": "Kilo-Org/kilocode",
+      "commit": "0c85028970ca19d8f5b87c32db5578575db7cb31",
+      "stars": 27625,
+      "license": "MIT"
+    },
+    {
+      "repo": "eslint/eslint",
+      "commit": "b59d889c7c18d8c73144e6ba46e9e7f3e7da0196",
+      "stars": 27564,
+      "license": "MIT"
+    },
+    {
+      "repo": "Wox-launcher/Wox",
+      "commit": "d37c81ef2a7216e873fdf44e89e47b1daa60f5d1",
+      "stars": 27525,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "microsoft/vcpkg",
+      "commit": "3cd21e48a75f67acfef289da52893ce79144aaa1",
+      "stars": 27522,
+      "license": "MIT"
+    },
+    {
+      "repo": "OthmanAdi/planning-with-files",
+      "commit": "96b79bf1d64f22ab5f68442e0a45704eef06ddfc",
+      "stars": 27470,
+      "license": "MIT"
+    },
+    {
+      "repo": "valkey-io/valkey",
+      "commit": "035b8d61d0e8fc3558e566ec76088c07562b080c",
+      "stars": 27440,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "Molunerfinn/PicGo",
+      "commit": "2e3e30fcbcf3917805da79bcc74716334bd212c8",
+      "stars": 27348,
+      "license": "MIT"
+    },
+    {
+      "repo": "quasarframework/quasar",
+      "commit": "1a3bcbbc2d16541f5ace6ce9e064c4c48829da7c",
+      "stars": 27201,
+      "license": "MIT"
+    },
+    {
+      "repo": "Schniz/fnm",
+      "commit": "86adc9676ceb2a509b21e75e74048b93c89f097d",
+      "stars": 27113,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "phuryn/pm-skills",
+      "commit": "c68487d721e419ec87af1ae6412a842978eab785",
+      "stars": 27104,
+      "license": "MIT"
+    },
+    {
+      "repo": "angular/angular-cli",
+      "commit": "00c25090960adfea437997a8e3cdec17634bf9eb",
+      "stars": 27015,
+      "license": "MIT"
+    },
+    {
+      "repo": "onlook-dev/onlook",
+      "commit": "423e2e924366419e418ee049093872d535eea41a",
+      "stars": 26922,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "floci-io/floci",
+      "commit": "0a5809a559311de6b06f03f0733743c6108beea6",
+      "stars": 26852,
+      "license": "MIT"
+    },
+    {
+      "repo": "mihomo-party-org/clash-party",
+      "commit": "6c1151f4cbdf4c713524b1410a9d485f2bf5ad19",
+      "stars": 26842,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "deepset-ai/haystack",
+      "commit": "1b41a8badfae0f0feecdbf1473e0a60b21c20cfd",
+      "stars": 26743,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "elixir-lang/elixir",
+      "commit": "558215b8da28e88b90b4e73f1cfc746e624ce075",
+      "stars": 26697,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "icsharpcode/ILSpy",
+      "commit": "dad8a25ed2b742c64b7e22b5db6cc13c69f3e9b2",
+      "stars": 26665,
+      "license": "MIT"
+    },
+    {
+      "repo": "Devolutions/UniGetUI",
+      "commit": "288ef55d71b24c9aa83f3621f16547d0e7cd2cc2",
+      "stars": 26607,
+      "license": "MIT"
+    },
+    {
+      "repo": "yikart/AiToEarn",
+      "commit": "3581f511293236044e56fad67958cfcea0def6b5",
+      "stars": 26541,
+      "license": "MIT"
+    },
+    {
+      "repo": "microsoft/winget-cli",
+      "commit": "3d9083c062c1e7a7086e05becb414d4e005e4ab6",
+      "stars": 26505,
+      "license": "MIT"
+    },
+    {
+      "repo": "apache/flink",
+      "commit": "3f4e1a3f43f762ddf9bb7ad7ff2abef850798e74",
+      "stars": 26410,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "anomalyco/sst",
+      "commit": "e49ac31411f63ab4ed0d802b7e15d95f6b827e47",
+      "stars": 26356,
+      "license": "MIT"
+    },
+    {
+      "repo": "vapor/vapor",
+      "commit": "88754c79b3bb298e2ff2765b092691aae8c757b1",
+      "stars": 26227,
+      "license": "MIT"
+    },
+    {
+      "repo": "agentskills/agentskills",
+      "commit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379",
+      "stars": 26192,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "zulip/zulip",
+      "commit": "d06d30056e658492b24421687379d7e989e2e736",
+      "stars": 26054,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "promptfoo/promptfoo",
+      "commit": "132a2d38b1b0adc953b0db650f950d573bc113c4",
+      "stars": 26033,
+      "license": "MIT"
+    },
+    {
+      "repo": "Wilfred/difftastic",
+      "commit": "f8ed095aecd70ddf9bb82ee957f6ed9576108b1f",
+      "stars": 26023,
+      "license": "MIT"
+    },
+    {
+      "repo": "biomejs/biome",
+      "commit": "57e1e6216ba4924cae383790e3f3c64ea11dd143",
+      "stars": 25961,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "bazelbuild/bazel",
+      "commit": "f89abcf17176698f571dad6e053fdec805f3a79e",
+      "stars": 25956,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "pulumi/pulumi",
+      "commit": "4e9f82d6dbb465aba2b299782979c08c78e5a600",
+      "stars": 25791,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "Niko1221/Strata",
+      "commit": "296b59d2f73c8f04a805df29c2fa97655adace78",
+      "stars": 25720,
+      "license": "MIT"
+    },
+    {
+      "repo": "browserbase/stagehand",
+      "commit": "10418f98831285b3cddca5328c8013a94f22672a",
+      "stars": 25695,
+      "license": "MIT"
+    },
+    {
+      "repo": "NativeScript/NativeScript",
+      "commit": "3224f1b437106cc5d1926fde19e1233e42d52786",
+      "stars": 25672,
+      "license": "MIT"
+    },
+    {
+      "repo": "EveryInc/compound-engineering-plugin",
+      "commit": "fac349c0c31a543d497fd4825af9b44bdb7e7dfe",
+      "stars": 25548,
+      "license": "MIT"
+    },
+    {
+      "repo": "letta-ai/letta",
+      "commit": "5bcdd177d70fa2b31a754cfcd801e77b2e1ab16a",
+      "stars": 25157,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "neoclide/coc.nvim",
+      "commit": "44e254732db696245a14d35fb6d294d3141964bc",
+      "stars": 25154,
+      "license": "MIT"
+    },
+    {
+      "repo": "Dao-AILab/flash-attention",
+      "commit": "e9d8944c855489e03c66262d07ba4c81d9d8dd31",
+      "stars": 25141,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "OpenListTeam/OpenList",
+      "commit": "3b28270a4066ea52943a69ecddd850d83f7e8bdc",
+      "stars": 25092,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "highlightjs/highlight.js",
+      "commit": "fc3f06392f189354eed922973635ab9e9268b983",
+      "stars": 25003,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "nextai-translator/nextai-translator",
+      "commit": "a9681a4ab0599bef7013e29fca701f250d7738a2",
+      "stars": 24999,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "agentsmd/agents.md",
+      "commit": "d001185d792eb6402a58e4cbef1c228b309ec25d",
+      "stars": 24951,
+      "license": "MIT"
+    },
+    {
+      "repo": "go-delve/delve",
+      "commit": "7e105b945b623c501f6afdc3518a9f5dc1810910",
+      "stars": 24949,
+      "license": "MIT"
+    },
+    {
+      "repo": "pascalorg/editor",
+      "commit": "3dd378b8eb933d711fa903140f74b02a1e9ab33f",
+      "stars": 24902,
+      "license": "MIT"
+    },
+    {
+      "repo": "tursodatabase/turso",
+      "commit": "347ebcf5b9834b7844c9d56c850502d9c1684e9e",
+      "stars": 24785,
+      "license": "MIT"
+    },
+    {
+      "repo": "modelcontextprotocol/python-sdk",
+      "commit": "754254c08fe1c3eda18b69da3d336106fe8d72d6",
+      "stars": 24592,
+      "license": "MIT"
+    },
+    {
+      "repo": "CymChad/BaseRecyclerViewAdapterHelper",
+      "commit": "9948068cd95d5386cdb7f3e03d85fe2aede307cd",
+      "stars": 24572,
+      "license": "MIT"
+    },
+    {
+      "repo": "docmirror/dev-sidecar",
+      "commit": "f50c5b87e7f102504e09630adaf01116aad0d671",
+      "stars": 24517,
+      "license": "MPL-2.0"
+    },
+    {
+      "repo": "plotly/dash",
+      "commit": "c388ddf2f621496a23332052b50ebaeb4f5f50d6",
+      "stars": 24454,
+      "license": "MIT"
+    },
+    {
+      "repo": "argoproj/argo-cd",
+      "commit": "8833e45aafa555c5320319fdb71833d4df81549f",
+      "stars": 24412,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "onevcat/Kingfisher",
+      "commit": "314ac75dbe62cf0b94741b3171f08329c0e49aa4",
+      "stars": 24403,
+      "license": "MIT"
+    },
+    {
+      "repo": "uutils/coreutils",
+      "commit": "b8657e82ac019cf5b12c05523c376e28e420a403",
+      "stars": 24247,
+      "license": "MIT"
+    },
+    {
+      "repo": "slopus/happy",
+      "commit": "e0b7fc074d720e44d2bc164fc71acb48dfa1afd6",
+      "stars": 24172,
+      "license": "MIT"
+    },
+    {
+      "repo": "processing/p5.js",
+      "commit": "24a68d5c19eb70931c9a08c41b43a658978835f3",
+      "stars": 24137,
+      "license": "LGPL-2.1"
+    },
+    {
+      "repo": "air-verse/air",
+      "commit": "71ea1dee05248122ed22b5870c7fb20a90d80ddd",
+      "stars": 24074,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "PrefectHQ/prefect",
+      "commit": "d8c84c2acfff796ba0698977ab09a09690b0ac39",
+      "stars": 24025,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "krayin/laravel-crm",
+      "commit": "8f3a395994f80bf977832d14d6dd1d023ac9517b",
+      "stars": 24013,
+      "license": "MIT"
+    },
+    {
+      "repo": "ayangweb/BongoCat",
+      "commit": "30d0c34f557a76e7f265befa94e71704c813f8a9",
+      "stars": 23970,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "facebook/lexical",
+      "commit": "fd661f08c025c18593e0f1fbbcb503fe42b815e9",
+      "stars": 23953,
+      "license": "MIT"
+    },
+    {
+      "repo": "SuperClaude-Org/SuperClaude_Framework",
+      "commit": "fe68862c8ed9e2afb8120c2d9e27d0c3a7ce73a2",
+      "stars": 23910,
+      "license": "MIT"
+    },
+    {
+      "repo": "verl-project/verl",
+      "commit": "d400b3eccc304a5f0c64817b1f295462752b6b48",
+      "stars": 23896,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "every-app/open-seo",
+      "commit": "d7ea7852480601af9bc8870942af8311a410e567",
+      "stars": 23780,
+      "license": "MIT"
+    },
+    {
+      "repo": "MaaAssistantArknights/MaaAssistantArknights",
+      "commit": "63e8ab628c955155ee0de974f6b9b3ff50e15dad",
+      "stars": 23768,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "temporalio/temporal",
+      "commit": "dcd360f177a1238c6f7c59ef5889613b7e243a03",
+      "stars": 23742,
+      "license": "MIT"
+    },
+    {
+      "repo": "validatorjs/validator.js",
+      "commit": "9ff342479591ca5a43cb30000195bcf55c1bbed9",
+      "stars": 23736,
+      "license": "MIT"
+    },
+    {
+      "repo": "bendlang/bend",
+      "commit": "d2aeefc1902d617340e26f7fab5c1ef50fe28efa",
+      "stars": 23698,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "coleam00/Archon",
+      "commit": "7377bd5a2486ba28a256e90e19044f4da501b48a",
+      "stars": 23694,
+      "license": "MIT"
+    },
+    {
+      "repo": "kriasoft/react-starter-kit",
+      "commit": "dbdb0d4991bbaae1671ff62180089f2733dd406a",
+      "stars": 23692,
+      "license": "MIT"
+    },
+    {
+      "repo": "AprilNEA/OpenLogi",
+      "commit": "42af6f45ef0d6659ebfdcc2ccb476dc4e6cc0340",
+      "stars": 23662,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "johnpapa/angular-styleguide",
+      "commit": "5c2703f36af03798c11729bfc5ba179aebaa320c",
+      "stars": 23595,
+      "license": "MIT"
+    },
+    {
+      "repo": "JanDeDobbeleer/oh-my-posh",
+      "commit": "913014b4abdb5c6be2fcd6e759d242168fa390e8",
+      "stars": 23593,
+      "license": "MIT"
+    },
+    {
+      "repo": "saleor/saleor",
+      "commit": "dfa97c976418c4760ffd63d34b5e13698dfd85e8",
+      "stars": 23446,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "guzzle/guzzle",
+      "commit": "93939470950a9b11e2e84204166ef5e048c55fe4",
+      "stars": 23445,
+      "license": "MIT"
+    },
+    {
+      "repo": "TecharoHQ/anubis",
+      "commit": "207f9eb87183bf3d29982515648ed95b68f7dd4d",
+      "stars": 23442,
+      "license": "MIT"
+    },
+    {
+      "repo": "pubkey/rxdb",
+      "commit": "6b3a69d23b0e8d7badc43da840d8c06f1caee4e7",
+      "stars": 23410,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "jaegertracing/jaeger",
+      "commit": "6cd91e62bafa93fd9a2fc9369dad889117b7bf07",
+      "stars": 23298,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "Skyvern-AI/skyvern",
+      "commit": "b6c6faee192f0747f24c8372a66012e646ca846c",
+      "stars": 23215,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "marimo-team/marimo",
+      "commit": "b1299c7df71863ef4d86b87b59b7eb30433d1c80",
+      "stars": 23200,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "micro/go-micro",
+      "commit": "cefe2ce7aa21d06c2cb51945ae4ad0c8a97b5398",
+      "stars": 23087,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "czlonkowski/n8n-mcp",
+      "commit": "8ef965a36e2f7bdca40252a9fc3c4ab99d851fd0",
+      "stars": 23083,
+      "license": "MIT"
+    },
+    {
+      "repo": "oxc-project/oxc",
+      "commit": "4770423f7b02bd69bd4bd11f504d8d7209be6be9",
+      "stars": 23078,
+      "license": "MIT"
+    },
+    {
+      "repo": "2025Emma/vibe-coding-cn",
+      "commit": "9b42dd10ddf3fff58f8c7a4d347175db107d7bf9",
+      "stars": 23071,
+      "license": "MIT"
+    },
+    {
+      "repo": "browser-use/jev-ultrafast",
+      "commit": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+      "stars": 23045,
+      "license": "MIT"
+    },
+    {
+      "repo": "1Panel-dev/MaxKB",
+      "commit": "b3b53978dc79847eaa96bfc9eae8fac4a1cf6a46",
+      "stars": 22985,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "mochajs/mocha",
+      "commit": "2c2b89600e3ba8225bf11d7919e698060a55c86e",
+      "stars": 22898,
+      "license": "MIT"
+    },
+    {
+      "repo": "super-productivity/super-productivity",
+      "commit": "65145cdceec75286a32215fc519b5e8e6bb89a70",
+      "stars": 22863,
+      "license": "MIT"
+    },
+    {
+      "repo": "forem/forem",
+      "commit": "646ae4ee11574b92aa2ed4c4c5954baf42f65dd0",
+      "stars": 22799,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "renovatebot/renovate",
+      "commit": "501a2a0f429eccf7993a2cff4d6dfe3d6d3980f6",
+      "stars": 22765,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "NVIDIA/NemoClaw",
+      "commit": "282836ecdfcc7f3a56e15dbb6c1be56d0bdadec1",
+      "stars": 22754,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "vectordotdev/vector",
+      "commit": "e473eef2a0a324e760ea801b4debdc4c8eb2a414",
+      "stars": 22708,
+      "license": "MPL-2.0"
+    },
+    {
+      "repo": "magicuidesign/magicui",
+      "commit": "85f97fd27b053339af74ba9dd4ca428ee25989fb",
+      "stars": 22689,
+      "license": "MIT"
+    },
+    {
+      "repo": "comet-ml/opik",
+      "commit": "0afba76de87786b9b06e4b87f0b58f8982393a01",
+      "stars": 22640,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "steipete/CodexBar",
+      "commit": "08e15ffd0d44d310054d530a9b507f6390c7e7d7",
+      "stars": 22560,
+      "license": "MIT"
+    },
+    {
+      "repo": "jhipster/generator-jhipster",
+      "commit": "9f5787ce01d4444fee1a3b2bd5e7d6db8d12cfdd",
+      "stars": 22465,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "react-grid-layout/react-grid-layout",
+      "commit": "866f646fe9989f604a0d26dba756fab630f07d23",
+      "stars": 22450,
+      "license": "MIT"
+    },
+    {
+      "repo": "RustPython/RustPython",
+      "commit": "fd5b30eb5e6c1dd24bb98a305b1c5f47fa64820d",
+      "stars": 22401,
+      "license": "MIT"
+    },
+    {
+      "repo": "openobserve/openobserve",
+      "commit": "96a5b52cc4c7607eb588e61afbed00f18459b591",
+      "stars": 22388,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "redis/go-redis",
+      "commit": "b57341e5a0e407cd8e557f3a27fd9629b97bc119",
+      "stars": 22263,
+      "license": "BSD-2-Clause"
+    },
+    {
+      "repo": "Homebrew/homebrew-cask",
+      "commit": "7941dc52d2e496eb88090b428f99c518e6354e96",
+      "stars": 22256,
+      "license": "BSD-2-Clause"
+    },
+    {
+      "repo": "palantir/blueprint",
+      "commit": "7f1b2f02ef27e1638ef434e5cec4c08fb97d0e2c",
+      "stars": 22137,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "lima-vm/lima",
+      "commit": "5e86a5fc98ae6311f9fe6419220e3fe1529ebb1c",
+      "stars": 22101,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "microsoft/onnxruntime",
+      "commit": "f33c1744e1e1064d3618d1d0ce533f0b946aed2d",
+      "stars": 22090,
+      "license": "MIT"
+    },
+    {
+      "repo": "appium/appium",
+      "commit": "d6493606184882c938a8dc8ee374727f4e676b23",
+      "stars": 22088,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "QwikDev/qwik",
+      "commit": "ed9f0e11e0d28bafabcfa90a1f276b53c1cc223a",
+      "stars": 22066,
+      "license": "MIT"
+    },
+    {
+      "repo": "chidiwilliams/buzz",
+      "commit": "851c8b359343db8c9460aa15ee59a40f2ab66aa8",
+      "stars": 22020,
+      "license": "MIT"
+    },
+    {
+      "repo": "snarktank/ralph",
+      "commit": "6c53cb0b831ebe8739c6a003e22af14902d8b0b5",
+      "stars": 21977,
+      "license": "MIT"
+    },
+    {
+      "repo": "MobSF/Mobile-Security-Framework-MobSF",
+      "commit": "08872c8454e59f8a6347c35b46852c9929f5eb5e",
+      "stars": 21966,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "matomo-org/matomo",
+      "commit": "6a14282729fc403497d665885156452b0e93d0da",
+      "stars": 21953,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "android/nowinandroid",
+      "commit": "a49ed253d75e61a2b6ab80a8da677b57437b08eb",
+      "stars": 21931,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "aidenybai/react-scan",
+      "commit": "0fb31862b697ef3ed2d8ed6990878a35a4ca8a75",
+      "stars": 21875,
+      "license": "MIT"
+    },
+    {
+      "repo": "google/adk-python",
+      "commit": "f78149a97e109e9c947ade06e3a9ab8a45385e0e",
+      "stars": 21874,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "lit/lit",
+      "commit": "01dbc6673cdc211543932afd0ca04e223e567366",
+      "stars": 21851,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "huggingface/peft",
+      "commit": "e8e8a7c40af177652ad88a3682d64e0480f5f919",
+      "stars": 21791,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "jsdom/jsdom",
+      "commit": "058c0f55f369a70bcb113d660ae562b9066f2d44",
+      "stars": 21711,
+      "license": "MIT"
+    },
+    {
+      "repo": "eclipse-theia/theia",
+      "commit": "81ea5f939c40c905de91083d07e284bfd7437fac",
+      "stars": 21710,
+      "license": "EPL-2.0"
+    },
+    {
+      "repo": "netbox-community/netbox",
+      "commit": "97cdc39b3cab41c20dce20c55310f0fef4967069",
+      "stars": 21700,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "SBoudrias/Inquirer.js",
+      "commit": "af8b2c1c7e30bf74e5b166052dcbe070db636e15",
+      "stars": 21636,
+      "license": "MIT"
+    },
+    {
+      "repo": "imputnet/helium",
+      "commit": "b5145ab1047297970aceb9ca9f48722f6926cc66",
+      "stars": 21617,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "onnx/onnx",
+      "commit": "18a4972ac6482703dc105de8ade85574207bd241",
+      "stars": 21589,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "ColorlibHQ/gentelella",
+      "commit": "02936f9003baa8473aa39dadd4ce23b679961d53",
+      "stars": 21547,
+      "license": "MIT"
+    },
+    {
+      "repo": "containerd/containerd",
+      "commit": "c787e39387ec2de521a14985f6785c53dfefaad7",
+      "stars": 21421,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "vitessio/vitess",
+      "commit": "4ef6a5892088dbfbae3f4266719257a468b4b822",
+      "stars": 21387,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "vulhub/vulhub",
+      "commit": "8fd63916f7a8711e2e01dda0d27237e4d6175d38",
+      "stars": 21362,
+      "license": "MIT"
+    },
+    {
+      "repo": "xtermjs/xterm.js",
+      "commit": "991857a1b1cacf06f9531ba74a6e927a7a6398bb",
+      "stars": 21273,
+      "license": "MIT"
+    },
+    {
+      "repo": "wasmerio/wasmer",
+      "commit": "403c4671f48fa9d757141bee5ac8b763f26ac6e8",
+      "stars": 21157,
+      "license": "MIT"
+    },
+    {
+      "repo": "wekan/wekan",
+      "commit": "83e39fc8d9f6e4f35bc7999fd62d570f3a19135e",
+      "stars": 21121,
+      "license": "MIT"
+    },
+    {
+      "repo": "gravitational/teleport",
+      "commit": "1283425b60ec5f60d509ba4c791183d452923ff7",
+      "stars": 20997,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "open-ani/animeko",
+      "commit": "008825b8540750d1323552cec2fa4bb8610a56a4",
+      "stars": 20959,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "1jehuang/jcode",
+      "commit": "0c5968d138b1d94e7182aebe08d0860ba4ae2638",
+      "stars": 20894,
+      "license": "MIT"
+    },
+    {
+      "repo": "monkeytypegame/monkeytype",
+      "commit": "7974c585645714375db2a93498b1ae25ddf635ba",
+      "stars": 20891,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "sveltejs/kit",
+      "commit": "242149eea1c958b2aeddeca1cd06b78939d5c864",
+      "stars": 20861,
+      "license": "MIT"
+    },
+    {
+      "repo": "apache/shardingsphere",
+      "commit": "39db8f78e08f15e40e40b1dade1e6e242c4bec88",
+      "stars": 20808,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "earthtojake/text-to-cad",
+      "commit": "24573128ceaab564f497d7c12f995c41784c9539",
+      "stars": 20789,
+      "license": "MIT"
+    },
+    {
+      "repo": "dotnet/roslyn",
+      "commit": "7ed110c0f961a5f8800139bc2df914ffb0099aca",
+      "stars": 20736,
+      "license": "MIT"
+    },
+    {
+      "repo": "pydantic/pydantic-ai",
+      "commit": "52978efb01a74e5e789403f8f1c44d230ff3ac05",
+      "stars": 20654,
+      "license": "MIT"
+    },
+    {
+      "repo": "google/filament",
+      "commit": "f22f36e124fa58ef896800f16e764d886dce521d",
+      "stars": 20612,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "wagtail/wagtail",
+      "commit": "8b39eb04ee18a59a3bb931fe0e564b4947c593ac",
+      "stars": 20573,
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repo": "voyager-crew/voyager",
+      "commit": "1dfd5721dfd2da274a4a5190aafb0c20fdafea15",
+      "stars": 20396,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "triton-lang/triton",
+      "commit": "6bf64a51df4a9c48f0d575b4ca4ad6c9988d36d2",
+      "stars": 20380,
+      "license": "MIT"
+    },
+    {
+      "repo": "refactoringhq/tolaria",
+      "commit": "812e225854e4beea5965a2ff67f7ce6f625bd4b7",
+      "stars": 20086,
+      "license": "AGPL-3.0"
+    },
+    {
+      "repo": "whyour/qinglong",
+      "commit": "8305825ffd0a1941d0984b5da22d957080ebf6a8",
+      "stars": 19970,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "astral-sh/ty",
+      "commit": "53701986c2514d70e334baade8c180fb6c2d8bce",
+      "stars": 19872,
+      "license": "MIT"
+    },
+    {
+      "repo": "iDvel/rime-ice",
+      "commit": "da1fbe602e38f26db846fa10120ee64c2b0324c0",
+      "stars": 19780,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "teng-lin/notebooklm-py",
+      "commit": "4188d7e26a07b6b94b67bf95041c81bc1530c508",
+      "stars": 19754,
+      "license": "MIT"
+    },
+    {
+      "repo": "sandboxie-plus/Sandboxie",
+      "commit": "0863e12a68b7d7d452be1d90eb4f1960aaba6751",
+      "stars": 19703,
+      "license": "GPL-3.0"
+    },
+    {
+      "repo": "google/gvisor",
+      "commit": "fd123c19d333102bd7d04122b121fd483adcdda9",
+      "stars": 19689,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "firecrawl/pdf-inspector",
+      "commit": "bcf387d1f4ab91d702f417fd9600694da0c166c3",
+      "stars": 19657,
+      "license": "MIT"
+    },
+    {
+      "repo": "elizaOS/eliza",
+      "commit": "dd1e61c60dfc539f5bfa2359fcd314e0c083870f",
+      "stars": 19611,
+      "license": "MIT"
+    },
+    {
+      "repo": "huggingface/trl",
+      "commit": "447be34c59a4ad7fb6212917382c62053bab147b",
+      "stars": 19526,
+      "license": "Apache-2.0"
+    },
+    {
+      "repo": "radix-ui/primitives",
+      "commit": "eb3a2b7091293e27df8f9ba906632d8daa3d81a3",
+      "stars": 19397,
+      "license": "MIT"
+    },
+    {
+      "repo": "mountain-loop/yaak",
+      "commit": "277bbe1baa9bba6f4dfe166a1ff9b1ba2c1f5331",
+      "stars": 19322,
+      "license": "MIT"
+    },
+    {
+      "repo": "tiann/KernelSU",
+      "commit": "9f5966b4d534869fd72a79b3c6ea602e5eae3022",
+      "stars": 19271,
+      "license": "GPL-3.0"
+    }
+  ]
+}

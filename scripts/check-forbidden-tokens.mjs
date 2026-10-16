@@ -51,6 +51,10 @@ const ignoredPaths = [
   // Exclude the token list and the scanner itself so they never match themselves.
   "scripts/forbidden-tokens.txt",
   "scripts/check-forbidden-tokens.mjs",
+  // Census manifests list third-party repositories by name (pivot T2.4), and
+  // other projects' names are not ours to change. The census statistics and
+  // write-ups name no repositories and stay covered.
+  "doc/census/*/manifest.json",
 ];
 const gitIgnoreArgs = ignoredPaths.map((path) => `':!${path}'`).join(" ");
 const rgIgnoreArgs = ignoredPaths.map((path) => `--glob '!${path}'`).join(" ");
