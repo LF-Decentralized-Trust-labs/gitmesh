@@ -33,6 +33,7 @@
     "version-packages": "changeset version",
     "lint": "eslint lib/workspace-core lib/workspace-adapters cli/src/workspace",
     "check:tokens": "node scripts/check-forbidden-tokens.mjs",
+    "census": "node cli/node_modules/tsx/dist/cli.mjs scripts/census/census.ts",
     "docs:dev": "cd docs && npx mintlify dev"
   },
   "devDependencies": {
