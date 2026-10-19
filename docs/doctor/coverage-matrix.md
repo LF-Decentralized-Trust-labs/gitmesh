@@ -30,9 +30,9 @@ Formats churn. Every detector ships golden fixtures, and a weekly format-canary 
 
 The `third-party-managers` adapter inventories files that other sync tools own and labels each one `managed by <tool>`:
 
-- **Ruler**: `.ruler/ruler.toml`, `.ruler/mcp.json`, and the Markdown sources under `.ruler/`
-- **rulesync**: `rulesync.jsonc`, `rulesync.local.jsonc`, the `mcp`, `hooks` and `permissions` files in `.rulesync/` (`.json` or `.jsonc`), `.rulesync/.aiignore`, `.rulesyncignore`, and the Markdown sources under `.rulesync/`
-- **agents-json** (`@agents-dev/cli`): `.agents/agents.json`, `.agents/local.json`
+- **[Ruler](https://github.com/intellectronica/ruler)**: `.ruler/ruler.toml`, `.ruler/mcp.json`, and the Markdown sources under `.ruler/`
+- **[rulesync](https://github.com/dyoshikawa/rulesync)**: `rulesync.jsonc`, `rulesync.local.jsonc`, the `mcp`, `hooks` and `permissions` files in `.rulesync/` (`.json` or `.jsonc`), `.rulesync/.aiignore`, `.rulesyncignore`, and the Markdown sources under `.rulesync/`
+- **agents-json** ([`@agents-dev/cli`](https://github.com/amtiYo/agents)): `.agents/agents.json`, `.agents/local.json`
 - **agentsync family**: `agentsync.json`, `agentsync.config.json`, `.agents/agentsync.toml`, `.agentsync/agentsync.toml`, `.agentsync-state.json`
 - **agent_sync**: `.ai/agent_sync.yaml`, `.ai/.sync-manifest`; **agent-sync**: `.agent-sync.toml`; **agentlink**: `.agentlink.yaml`
 - **skills-lock**: `skills-lock.json`; **mcp-lock**: `.mcp.lock`
