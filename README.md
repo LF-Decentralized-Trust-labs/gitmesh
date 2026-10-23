@@ -106,6 +106,7 @@ The plan behind these layers, with its evidence and its kill criteria, is [`doc/
 - [Findings GM001-GM011](docs/findings/overview.md) - what each rule checks and how to clear it
 - [Coverage matrix](docs/doctor/coverage-matrix.md) - what doctor inventories per agent today
 - [Scanners](docs/doctor/scanners.md) - where doctor stops and content-security scanners begin
+- [Comparisons](docs/comparisons.md) - doctor next to `/doctor`, cc-health-check, agents-lint and AgentLint, check by check
 
 ## Legacy: the GitMesh Agents runtime
 

@@ -1,7 +1,9 @@
-# gitmesh doctor and its neighbors: the benchmark-parity checklist
+---
+title: "gitmesh doctor and its neighbors"
+sidebarTitle: Comparisons
+description: "How gitmesh doctor compares with Claude Code's /doctor, cc-health-check, agents-lint and AgentLint: what each audits, when to use which, and every published check mapped."
+---
 
-Status: benchmark-parity checklist (pivot §4.5 item (c), task T1.19; published as the
-benchmark honesty page by T2.6)
 Checked: 2026-09-13, against each tool's live docs, source, or shipped binary
 Scope: every check published by Claude Code's `/doctor` checkup, cc-health-check,
 agents-lint, and AgentLint, mapped to what `gitmesh doctor` does with the same territory

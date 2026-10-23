@@ -33,3 +33,4 @@ Run doctor for hygiene and a scanner for content, each with its own exit code, i
 
 - [Coverage matrix](/doctor/coverage-matrix): which agents and surfaces doctor inventories today.
 - [Findings](/findings/overview): every rule doctor runs, with what it checks and what it deliberately leaves out.
+- [Comparisons](/comparisons): every check `/doctor`, cc-health-check, agents-lint and AgentLint publish, mapped to what doctor does with the same territory.
