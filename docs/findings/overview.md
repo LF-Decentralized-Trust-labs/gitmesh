@@ -17,7 +17,7 @@ Every finding `gitmesh doctor` reports carries a stable id in the ESLint style. 
 | [GM007](/findings/gm007) | warning | Instruction file exceeds the 40,000-character threshold |
 | [GM008](/findings/gm008) | info | Orphan config for an agent unseen in repository history |
 | [GM009](/findings/gm009) | warning | Inconsistent local-vs-shared hygiene: `.gitignore` vs committed status |
-| [GM010](/findings/gm010) | warning | `CLAUDE.md` without an `AGENTS.md` bridge, or vice versa |
+| [GM010](/findings/gm010) | warning | `CLAUDE.md` without an `AGENTS.md` bridge |
 | [GM011](/findings/gm011) | warning | Semantic contradictions inside one tool's own config |
 
 ## Severities and the run

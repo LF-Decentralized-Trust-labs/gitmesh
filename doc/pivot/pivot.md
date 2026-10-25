@@ -289,6 +289,7 @@ Five layers. Each ships independently, is useful alone, and is gated on the prev
    - `GM008` orphan config for an agent unseen in repo history (informational);
    - `GM009` inconsistent local-vs-shared hygiene (`.gitignore` vs committed status);
    - `GM010` CLAUDE.md without an AGENTS.md bridge, or vice-versa (the #6235 finding; fix = the shim);
+     *(Revised 2026-10-25 by maintainer decision on #484: Claude Code v2.1.277 (2026-09-18) reads AGENTS.md in a project with no CLAUDE.md, closing #6235, so the "vice-versa" shape (AGENTS.md with no CLAUDE.md) no longer fires. GM010 reports a CLAUDE.md with no AGENTS.md, and both present but not bridged, since with both files Claude Code reads CLAUDE.md alone.)*
    - `GM011` **semantic contradictions** across a single tool's own config - permission-allow contradicted by a blocking hook; command/subagent referencing a nonexistent agent or skill (pattern proven by claude-config-doctor, generalized cross-tool).
 4. **Output:** human TTY report (grouped, scored 0–100 - the UX pattern users already expect from cc-health-check/agents-lint), `--json` (stable versioned schema), `--md` (for PR comments), exit codes (0 clean / 1 findings / 2 errors), `--fail-on <severity>`. No network calls, no telemetry, nothing written, symlink-aware (reports through symlinks without dereferencing surprises).
 

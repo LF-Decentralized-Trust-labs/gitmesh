@@ -70,7 +70,7 @@ Exit codes are the CI contract: `0` no finding at or above `--fail-on`, `1` at l
 | [GM007](docs/findings/gm007.md) | warning | Instruction file exceeds the 40,000-character threshold |
 | [GM008](docs/findings/gm008.md) | info | Orphan config for an agent unseen in repository history |
 | [GM009](docs/findings/gm009.md) | warning | Inconsistent local-vs-shared hygiene: `.gitignore` vs committed status |
-| [GM010](docs/findings/gm010.md) | warning | `CLAUDE.md` without an `AGENTS.md` bridge, or vice versa |
+| [GM010](docs/findings/gm010.md) | warning | `CLAUDE.md` without an `AGENTS.md` bridge |
 | [GM011](docs/findings/gm011.md) | warning | Semantic contradictions inside one tool's own config |
 
 GM008 and GM009 are implemented but [silent in this release](docs/findings/overview.md#rules-that-are-silent-today): doctor does not yet read the repository history or the tracked and ignored file status they need.

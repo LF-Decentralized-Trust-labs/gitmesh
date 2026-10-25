@@ -119,8 +119,8 @@ function isDriftDocument({ scope, kind, path }: DetectedArtifact): boolean {
 }
 
 /**
- * A CLAUDE.md carrying the `@AGENTS.md` import token is the #6235 shim
- * GM010 recommends (pivot §8.2): a pointer to AGENTS.md plus Claude-only
+ * A CLAUDE.md carrying the `@AGENTS.md` import token is the shim GM010
+ * recommends (pivot §8.2): a pointer to AGENTS.md plus Claude-only
  * extras, not an independent copy - so it stays out of the pairwise differ,
  * the same reasoning that makes a symlinked CLAUDE.md zero drift (§10.4).
  * Diffing the shim charged the score for adopting doctor's own remediation.
