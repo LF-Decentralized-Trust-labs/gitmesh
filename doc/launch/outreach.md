@@ -6,7 +6,7 @@ One issue to each of the three sync tools whose sources GitMesh plans to import 
 
 Each project's maintainer will probably run doctor on their own repository first. On 2026-10-19, gitmesh-cli 0.4.0 (`@next`) misreads Ruler's and @agents-dev/cli's own repositories, and repositories those two tools manage:
 
-- [ ] **GM010 stops warning on `AGENTS.md`-only repositories** ([#484](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/484)). It warns on Ruler's and @agents-dev/cli's own repositories, citing a Claude Code limitation that ended with v2.1.277.
+- [x] **GM010 stops warning on `AGENTS.md`-only repositories** ([#484](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/484)). It warns on Ruler's and @agents-dev/cli's own repositories, citing a Claude Code limitation that ended with v2.1.277.
 - [ ] **GM002 stops counting Cursor as present from `AGENTS.md` alone** ([#493](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/493), [#488](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/488)). Both repositories get a warning about a missing Cursor hook only because they have an `AGENTS.md`.
 - [ ] **GM001 leaves @agents-dev/cli's `.agents/local.json` alone** ([#504](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/504)). That tool keeps secrets there by design; today doctor reports each one as an error and says to move it out.
 - [ ] **Ruler's outputs are labeled and its source is listed once** ([#505](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/505)). Today GM010 asks Ruler users to edit the `CLAUDE.md` that Ruler generates.

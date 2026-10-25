@@ -23,20 +23,15 @@ const agentsMd = (extra: Partial<RiskArtifact> = {}) =>
 const run = (artifacts: RiskArtifact[]) => runRiskRules({ artifacts }, [gm010]);
 
 describe("GM010 - firing shapes", () => {
-  it("flags AGENTS.md with no CLAUDE.md shim", () => {
-    expect(run([agentsMd()])).toEqual([
-      expect.objectContaining({
-        ruleId: "GM010",
-        severity: "warning",
-        path: "AGENTS.md",
-        message: expect.stringContaining("anthropics/claude-code#6235"),
-      }),
-    ]);
+  it("stays silent on AGENTS.md with no CLAUDE.md: Claude Code v2.1.277+ reads it (#484)", () => {
+    expect(run([agentsMd()])).toEqual([]);
   });
 
   it("flags CLAUDE.md with no AGENTS.md for the other agents", () => {
     expect(run([artifact("CLAUDE.md", "# Claude\n")])).toEqual([
       expect.objectContaining({
+        ruleId: "GM010",
+        severity: "warning",
         path: "CLAUDE.md",
         message: expect.stringContaining("there is no AGENTS.md"),
       }),
@@ -52,8 +47,10 @@ describe("GM010 - firing shapes", () => {
     ]);
   });
 
-  it("reports AGENTS.md inventoried by several adapters once", () => {
-    expect(run([agentsMd(), artifact("AGENTS.md", "# Agents\n", {}, "cursor")])).toHaveLength(1);
+  it("reports CLAUDE.md inventoried by several adapters once", () => {
+    expect(
+      run([artifact("CLAUDE.md", "# Claude\n"), artifact("CLAUDE.md", "# Claude\n", {}, "cursor")]),
+    ).toHaveLength(1);
   });
 });
 
@@ -94,11 +91,14 @@ describe("GM010 - scope", () => {
     ).toEqual([]);
   });
 
-  it("treats a broken CLAUDE.md symlink as missing", () => {
+  it("treats a broken symlink on either side as missing", () => {
     expect(
       run([agentsMd(), artifact("CLAUDE.md", undefined, { symlinkTarget: "gone.md", broken: true })]),
+    ).toEqual([]);
+    expect(
+      run([agentsMd({ symlinkTarget: "gone.md", broken: true }), artifact("CLAUDE.md", "# Claude\n")]),
     ).toEqual([
-      expect.objectContaining({ path: "AGENTS.md" }),
+      expect.objectContaining({ path: "CLAUDE.md", message: expect.stringContaining("there is no AGENTS.md") }),
     ]);
   });
 });
