@@ -6,15 +6,17 @@ Drafts and a checklist for launching `gitmesh doctor` (pivot §12, task T2.4; la
 |---|---|
 | [show-hn.md](show-hn.md) | Show HN title, text, first comment and prepared answers |
 | [posts.md](posts.md) | Posts for r/ClaudeAI, r/ChatGPTCoding and lobste.rs, and what replaces the "#6235-adjacent" post |
+| [outreach.md](outreach.md) | Issues to Ruler, rulesync and @agents-dev/cli about reading their files (task T2.5), opened before launch |
 | [../census/2026-10/README.md](../census/2026-10/README.md) | The census data post |
 | [../../scripts/census/README.md](../../scripts/census/README.md) | How the census is run and reproduced |
 
 ## Order of events
 
-1. **Day 0, morning (US Eastern):** publish the census post, then submit Show HN linking the repository. The benchmark page (T2.6) is live before either. Unless the docs site is hosted by then, the census post's address is its page on GitHub (`doc/census/2026-10/README.md` on `main`), which renders its tables as written.
-2. **Day 0, following hours:** both maintainers answer comments. Nobody else is asked to.
-3. **Days 1-3:** one post per venue in [posts.md](posts.md), on different days, each written for that venue. Never the same text twice.
-4. **Day 7:** read the G1 number (below) and write down what happened, good or bad.
+1. **A few days before day 0:** open the three issues in [outreach.md](outreach.md), so the projects the posts name hear about GitMesh from us first.
+2. **Day 0, morning (US Eastern):** publish the census post, then submit Show HN linking the repository. The benchmark page (T2.6) is live before either. Unless the docs site is hosted by then, the census post's address is its page on GitHub (`doc/census/2026-10/README.md` on `main`), which renders its tables as written.
+3. **Day 0, following hours:** both maintainers answer comments. Nobody else is asked to.
+4. **Days 1-3:** one post per venue in [posts.md](posts.md), on different days, each written for that venue. Never the same text twice.
+5. **Day 7:** read the G1 number (below) and write down what happened, good or bad.
 
 The `apply`/`migrate` and `policy` launches (§17.2 (b) and (c)) are separate news moments and are not in this kit.
 
@@ -73,6 +75,7 @@ Every number and claim in the drafts comes from here. When a fact changes, chang
 | Exit codes | `0` nothing at or above `--fail-on`, `1` findings, `2` the run failed | README |
 | Claude Code and `AGENTS.md` | reads `AGENTS.md` in a project with no `CLAUDE.md` since v2.1.277 (2026-09-18); anthropics/claude-code#6235 closed as completed on 2026-08-17; with both files present it reads `CLAUDE.md` | [#484](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/484) |
 | Neighbors | Claude Code's `/doctor` (alias `/checkup`), cc-health-check, agents-lint, AgentLint audit one tool or file class; Snyk Agent Scan and Cisco's scanner own content security | [comparisons](../../docs/comparisons.md), [scanners](../../docs/doctor/scanners.md) |
+| Sync tools | Ruler, rulesync and @agents-dev/cli generate each agent's files from one source; rulesync also compiles one permissions file into native permission settings for 47 tools, the first since v7.30.0 (2026-04-13) | [outreach facts](outreach.md#facts-as-of-2026-10-19), checked 2026-10-19 |
 | License, home | Apache-2.0; a Linux Foundation Decentralized Trust lab (residence is community affiliation, not endorsement) | §17.1 |
 | Census | the 500 most-starred licensed, public, non-fork repositories with a root `AGENTS.md`, discovered 2026-10-16; numbers in the census post | [doc/census/2026-10](../census/2026-10/README.md) |
 
