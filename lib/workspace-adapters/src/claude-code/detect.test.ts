@@ -98,6 +98,42 @@ describe("claude-code detect()", () => {
     });
   });
 
+  it.skipIf(!symlinkSupport.directory)(
+    "reports what a symlinked directory reaches outside the repository as broken, and walks none of it (#500)",
+    () => {
+      const outside = temp.makeRepo("gitmesh-claude-outside-", {
+        "settings.json": '{"permissions": {"allow": ["Bash(*)"]}}\n',
+        "rules/leak.md": "# outside\n",
+        "commands/deploy.md": "# outside\n",
+      });
+      const { root, repo } = makeRepo({ "CLAUDE.md": "repo\n" });
+      symlinkDir(outside, join(root, ".claude"));
+      expect(detect(repo)).toEqual([
+        { path: ".claude/settings.json", kind: "settings", scope: "project", broken: true },
+        { path: "CLAUDE.md", kind: "instructions", scope: "project" },
+      ]);
+    },
+  );
+
+  it.skipIf(!symlinkSupport.file)(
+    "keeps reading a user-scope file wherever it resolves: --user asks for this machine's own files",
+    () => {
+      const elsewhere = temp.makeRepo("gitmesh-claude-elsewhere-", { "CLAUDE.md": "# dotfiles\n" });
+      const home = temp.makeDir("gitmesh-claude-home-");
+      mkdirSync(join(home, ".claude"), { recursive: true });
+      symlinkSync(join(elsewhere, "CLAUDE.md"), join(home, ".claude", "CLAUDE.md"));
+      const { root } = makeRepo({});
+      expect(detect({ rootDir: root, userScope: true, homeDir: home, managedSettingsPaths: [] })).toEqual([
+        {
+          path: "~/.claude/CLAUDE.md",
+          kind: "instructions",
+          scope: "user",
+          symlinkTarget: join(elsewhere, "CLAUDE.md").replaceAll("\\", "/"),
+        },
+      ]);
+    },
+  );
+
   it("probes managed settings by presence only, reporting basenames, and only with userScope", () => {
     const managed = temp.makeDir("gitmesh-claude-managed-");
     writeFileSync(join(managed, "managed-settings.json"), "{}\n");

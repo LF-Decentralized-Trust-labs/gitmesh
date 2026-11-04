@@ -70,7 +70,7 @@ export interface RiskArtifact {
   executable?: boolean;
   /** Literal symlink target when the artifact is itself a symlink. */
   symlinkTarget?: string;
-  /** True when the artifact is a symlink that does not resolve to a file. */
+  /** True when the artifact does not resolve to a file inside the repository; it is never read. */
   broken?: boolean;
   /**
    * VCS status, caller-supplied (the doctor pipeline's lane): true when

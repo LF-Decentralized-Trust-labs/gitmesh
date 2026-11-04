@@ -87,6 +87,7 @@ export function detect(repo: RepoContext): AntigravityArtifact[] {
   //    the only one needing a repo-wide walk.
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
@@ -106,6 +107,7 @@ export function detect(repo: RepoContext): AntigravityArtifact[] {
   //    `.gemini/` and classifies by file shape rather than guessing a
   //    directory name that would silently miss every other layout.
   walk(
+    root,
     join(root, GEMINI_DIR),
     GEMINI_DIR,
     new Set(),
@@ -115,7 +117,7 @@ export function detect(repo: RepoContext): AntigravityArtifact[] {
       const kind = pluginArtifactKind(rel);
       if (kind !== undefined) {
         const artifact = makeArtifact(rel, kind, "project", info);
-        if (kind === "skill" && skillDirHasExecutable(join(root, rel, ".."))) {
+        if (kind === "skill" && skillDirHasExecutable(root, join(root, rel, ".."))) {
           artifact.executable = true;
         }
         out.push(artifact);

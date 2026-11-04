@@ -54,6 +54,7 @@ export function detect(repo: RepoContext): ClineArtifact[] {
   const rulesAbs = join(root, RULES_DIR);
   if (safeStat(rulesAbs)?.isDirectory()) {
     walk(
+      root,
       rulesAbs,
       RULES_DIR,
       new Set(),
@@ -67,7 +68,7 @@ export function detect(repo: RepoContext): ClineArtifact[] {
       },
     );
   } else {
-    const singleFile = inspectFile(rulesAbs);
+    const singleFile = inspectFile(root, rulesAbs);
     if (singleFile) {
       out.push(makeArtifact(RULES_DIR, "rule", "project", singleFile));
     }

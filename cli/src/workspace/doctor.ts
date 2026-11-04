@@ -15,7 +15,7 @@ import {
   type DetectedArtifact,
   type RepoContext,
 } from "@gitmesh/workspace-adapters";
-import { safeStat } from "@gitmesh/workspace-adapters/detect-fs";
+import { resolvesInside, safeStat } from "@gitmesh/workspace-adapters/detect-fs";
 import {
   computeDriftReport,
   importsAgentsMd,
@@ -173,7 +173,12 @@ export async function collectDoctorReport(repo: RepoContext): Promise<DoctorRepo
         manager,
       };
       const abs = locate(detected, repo.rootDir, home, env);
-      if (abs !== undefined) {
+      if (abs !== undefined && scope !== "user" && !resolvesInside(abs, repo.rootDir)) {
+        // The detectors already report a path that leaves the repository as
+        // broken (#500); should one miss, nothing is read through it here
+        // either, and the report says why the same way.
+        artifact.broken = true;
+      } else if (abs !== undefined) {
         if (!contents.has(abs)) contents.set(abs, readText(abs, path));
         artifact.content = contents.get(abs);
         if (

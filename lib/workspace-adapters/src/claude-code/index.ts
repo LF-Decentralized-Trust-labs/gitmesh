@@ -31,6 +31,7 @@ export const claudeCodeAdapter: AgentAdapter = {
     { name: "full-surface" },
     { name: "no-artifacts" },
     { name: "scoped-and-managed" },
+    { name: "symlink-escapes" },
     { name: "user-scope-not-requested" },
   ],
 };

@@ -73,6 +73,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
 
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
@@ -82,7 +83,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
     },
   );
 
-  const configInfo = inspectFile(join(root, ".codex", "config.toml"));
+  const configInfo = inspectFile(root, join(root, ".codex", "config.toml"));
   if (configInfo) {
     out.push(makeArtifact(".codex/config.toml", "config", "project", configInfo));
   }
@@ -94,7 +95,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
     if (!entry.name.endsWith(".toml") || isTraversableDir(entry, abs)) {
       continue;
     }
-    const info = fileInfoFromEntry(entry, abs);
+    const info = fileInfoFromEntry(root, entry, abs);
     if (info) {
       out.push(makeArtifact(`.codex/agents/${entry.name}`, "subagent", "project", info));
     }
@@ -103,6 +104,7 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   // Execpolicy `.rules`: §4.3 fixes no location, so scan `.codex/` only -
   // a repo-wide sweep would false-positive on unrelated `.rules` files.
   walk(
+    root,
     join(root, ".codex"),
     ".codex",
     new Set(),
@@ -131,7 +133,8 @@ export function detect(repo: RepoContext): CodexArtifact[] {
 
   // User config; display paths stay machine-independent.
   const codexHome = codexHomeEnv || join(repo.homeDir ?? homedir(), ".codex");
-  const userConfig = inspectFile(join(codexHome, "config.toml"));
+  // No repository boundary: `--user` asks for this machine's own file.
+  const userConfig = inspectFile(undefined, join(codexHome, "config.toml"));
   if (userConfig) {
     const base = codexHomeEnv ? "$CODEX_HOME" : "~/.codex";
     out.push(makeArtifact(`${base}/config.toml`, "config", "user", userConfig));

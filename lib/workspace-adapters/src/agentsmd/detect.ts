@@ -27,6 +27,7 @@ export function detect(repo: RepoContext): AgentsMdArtifact[] {
   const out: AgentsMdArtifact[] = [];
   walk(
     repo.rootDir,
+    repo.rootDir,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),

@@ -7,7 +7,7 @@ import {
   type Dirent,
   type Stats,
 } from "node:fs";
-import { join, win32 } from "node:path";
+import { join, sep, win32 } from "node:path";
 import type { ArtifactScope, DetectedArtifact } from "./types.js";
 
 /**
@@ -17,7 +17,9 @@ import type { ArtifactScope, DetectedArtifact } from "./types.js";
  * (literal targets, never resolved away - pivot.md §10.4), cycle-safe, and
  * filesystem errors contained - an unreadable directory or a broken symlink
  * skips or flags the entry, never aborts, so a doctor scan survives any
- * repository.
+ * repository. And nothing here reads or walks across the repository
+ * boundary: a path that resolves outside `root` is reported broken and never
+ * followed (#500), so doctor is safe to point at an unreviewed checkout.
  */
 
 /** Symlink details of an inventoried file; empty for a regular file. */
@@ -66,26 +68,66 @@ export function safeLstat(absPath: string): Stats | undefined {
   }
 }
 
+/** `realpath` that never throws: `undefined` for anything that does not resolve. */
+function safeRealpath(absPath: string): string | undefined {
+  try {
+    return realpathSync(absPath);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * True when `absPath` resolves, every symlink followed, to a location inside
+ * `root` (itself resolved) - the repository boundary doctor never reads or
+ * walks across (#500). A committed symlink may point at anything the running
+ * user can read, and the drift report quotes instruction content, so a path
+ * that leaves the repository is treated as broken: inventoried with its
+ * literal target, never read, never traversed. False for a path that does
+ * not resolve at all.
+ */
+export function resolvesInside(absPath: string, root: string): boolean {
+  const realRoot = safeRealpath(root);
+  const real = safeRealpath(absPath);
+  return realRoot !== undefined && real !== undefined && isWithin(real, realRoot);
+}
+
+function isWithin(real: string, realRoot: string): boolean {
+  return real === realRoot || real.startsWith(realRoot.endsWith(sep) ? realRoot : realRoot + sep);
+}
+
 /**
  * Inspects one path expected to hold a regular file. Returns `null` when it
  * does not exist or is a directory; symlinks are reported with their literal
- * target, flagged broken when they do not resolve to a file.
+ * target, flagged broken when they do not resolve to a file. `root` is the
+ * repository the path must resolve inside of; anything reaching outside it -
+ * a symlink, or a regular file behind a symlinked directory - is broken.
+ * `undefined` lifts the boundary, for the user-scope files `--user` asks
+ * doctor to read from the machine itself (pivot §10.1).
  */
-export function inspectFile(absPath: string): FileInfo | null {
+export function inspectFile(root: string | undefined, absPath: string): FileInfo | null {
   const stats = safeLstat(absPath);
   if (stats === undefined) {
     return null;
   }
   if (stats.isSymbolicLink()) {
-    return symlinkInfo(absPath);
+    return symlinkInfo(root, absPath);
   }
-  return stats.isFile() ? {} : null;
+  if (!stats.isFile()) {
+    return null;
+  }
+  return root === undefined || resolvesInside(absPath, root) ? {} : { broken: true };
 }
 
-/** Like {@link inspectFile}, reusing the `Dirent` from a directory listing. */
-export function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | null {
+/**
+ * Like {@link inspectFile}, reusing the `Dirent` from a directory listing.
+ * The listing's directory has already been checked by {@link walk}, so a
+ * regular entry is inside the repository by construction; only a symlink
+ * needs resolving.
+ */
+export function fileInfoFromEntry(root: string, entry: Dirent, absPath: string): FileInfo | null {
   if (entry.isSymbolicLink()) {
-    return symlinkInfo(absPath);
+    return symlinkInfo(root, absPath);
   }
   return entry.isFile() ? {} : null;
 }
@@ -94,9 +136,11 @@ export function fileInfoFromEntry(entry: Dirent, absPath: string): FileInfo | nu
  * Symlink details of one link. `isHealthy` decides what the link may resolve
  * to before it counts as broken: file detectors use the default (a file);
  * the topology scan accepts anything that resolves (symlinked config
- * *directories* are exactly what symlink managers create).
+ * *directories* are exactly what symlink managers create). Whatever it
+ * resolves to must lie inside `root` (see {@link inspectFile}).
  */
 export function symlinkInfo(
+  root: string | undefined,
   absPath: string,
   isHealthy: (stats: Stats) => boolean = (stats) => stats.isFile(),
 ): FileInfo {
@@ -109,7 +153,11 @@ export function symlinkInfo(
     return { broken: true };
   }
   const resolved = safeStat(absPath);
-  return resolved && isHealthy(resolved) ? { symlinkTarget } : { symlinkTarget, broken: true };
+  const healthy =
+    resolved !== undefined &&
+    isHealthy(resolved) &&
+    (root === undefined || resolvesInside(absPath, root));
+  return healthy ? { symlinkTarget } : { symlinkTarget, broken: true };
 }
 
 /** True for directories, including symlinks that resolve to directories. */
@@ -132,15 +180,18 @@ export function sortedEntries(absDir: string): Dirent[] {
 }
 
 /**
- * Cycle-safe recursive walk. Directories are marked visited by real path, so
- * symlink cycles and aliased trees terminate and each real directory is
- * inventoried exactly once; `recurse` gates descent by directory name;
- * `fileFilter` gates which file names are inspected at all - inspecting a
- * symlink costs `readlink` + `stat`, so filtering happens before inspection,
- * not in `onFile`; `onFile` receives each matching file (or file symlink)
- * with its POSIX-style path relative to the walk root.
+ * Cycle-safe recursive walk under `absDir`, inside the repository at `root`.
+ * Directories are marked visited by real path, so symlink cycles and aliased
+ * trees terminate and each real directory is inventoried exactly once, and a
+ * directory whose real path leaves `root` (a symlinked directory pointing
+ * out of the repository) is never entered (#500); `recurse` gates descent by
+ * directory name; `fileFilter` gates which file names are inspected at all -
+ * inspecting a symlink costs `readlink` + `stat`, so filtering happens before
+ * inspection, not in `onFile`; `onFile` receives each matching file (or file
+ * symlink) with its POSIX-style path relative to the walk root.
  */
 export function walk(
+  root: string,
   absDir: string,
   relDir: string,
   visited: Set<string>,
@@ -148,13 +199,24 @@ export function walk(
   fileFilter: (name: string) => boolean,
   onFile: (name: string, rel: string, info: FileInfo) => void,
 ): void {
-  let real: string;
-  try {
-    real = realpathSync(absDir);
-  } catch {
-    return;
+  const realRoot = safeRealpath(root);
+  if (realRoot !== undefined) {
+    walkInside(root, realRoot, absDir, relDir, visited, recurse, fileFilter, onFile);
   }
-  if (visited.has(real)) {
+}
+
+function walkInside(
+  root: string,
+  realRoot: string,
+  absDir: string,
+  relDir: string,
+  visited: Set<string>,
+  recurse: (dirName: string) => boolean,
+  fileFilter: (name: string) => boolean,
+  onFile: (name: string, rel: string, info: FileInfo) => void,
+): void {
+  const real = safeRealpath(absDir);
+  if (real === undefined || !isWithin(real, realRoot) || visited.has(real)) {
     return;
   }
   visited.add(real);
@@ -163,10 +225,10 @@ export function walk(
     const rel = relDir === "" ? entry.name : `${relDir}/${entry.name}`;
     if (isTraversableDir(entry, abs)) {
       if (recurse(entry.name)) {
-        walk(abs, rel, visited, recurse, fileFilter, onFile);
+        walkInside(root, realRoot, abs, rel, visited, recurse, fileFilter, onFile);
       }
     } else if (fileFilter(entry.name)) {
-      const info = fileInfoFromEntry(entry, abs);
+      const info = fileInfoFromEntry(root, entry, abs);
       if (info) {
         onFile(entry.name, rel, info);
       }
@@ -182,7 +244,7 @@ export function addFile<K extends string>(
   scope: ArtifactScope,
   out: Array<DetectedArtifact & { kind: K }>,
 ): void {
-  const info = inspectFile(join(root, relPath));
+  const info = inspectFile(root, join(root, relPath));
   if (info) {
     out.push(makeArtifact(relPath, kind, scope, info));
   }
@@ -196,6 +258,7 @@ export function collectMarkdownTree<K extends string>(
   out: Array<DetectedArtifact & { kind: K }>,
 ): void {
   walk(
+    root,
     join(root, relBase),
     relBase,
     new Set(),
@@ -226,7 +289,7 @@ export function collectDirFiles<K extends string>(
     if (isTraversableDir(entry, abs) || !filter(entry.name)) {
       continue;
     }
-    const info = fileInfoFromEntry(entry, abs);
+    const info = fileInfoFromEntry(root, entry, abs);
     if (info) {
       out.push(makeArtifact(`${relBase}/${entry.name}`, kind, "project", info));
     }
@@ -252,10 +315,10 @@ export function collectSkillManifests<K extends string>(
       continue;
     }
     const rel = `${relBase}/${entry.name}/SKILL.md`;
-    const info = inspectFile(join(base, entry.name, "SKILL.md"));
+    const info = inspectFile(root, join(base, entry.name, "SKILL.md"));
     if (info) {
       const artifact = makeArtifact(rel, kind, "project", info);
-      if (skillDirHasExecutable(join(base, entry.name))) {
+      if (skillDirHasExecutable(root, join(base, entry.name))) {
         artifact.executable = true;
       }
       out.push(artifact);
@@ -271,12 +334,14 @@ export function collectSkillManifests<K extends string>(
 const SKILL_SCRIPT_RE = /\.(?:sh|bash|zsh|py|rb|ps1|js|mjs|cjs)$/;
 
 /**
- * True when the skill directory at `absDir` holds a script file at any
- * depth. Cycle-safe via {@link walk}; descent stops once one is found.
+ * True when the skill directory at `absDir`, inside the repository at
+ * `root`, holds a script file at any depth. Cycle-safe via {@link walk};
+ * descent stops once one is found.
  */
-export function skillDirHasExecutable(absDir: string): boolean {
+export function skillDirHasExecutable(root: string, absDir: string): boolean {
   let found = false;
   walk(
+    root,
     absDir,
     "",
     new Set(),

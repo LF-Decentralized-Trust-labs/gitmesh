@@ -82,6 +82,7 @@ export function detect(repo: RepoContext): CopilotArtifact[] {
   //    an agent definition, not instructions; step 4 inventories it as such.
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
@@ -98,6 +99,7 @@ export function detect(repo: RepoContext): CopilotArtifact[] {
 
   // 3. `.github/instructions/` - searched recursively (VS Code docs).
   walk(
+    root,
     join(root, INSTRUCTIONS_DIR),
     INSTRUCTIONS_DIR,
     new Set(),
@@ -145,7 +147,7 @@ function instructionsRuleArtifact(
 function addAutoApproveSettings(root: string, out: CopilotArtifact[]): void {
   const rel = ".vscode/settings.json";
   const abs = join(root, rel);
-  const info = inspectFile(abs);
+  const info = inspectFile(root, abs);
   if (!info) {
     return;
   }

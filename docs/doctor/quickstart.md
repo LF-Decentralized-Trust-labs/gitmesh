@@ -4,7 +4,7 @@ sidebarTitle: Quickstart
 description: "Audit every coding agent's configuration in your repository with one read-only command: Claude Code, Codex, Cursor, Copilot, Antigravity, OpenCode and more."
 ---
 
-`gitmesh doctor` reads the agent configuration in a repository (instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings) for every agent in the [coverage matrix](/doctor/coverage-matrix) in one pass, diffs the instruction copies different agents read, and reports risk findings with stable ids (GM001-GM011). It never writes a file, never opens a network connection, and never runs a subprocess.
+`gitmesh doctor` reads the agent configuration in a repository (instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings) for every agent in the [coverage matrix](/doctor/coverage-matrix) in one pass, diffs the instruction copies different agents read, and reports risk findings with stable ids (GM001-GM011). It never writes a file, never opens a network connection, and never runs a subprocess. It also reads nothing outside the repository unless you pass `--user`: a symlink that resolves outside the repository is reported as broken and never read or followed.
 
 ## 1. Run it (10 seconds)
 

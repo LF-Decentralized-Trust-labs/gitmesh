@@ -82,6 +82,7 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   // 1. CLAUDE.md / CLAUDE.local.md hierarchy: repo root + every subdirectory.
   walk(
     root,
+    root,
     "",
     new Set(),
     (name) => !INSTRUCTION_WALK_EXCLUDES.has(name),
@@ -110,7 +111,8 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
   // 4. User scope, only when requested (`doctor --user`; §10.1 trust boundary).
   if (repo.userScope) {
     const home = repo.homeDir ?? homedir();
-    const info = inspectFile(join(home, ".claude", "CLAUDE.md"));
+    // No repository boundary: `--user` asks for this machine's own file.
+    const info = inspectFile(undefined, join(home, ".claude", "CLAUDE.md"));
     if (info) {
       artifacts.push(makeArtifact(USER_MEMORY_PATH, "instructions", "user", info));
     }

@@ -1,0 +1,8 @@
+{
+  "CLAUDE.md": "<outside>/secret.md",
+  ".claude/rules/escape.md": "../../../outside/leak.md",
+  ".claude/rules/ok.md": "../../docs/rules.md",
+  ".claude/settings.json": "../hop.json",
+  "hop.json": "<outside>/settings.json",
+  ".claude/commands": "<outside>/commands"
+}

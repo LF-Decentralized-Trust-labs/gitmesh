@@ -36,7 +36,7 @@ The `third-party-managers` adapter inventories files that other sync tools own a
 - **agentsync family**: `agentsync.json`, `agentsync.config.json`, `.agents/agentsync.toml`, `.agentsync/agentsync.toml`, `.agentsync-state.json`
 - **agent_sync**: `.ai/agent_sync.yaml`, `.ai/.sync-manifest`; **agent-sync**: `.agent-sync.toml`; **agentlink**: `.agentlink.yaml`
 - **skills-lock**: `skills-lock.json`; **mcp-lock**: `.mcp.lock`
-- **symlinks**: known agent config paths that are symlinks, reported with their literal target
+- **symlinks**: known agent config paths that are symlinks, reported with their literal target; one that resolves outside the repository is reported broken and never read or followed
 
 Being managed is never itself a finding, and doctor suggests nothing destructive in a manager's territory (ADR-004). The files are still checked: [GM001](/findings/gm001) scans the managers' config files (`ruler.toml`, `.ruler/mcp.json`, `rulesync.jsonc`, `.agents/local.json`, ...) for plaintext secrets, [GM005](/findings/gm005) compares `.ruler/mcp.json` and `.rulesync/mcp.json(c)` with the agents' own MCP configs, and [GM004](/findings/gm004) reads pins from `skills-lock.json` and `.mcp.lock`. Source files are not scanned yet, so a token in `.agents/agents.json` or in a Markdown source is not reported.
 

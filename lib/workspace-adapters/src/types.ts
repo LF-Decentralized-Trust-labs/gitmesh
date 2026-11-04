@@ -91,7 +91,11 @@ export interface DetectedArtifact {
    * it is inventoried as a link, never resolved away.
    */
   symlinkTarget?: string;
-  /** True when the artifact is a symlink that does not resolve to a file. */
+  /**
+   * True when the artifact does not resolve to a file inside the repository:
+   * a dangling symlink, or a path that leaves the repository through one
+   * (#500). Such an artifact is inventoried and never read.
+   */
   broken?: boolean;
   /**
    * Owning third-party manager (`ruler`, `rulesync`, …) when one claims the
