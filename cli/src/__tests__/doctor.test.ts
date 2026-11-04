@@ -149,12 +149,12 @@ const FIXTURE = join(FIXTURES, "sample");
 const SECRET = "ghp_FAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKE01";
 
 /**
- * The machine-scoped probes, pinned off. `RepoContext` documents these as the
- * seam for exactly this ("tests point these at fixture paths. An empty array
- * disables the probe"). Without them a contributor who has CODEX_HOME
- * exported, a `~/.codex/requirements.toml`, an antigravity settings file or
- * org-managed Claude settings gets extra artifacts - a red byte-exact golden
- * on a clean checkout, with a diff that reads like a code bug.
+ * The machine-scoped probes, pinned off. They run only with `userScope`
+ * (#493), so this matters for the `--user` tests; it stays on every call so a
+ * future probe that forgets the gate shows up as a missing pin here, not as a
+ * golden that is red only on a contributor's laptop. `RepoContext` documents
+ * these as the seam for exactly this ("tests point these at fixture paths. An
+ * empty array disables the probe").
  */
 const HERMETIC: Partial<RepoContext> = {
   env: {},
@@ -356,6 +356,34 @@ describe("gitmesh doctor - pipeline", () => {
     expect(on.drift.documents).toEqual([]);
     const off = await collectDoctorReport({ ...HERMETIC, rootDir, homeDir: home });
     expect(off.artifacts).toEqual([]);
+  });
+
+  it("reports the same inventory on any machine without --user (#493)", async () => {
+    const machine = makeRepo({
+      "managed-settings.json": "{}\n",
+      "requirements.toml": "",
+      "antigravity-settings.json": "{}\n",
+    });
+    const probes: Partial<RepoContext> = {
+      env: { CODEX_HOME: machine },
+      homeDir: machine,
+      managedSettingsPaths: [join(machine, "managed-settings.json")],
+      requirementsTomlPaths: [join(machine, "requirements.toml")],
+      antigravitySettingsPaths: [join(machine, "antigravity-settings.json")],
+    };
+    const rootDir = makeRepo({ "AGENTS.md": "# Rules\n" });
+    const off = await collectDoctorReport({ ...probes, rootDir });
+    expect(off.artifacts.map(({ adapter, path }) => [adapter, path])).toEqual(
+      (await collectDoctorReport({ ...HERMETIC, rootDir })).artifacts.map(({ adapter, path }) => [adapter, path]),
+    );
+    expect(off.artifacts.filter((a) => a.scope === "managed" || a.scope === "user")).toEqual([]);
+    const on = await collectDoctorReport({ ...probes, rootDir, userScope: true });
+    expect(on.artifacts.filter((a) => a.scope === "managed").map((a) => a.path).sort()).toEqual([
+      "antigravity-cli/settings.json",
+      "managed-settings.json",
+      "requirements.toml",
+    ]);
+    expect(on.artifacts).toContainEqual(expect.objectContaining({ path: "CODEX_HOME", scope: "user" }));
   });
 
   it("scans the enclosing git root of the given directory", async () => {

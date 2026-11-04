@@ -98,21 +98,24 @@ describe("claude-code detect()", () => {
     });
   });
 
-  it("probes managed settings by presence only, reporting basenames", () => {
+  it("probes managed settings by presence only, reporting basenames, and only with userScope", () => {
     const managed = temp.makeDir("gitmesh-claude-managed-");
     writeFileSync(join(managed, "managed-settings.json"), "{}\n");
     mkdirSync(join(managed, "managed-settings.d"));
     writeFileSync(join(managed, "managed-settings.d", "00.json"), "{}\n");
     const { root } = makeRepo({});
-
-    const artifacts = detect({
+    const repo: RepoContext = {
       rootDir: root,
+      homeDir: temp.makeDir("gitmesh-claude-home-"),
       managedSettingsPaths: [
         join(managed, "managed-settings.json"),
         join(managed, "managed-settings.d"),
         join(managed, "does-not-exist.json"),
       ],
-    });
+    };
+
+    expect(detect(repo)).toEqual([]);
+    const artifacts = detect({ ...repo, userScope: true });
     expect(artifacts).toEqual([
       { path: "managed-settings.d", kind: "settings", scope: "managed" },
       { path: "managed-settings.json", kind: "settings", scope: "managed" },

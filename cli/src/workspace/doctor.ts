@@ -50,8 +50,9 @@ export interface DoctorOptions {
    * `RepoContext` overlay for the machine-scoped probes (`env`,
    * `managedSettingsPaths`, `requirementsTomlPaths`,
    * `antigravitySettingsPaths`, `homeDir`). Not a CLI flag - the command
-   * never sets it. Tests pin these so a run is reproducible off the machine
-   * that happens to have a Codex install or org-managed settings.
+   * never sets it. The probes run only with `user` (#493); tests pin them
+   * so a `--user` run is reproducible off the machine that happens to have
+   * a Codex install or org-managed settings.
    */
   context?: Partial<RepoContext>;
 }

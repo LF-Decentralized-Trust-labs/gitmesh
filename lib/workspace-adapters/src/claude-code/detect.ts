@@ -116,11 +116,15 @@ export function detect(repo: RepoContext): ClaudeCodeArtifact[] {
     }
   }
 
-  // 5. Managed-settings presence probe: report presence only - never the
-  //    location (machine-specific) and never the content.
-  for (const probe of repo.managedSettingsPaths ?? defaultManagedSettingsPaths()) {
-    if (safeStat(probe) !== undefined) {
-      artifacts.push(makeArtifact(lastSegment(probe), "settings", "managed"));
+  // 5. Managed-settings presence probe, only with `--user` like every other
+  //    read outside the repository (§10.1): without it, doctor's output
+  //    would depend on the machine it runs on (#493). Report presence only -
+  //    never the location (machine-specific) and never the content.
+  if (repo.userScope) {
+    for (const probe of repo.managedSettingsPaths ?? defaultManagedSettingsPaths()) {
+      if (safeStat(probe) !== undefined) {
+        artifacts.push(makeArtifact(lastSegment(probe), "settings", "managed"));
+      }
     }
   }
 

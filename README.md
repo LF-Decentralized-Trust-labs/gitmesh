@@ -53,7 +53,7 @@ The npm package is **`gitmesh-cli`** and the installed binary is **`gitmesh`**; 
 | `--fail-on <severity>` | severity that makes the run exit `1`: `error`, `warning` (default), `info`, or `none` to never fail |
 | `--json` | versioned machine-readable report |
 | `--md` | Markdown report for a PR comment or job summary |
-| `--user` | also inventory two user-scope files: `~/.claude/CLAUDE.md` and Codex's `config.toml` (in `~/.codex`, or `$CODEX_HOME` when set) |
+| `--user` | also inventory two user-scope files: `~/.claude/CLAUDE.md` and Codex's `config.toml` (in `~/.codex`, or `$CODEX_HOME` when set), and run the machine-level presence probes (org-managed Claude settings, Codex's `requirements.toml`, the Antigravity CLI settings file) |
 
 Exit codes are the CI contract: `0` no finding at or above `--fail-on`, `1` at least one, `2` the run itself failed. No finding can be suppressed in this release, so a gate on the default `warning` stays red until every warning is fixed; `--fail-on error` gates on errors only. Full walkthrough: [docs/doctor/quickstart.md](docs/doctor/quickstart.md).
 

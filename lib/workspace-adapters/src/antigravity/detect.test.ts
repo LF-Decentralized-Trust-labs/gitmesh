@@ -16,6 +16,7 @@ import { antigravityAdapter, defaultAntigravitySettingsPaths, detect } from "./i
  * probe list - isolates fixtures from the real environment.
  */
 interface CaseOptions {
+  userScope?: boolean;
   antigravitySettingsPaths?: string[];
 }
 
@@ -23,6 +24,7 @@ describeDetectorGoldens(antigravityAdapter, "T1.5", (caseDir, inputRepoDir) => {
   const options = loadCaseOptions<CaseOptions>(caseDir);
   return {
     rootDir: inputRepoDir,
+    userScope: options.userScope ?? false,
     antigravitySettingsPaths: (options.antigravitySettingsPaths ?? []).map((p) =>
       join(caseDir, p),
     ),
@@ -44,19 +46,21 @@ describe("antigravity detect()", () => {
     ]);
   });
 
-  it("reports the settings probe once - presence only, never location or content", () => {
+  it("reports the settings probe once - presence only, never location or content, and only with userScope", () => {
     const { root } = makeRepo({
       "elsewhere/settings.json": '{"deniedCommands":["rm -rf /"]}\n',
       "elsewhere/other.json": "{}\n",
     });
-    const artifacts = detect({
+    const repo: RepoContext = {
       rootDir: root,
       antigravitySettingsPaths: [
         join(root, "elsewhere", "settings.json"),
         join(root, "elsewhere", "other.json"),
         join(root, "elsewhere", "missing.json"),
       ],
-    });
+    };
+    expect(detect(repo)).toEqual([]);
+    const artifacts = detect({ ...repo, userScope: true });
     expect(artifacts).toEqual([
       { path: "antigravity-cli/settings.json", kind: "settings", scope: "managed" },
     ]);

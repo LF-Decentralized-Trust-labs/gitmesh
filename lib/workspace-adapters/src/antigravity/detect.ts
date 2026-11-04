@@ -126,10 +126,14 @@ export function detect(repo: RepoContext): AntigravityArtifact[] {
   // 4. Repo skills: one `.agent/skills/<name>/SKILL.md` manifest per skill.
   collectSkillManifests(root, ".agent/skills", "skill", out);
 
-  // 5. antigravity-cli settings: presence only - never location or content.
-  const probes = repo.antigravitySettingsPaths ?? defaultAntigravitySettingsPaths();
-  if (probes.some((probe) => safeStat(probe) !== undefined)) {
-    out.push(makeArtifact(CLI_SETTINGS_PROBE_PATH, "settings", "managed"));
+  // 5. antigravity-cli settings, only with `--user` like every other read
+  //    outside the repository (§10.1; #493). Presence only - never location
+  //    or content.
+  if (repo.userScope) {
+    const probes = repo.antigravitySettingsPaths ?? defaultAntigravitySettingsPaths();
+    if (probes.some((probe) => safeStat(probe) !== undefined)) {
+      out.push(makeArtifact(CLI_SETTINGS_PROBE_PATH, "settings", "managed"));
+    }
   }
 
   return out.sort(compareArtifacts);

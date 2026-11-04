@@ -116,21 +116,25 @@ export function detect(repo: RepoContext): CodexArtifact[] {
   // Skills: one `.agents/skills/<name>/SKILL.md` manifest per skill.
   collectSkillManifests(root, ".agents/skills", "skill", out);
 
+  // Everything below reads the machine, not the repository, so it runs only
+  // when requested (`doctor --user`; §10.1 trust boundary): without it,
+  // doctor's output would depend on the machine it runs on (#493).
+  if (!repo.userScope) {
+    return out.sort(compareArtifacts);
+  }
+
   // CODEX_HOME hint: presence only - the value is a machine-specific path.
   const codexHomeEnv = env["CODEX_HOME"];
   if (codexHomeEnv) {
     out.push(makeArtifact("CODEX_HOME", "env-hint", "user"));
   }
 
-  // User scope only when requested (`doctor --user`; §10.1 trust boundary);
-  // display paths stay machine-independent.
-  if (repo.userScope) {
-    const codexHome = codexHomeEnv || join(repo.homeDir ?? homedir(), ".codex");
-    const info = inspectFile(join(codexHome, "config.toml"));
-    if (info) {
-      const base = codexHomeEnv ? "$CODEX_HOME" : "~/.codex";
-      out.push(makeArtifact(`${base}/config.toml`, "config", "user", info));
-    }
+  // User config; display paths stay machine-independent.
+  const codexHome = codexHomeEnv || join(repo.homeDir ?? homedir(), ".codex");
+  const userConfig = inspectFile(join(codexHome, "config.toml"));
+  if (userConfig) {
+    const base = codexHomeEnv ? "$CODEX_HOME" : "~/.codex";
+    out.push(makeArtifact(`${base}/config.toml`, "config", "user", userConfig));
   }
 
   // Managed requirements.toml: presence only - never location or content.

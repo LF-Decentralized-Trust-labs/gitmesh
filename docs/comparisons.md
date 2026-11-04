@@ -71,7 +71,7 @@ area, changelog-sourced):
 | MCP config schema errors, multi-scope overrides | Partial | GM005 flags the cross-tool case (same server, different url/credentials across tools); within-one-tool scope layering is deliberately left to that tool |
 | Plugin load errors, stale enabledPlugins | Partial | Plugin/marketplace configs are inventoried (Inventory); load state is runtime, vendor's job |
 | Hook config field validation (missing `command`) | Not covered today | GM011 checks hook semantics, not schema; `claude doctor` and AgentLint (H1/H2) cover syntax |
-| Sandbox and org-managed settings load state | Partial | Managed-settings presence is inventoried (Inventory, labeled informational); load state is runtime |
+| Sandbox and org-managed settings load state | Partial | Managed-settings presence is inventoried with `--user` (Inventory, labeled informational); load state is runtime |
 
 ## 2. cc-health-check (yurukusa) - Claude-only ops-practice audit
 

@@ -79,10 +79,16 @@ describe("GM002", () => {
     ).toEqual([]);
   });
 
-  it("fires for claude-code present only through a content-less managed probe", () => {
-    expect(adaptersFlagged([artifact("claude-code", "managed-settings.json", "settings")])).toEqual([
+  it("counts an agent present only through its project or local artifacts (#493)", () => {
+    const managed: RiskArtifact = { ...artifact("claude-code", "managed-settings.json", "settings"), scope: "managed" };
+    const user: RiskArtifact = { ...artifact("cursor", "~/.cursor/hooks.json", "hooks", "{}"), scope: "user" };
+    expect(adaptersFlagged([managed, user])).toEqual([]);
+    expect(adaptersFlagged([managed, artifact("claude-code", "CLAUDE.md", "instructions", "# x")])).toEqual([
       "claude-code",
     ]);
+    expect(
+      adaptersFlagged([{ ...artifact("claude-code", "CLAUDE.local.md", "instructions", "# x"), scope: "local" }]),
+    ).toEqual(["claude-code"]);
   });
 
   it("requires a non-empty beforeReadFile hook list for cursor", () => {

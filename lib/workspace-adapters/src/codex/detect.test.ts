@@ -48,15 +48,31 @@ function makeRepo(files: Record<string, string>): { root: string; repo: RepoCont
 }
 
 describe("codex detect()", () => {
-  it("reports a CODEX_HOME hint when set - presence only, never the value", () => {
+  it("reports a CODEX_HOME hint when set - presence only, never the value, and only with userScope", () => {
     const { root } = makeRepo({});
-    const artifacts = detect({
+    const repo: RepoContext = {
       rootDir: root,
       env: { CODEX_HOME: "/somewhere/machine-specific" },
       requirementsTomlPaths: [],
-    });
+    };
+    expect(detect(repo)).toEqual([]);
+    const artifacts = detect({ ...repo, userScope: true });
     expect(artifacts).toEqual([{ path: "CODEX_HOME", kind: "env-hint", scope: "user" }]);
     expect(JSON.stringify(artifacts)).not.toContain("machine-specific");
+  });
+
+  it("probes requirements.toml only with userScope", () => {
+    const { root } = makeRepo({ "managed/requirements.toml": "" });
+    const repo: RepoContext = {
+      rootDir: root,
+      env: {},
+      homeDir: temp.makeDir("gitmesh-codex-home-"),
+      requirementsTomlPaths: [join(root, "managed", "requirements.toml")],
+    };
+    expect(detect(repo)).toEqual([]);
+    expect(detect({ ...repo, userScope: true })).toEqual([
+      { path: "requirements.toml", kind: "requirements", scope: "managed" },
+    ]);
   });
 
   it("computes per-OS default requirements.toml probe locations", () => {

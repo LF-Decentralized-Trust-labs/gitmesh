@@ -30,7 +30,8 @@ export interface RepoContext {
   /**
    * Absolute paths probed - for presence only - for org-managed Claude Code
    * settings. Defaults to the per-OS managed-settings locations; tests point
-   * these at fixture paths. An empty array disables the probe.
+   * these at fixture paths. An empty array disables the probe. Like every
+   * machine-level probe below, it runs only with `userScope` (#493).
    */
   managedSettingsPaths?: readonly string[];
   /**
@@ -47,12 +48,12 @@ export interface RepoContext {
    */
   antigravitySettingsPaths?: readonly string[];
   /**
-   * Environment consulted for machine-scoped hints (e.g. `CODEX_HOME`).
-   * Defaults to `process.env`; tests inject a fixed map. Read only by the
-   * codex detector today; the claude-code detector's default
-   * managed-settings paths still read `process.env` directly (rewiring them
-   * through here would be a behavior change, so it rides with a future
-   * behavior task, not a refactor).
+   * Environment consulted for machine-scoped hints (e.g. `CODEX_HOME`),
+   * only with `userScope`. Defaults to `process.env`; tests inject a fixed
+   * map. Read only by the codex detector today; the claude-code detector's
+   * default managed-settings paths still read `process.env` directly
+   * (rewiring them through here would be a behavior change, so it rides
+   * with a future behavior task, not a refactor).
    */
   env?: Readonly<Record<string, string | undefined>>;
 }

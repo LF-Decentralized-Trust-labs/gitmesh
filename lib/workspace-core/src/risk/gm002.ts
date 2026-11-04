@@ -4,8 +4,11 @@ import type { RiskArtifact, RiskRule } from "./risk.js";
 /**
  * GM002 - no deny/ask protection for `.env` files in an agent that can
  * express one (pivot §8.1 item 3, §10.5 `deny_read` mapping). Absence rule:
- * fires once per agent present in the inventory whose readable config
- * leaves `.env` exposed.
+ * fires once per agent present in the repository whose readable config
+ * leaves `.env` exposed. Present means a project- or local-scope artifact:
+ * a user file or a managed probe says what one machine has installed, so
+ * counting it would make the verdict differ between a laptop and CI on the
+ * same commit (#493).
  *
  * Protection means a deny/ask pattern that actually matches a secret path
  * (`SECRET_PATHS`, from the §10.5 `deny_read` set) under the agent's own
@@ -38,7 +41,7 @@ export const gm002: RiskRule = {
   },
   check: ({ matched, input }) =>
     PROTECTORS.flatMap(({ adapter, kind, message, unprotected }) => {
-      if (!input.artifacts.some((artifact) => artifact.adapter === adapter)) {
+      if (!input.artifacts.some((artifact) => artifact.adapter === adapter && REPO_SCOPES.has(artifact.scope))) {
         return [];
       }
       const configs = matched.flatMap((artifact) =>
@@ -47,6 +50,9 @@ export const gm002: RiskRule = {
       return unprotected(configs) ? [{ adapter, message }] : [];
     }),
 };
+
+/** Scopes that make an agent present: files in the repository working tree, not on the machine. */
+const REPO_SCOPES: ReadonlySet<string> = new Set(["project", "local"]);
 
 interface Protector {
   adapter: string;

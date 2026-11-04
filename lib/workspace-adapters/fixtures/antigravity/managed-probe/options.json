@@ -1,3 +1,4 @@
 {
+  "userScope": true,
   "antigravitySettingsPaths": ["managed/settings.json", "managed/missing.json"]
 }

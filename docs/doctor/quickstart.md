@@ -85,7 +85,7 @@ A directory doctor may not list is skipped without an error in this release, so 
 - run: npx gitmesh-cli@next doctor --fail-on error
 ```
 
-`--md` prints the same report as Markdown for a PR comment or job summary. `--json` prints a versioned machine-readable report (`schemaVersion: 1`). `--user` adds two user-scope files to the inventory: `~/.claude/CLAUDE.md` and Codex's `config.toml` (under `~/.codex`, or `CODEX_HOME` when it is set). [GM001](/findings/gm001), [GM006](/findings/gm006) and [GM007](/findings/gm007) check user-scope files; every other rule judges repository files only. A few machine-level presence probes run even without `--user` (org-managed Claude settings, Codex's `requirements.toml`, the Antigravity CLI settings file, a set `CODEX_HOME`). They are listed without content, but they can make [GM002](/findings/gm002) count an agent as present, so the same repository can report differently on two machines.
+`--md` prints the same report as Markdown for a PR comment or job summary. `--json` prints a versioned machine-readable report (`schemaVersion: 1`). `--user` adds two user-scope files to the inventory: `~/.claude/CLAUDE.md` and Codex's `config.toml` (under `~/.codex`, or `CODEX_HOME` when it is set). It also runs the machine-level presence probes (org-managed Claude settings, Codex's `requirements.toml`, the Antigravity CLI settings file, a set `CODEX_HOME`), listed without content. [GM001](/findings/gm001), [GM006](/findings/gm006) and [GM007](/findings/gm007) check user-scope files; every other rule judges repository files only. Without `--user`, doctor reads nothing outside the repository, so the same commit reports the same on every machine.
 
 ## What doctor will never do
 

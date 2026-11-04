@@ -7,7 +7,7 @@ Two matrices live on this page. The first is real today: which files doctor read
 
 ## Detection coverage today
 
-Every row is one agent adapter in doctor's registry. A cell names the files that adapter inventories; `-` means doctor does not read that surface for that agent yet, and "(nested)" means the file is found at any depth. Presence probes (org-managed settings, `requirements.toml`, the Antigravity CLI settings file) are inventoried without reading content, and they run even without `--user`.
+Every row is one agent adapter in doctor's registry. A cell names the files that adapter inventories; `-` means doctor does not read that surface for that agent yet, and "(nested)" means the file is found at any depth. Presence probes (org-managed settings, `requirements.toml`, the Antigravity CLI settings file) are inventoried without reading content, and they run only with `--user`.
 
 Not read yet, although the agent supports them: Claude Code's `.claude/CLAUDE.md` and nested `<dir>/.claude/` trees (skills, rules, agents), and Codex skills in nested `.agents/skills/` directories. Claude Code v2.1.277 and later also reads `AGENTS.md` in a project that has no `CLAUDE.md`; doctor inventories that file under the other adapters, not under `claude-code`.
 
