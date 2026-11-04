@@ -192,8 +192,8 @@ function relationToAgentsMd(report: DoctorJson, path: string, agentsMd: Document
     return "unreadable";
   }
   const document = documents.find((candidate) => candidate.paths.includes(path));
-  // Doctor leaves exactly one readable root document out of its diff: the CLAUDE.md that imports AGENTS.md.
-  if (document === undefined) return path === "CLAUDE.md" ? "import" : "unreadable";
+  // Doctor leaves one kind of readable root document out of its diff: a CLAUDE.md or GEMINI.md that imports AGENTS.md.
+  if (document === undefined) return IMPORTING_FILES.has(path) ? "import" : "unreadable";
   if (document.label === agentsMd.label) return "symlink";
   const pair = pairs.find(
     ({ a, b }) => (a === document.label && b === agentsMd.label) || (a === agentsMd.label && b === document.label),

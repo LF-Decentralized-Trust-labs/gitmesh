@@ -120,7 +120,8 @@ describe("doctor renderers - guarantees", () => {
     const report: DoctorReport = {
       ...EMPTY,
       drift: computeDriftReport([
-        { path: "AGENTS.md", content: `Deploy with ${token} and ship.\n` },
+        // A shared block makes the pair a diverged copy, so the token's block is printed, and redacted.
+        { path: "AGENTS.md", content: `Deploy with ${token} and ship.\n\nShip.\n` },
         { path: "GEMINI.md", content: "Ship.\n" },
       ]),
     };
@@ -142,7 +143,7 @@ describe("doctor renderers - guarantees", () => {
             `Staging DB password: ${password}\n\n` +
             "```pem\n-----BEGIN OPENSSH PRIVATE KEY-----\n" +
             `${keyBody}\n-----END OPENSSH PRIVATE KEY-----\n` +
-            "```\n",
+            "```\n\nShip.\n",
         },
         { path: "GEMINI.md", content: "Ship.\n" },
       ]),
@@ -177,6 +178,28 @@ describe("doctor renderers - guarantees", () => {
     }));
     expect(summarizeDoctorReport({ ...EMPTY, findings: errors }).score).toBe(0);
     expect(summarizeDoctorReport(EMPTY).score).toBe(100);
+  });
+
+  it("charges no points for pointers or separate documents and describes them as not copies (#501)", () => {
+    const report: DoctorReport = {
+      artifacts: [],
+      findings: [],
+      drift: computeDriftReport([
+        { path: "AGENTS.md", content: AGENTS_MD },
+        { path: "CLAUDE.md", content: "See AGENTS.md for the instructions in this repository.\n" },
+        { path: ".cursorrules", content: "# Cursor\n\nPrefer named exports.\n\n- Never push.\n\n- Never force.\n" },
+      ]),
+    };
+    expect(report.drift.pairs.map((pair) => pair.relation)).toEqual(["separate", "separate", "pointer"]);
+    expect(summarizeDoctorReport(report)).toMatchObject({ score: 100, driftingPairs: 0 });
+    for (const render of Object.values(RENDERERS)) {
+      const output = render(report);
+      expect(output).not.toContain("1 shared");
+      expect(output).toMatch(/0 divergent (instruction )?pairs|"driftingPairs": 0/);
+    }
+    expect(RENDERERS.tty(report)).toContain("CLAUDE.md points to AGENTS.md, no shared block; not a copy");
+    expect(RENDERERS.md(report)).toContain("separate documents, no shared block; not a copy");
+    expect(RENDERERS.json(report)).toContain('"relation": "pointer"');
   });
 
   it("renders an empty workspace in every mode", () => {

@@ -105,6 +105,7 @@
     {
       "a": ".cursor/rules/style.mdc",
       "b": "AGENTS.md",
+      "relation": "diverged",
       "onlyInA": [
         {
           "kind": "paragraph",
@@ -126,6 +127,7 @@
     {
       "a": ".cursor/rules/style.mdc",
       "b": "GEMINI.md",
+      "relation": "diverged",
       "onlyInA": [
         {
           "kind": "list",
@@ -157,6 +159,7 @@
     {
       "a": "AGENTS.md",
       "b": "GEMINI.md",
+      "relation": "diverged",
       "onlyInA": [
         {
           "kind": "list",

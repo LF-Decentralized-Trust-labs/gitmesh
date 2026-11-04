@@ -12,10 +12,14 @@
  * - Every unordered pair of logical documents gets a set diff (blocks only
  *   in one side, multiset semantics so duplicated blocks count) and a
  *   sequence diff (`reordered`: shared blocks whose relative order
- *   differs, via longest-common-subsequence).
- * - `divergentBlocks` aggregates across all documents: each block that is
- *   missing somewhere, with `presentIn`/`missingFrom` - the
- *   "present in A, missing in B/C" view.
+ *   differs, via longest-common-subsequence), and a `relation` saying what
+ *   the diff means: only `diverged` copies are drift. A pair sharing no
+ *   block is a `pointer` (the shorter side, at most three blocks, names the
+ *   other file: "See AGENTS.md") or `separate` documents, neither a copy
+ *   that drifted (#501; the definitions the census uses).
+ * - `divergentBlocks` aggregates across the documents that are copies of
+ *   one another: each block that is missing somewhere, with
+ *   `presentIn`/`missingFrom` - the "present in A, missing in B/C" view.
  *
  * Pure data → data: no filesystem access, no wallclock, deterministic
  * ordering everywhere (documents and pairs sorted by label, blocks in
@@ -60,11 +64,22 @@ export interface DriftBlockRef {
   hash: string;
 }
 
+/**
+ * What a pair's diff means. `identical`: same blocks, same order.
+ * `diverged`: copies sharing at least one block and differing elsewhere -
+ * the only relation that is drift and costs score. `pointer`: no shared
+ * block, and the shorter document, at most `POINTER_MAX_BLOCKS` blocks,
+ * names the other file. `separate`: no shared block otherwise - a document
+ * of its own, written for one agent, not a copy.
+ */
+export type PairRelation = "identical" | "diverged" | "pointer" | "separate";
+
 /** Set/sequence diff between one pair of logical documents. */
 export interface PairDrift {
   /** Labels of the compared documents; `a` sorts before `b`. */
   a: string;
   b: string;
+  relation: PairRelation;
   /** Blocks (multiset) present in `a` but not `b`, in `a` order. */
   onlyInA: DriftBlockRef[];
   /** Blocks (multiset) present in `b` but not `a`, in `b` order. */
@@ -94,9 +109,16 @@ export interface DriftReport {
   symlinkGroups: string[][];
   /** Every unordered pair of logical documents, lexicographic by labels. */
   pairs: PairDrift[];
-  /** Blocks missing from at least one document, first-seen order. */
+  /**
+   * Blocks missing from at least one of the documents that are copies of
+   * another (an `identical` or `diverged` pair), first-seen order. A pointer
+   * or a separate document shares nothing by definition and contributes none.
+   */
   divergentBlocks: BlockPresence[];
 }
+
+/** A pointer names the other file in at most this many blocks. */
+const POINTER_MAX_BLOCKS = 3;
 
 /** Computes the cross-tool drift report for a set of instruction files. */
 export function computeDriftReport(inputs: readonly DriftDocumentInput[]): DriftReport {
@@ -112,7 +134,15 @@ export function computeDriftReport(inputs: readonly DriftDocumentInput[]): Drift
     }
   }
 
-  return { documents, symlinkGroups, pairs, divergentBlocks: aggregatePresence(documents) };
+  const copies = new Set<string>();
+  for (const pair of pairs) {
+    if (pair.relation === "identical" || pair.relation === "diverged") {
+      copies.add(pair.a);
+      copies.add(pair.b);
+    }
+  }
+  const divergentBlocks = aggregatePresence(documents.filter((document) => copies.has(document.label)));
+  return { documents, symlinkGroups, pairs, divergentBlocks };
 }
 
 /** Groups inputs by logical identity and normalizes each group once. */
@@ -174,16 +204,43 @@ function diffPair(a: DriftDocument, b: DriftDocument): PairDrift {
     sharedB.map((block) => block.hash),
   );
   const reordered = sharedA.filter((_, index) => !inSequence[index]);
+  const identical = onlyInA.length === 0 && onlyInB.length === 0 && reordered.length === 0;
+  const relation: PairRelation = identical
+    ? "identical"
+    : sharedA.length > 0
+      ? "diverged"
+      : pointerOrSeparate(a, b);
 
   return {
     a: a.label,
     b: b.label,
+    relation,
     onlyInA,
     onlyInB,
     reordered,
     sharedCount: sharedA.length,
-    identical: onlyInA.length === 0 && onlyInB.length === 0 && reordered.length === 0,
+    identical,
   };
+}
+
+/**
+ * For a pair sharing no block: `pointer` when the shorter document (at most
+ * `POINTER_MAX_BLOCKS` blocks) names the other file - with equal lengths,
+ * either side may do the naming - else `separate`.
+ */
+function pointerOrSeparate(a: DriftDocument, b: DriftDocument): PairRelation {
+  const [shorter, longer] = a.doc.blocks.length <= b.doc.blocks.length ? [a, b] : [b, a];
+  if (shorter.doc.blocks.length > POINTER_MAX_BLOCKS) {
+    return "separate";
+  }
+  const tie = shorter.doc.blocks.length === longer.doc.blocks.length;
+  return names(shorter, longer) || (tie && names(longer, shorter)) ? "pointer" : "separate";
+}
+
+/** True when `from` mentions the file name of any of `to`'s paths, case-insensitively. */
+function names(from: DriftDocument, to: DriftDocument): boolean {
+  const text = from.doc.blocks.map((block) => block.text.toLowerCase()).join("\n");
+  return to.paths.some((path) => text.includes(path.slice(path.lastIndexOf("/") + 1).toLowerCase()));
 }
 
 /** Blocks missing from at least one document, with presence provenance. */

@@ -404,6 +404,7 @@ detectors ───▶│ importers│──▶│  Workspace IR │◀─│ po
 ### 10.4 Instruction normalization (what "drift" means, precisely)
 
 Markdown → block list (headings, paragraphs, fences, lists) → strip adapter wrappers/markers → normalize whitespace → stable hash per block and document. Cross-tool drift = set/sequence diff of block hashes with provenance. Cursor `.mdc` frontmatter and Copilot `applyTo` map scoped rules ↔ IR scope globs. Content inside managed markers compares against expected emitter output; content outside is user-owned and participates only in cross-tool divergence reporting. Symlinks resolve to a single logical document (a symlinked CLAUDE.md→AGENTS.md is *zero* drift and reported as the healthy pattern it is).
+*(Revised 2026-11-04 by maintainer decision on #501: a pair of root documents sharing no block is not drift. It is reported as a pointer when the shorter file, at most three blocks, names the other ("See AGENTS.md"), or as separate documents otherwise, and neither costs score; only copies that share some content and differ elsewhere are divergent. A GEMINI.md that imports `@AGENTS.md` is one source with it, like the CLAUDE.md shim, since Gemini expands `@file.md` imports the same way.)*
 
 ### 10.5 Permission model (the policy IR)
 

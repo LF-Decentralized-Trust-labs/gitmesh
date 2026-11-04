@@ -13,7 +13,9 @@
  * file is redacted in every mode too.
  *
  * Score: 100 minus 20 per error, 5 per warning, 5 per pair of instruction
- * documents that differ; `info` findings never cost points. Clamped at 0.
+ * documents that are diverged copies; `info` findings never cost points,
+ * and neither does a pointer ("See AGENTS.md") or a separate document - a
+ * pair sharing no block is not a copy that drifted (#501). Clamped at 0.
  */
 
 import type { DriftBlockRef, DriftReport, PairDrift } from "../drift/index.js";
@@ -40,6 +42,7 @@ export interface DoctorSummary {
   artifacts: number;
   adapters: number;
   findings: Record<RiskSeverity, number>;
+  /** Pairs of instruction documents that are diverged copies - the ones the score charges. */
   driftingPairs: number;
 }
 
@@ -52,7 +55,7 @@ const DRIFT_PENALTY = 5;
 export function summarizeDoctorReport(report: DoctorReport): DoctorSummary {
   const findings: Record<RiskSeverity, number> = { error: 0, warning: 0, info: 0 };
   for (const finding of report.findings) findings[finding.severity] += 1;
-  const driftingPairs = report.drift.pairs.filter((pair) => !pair.identical).length;
+  const driftingPairs = report.drift.pairs.filter((pair) => pair.relation === "diverged").length;
   const penalty =
     SEVERITIES.reduce((sum, severity) => sum + findings[severity] * PENALTY[severity], 0) +
     driftingPairs * DRIFT_PENALTY;
@@ -103,6 +106,11 @@ export function findingLocation(finding: RiskFinding): string {
 /** One-line result of a document pair, e.g. `2 blocks only in A, 3 shared`. */
 export function describePair(pair: PairDrift): string {
   if (pair.identical) return "identical";
+  if (pair.relation === "pointer") {
+    const [from, to] = pointerDirection(pair);
+    return `${from} points to ${to}, no shared block; not a copy`;
+  }
+  if (pair.relation === "separate") return "separate documents, no shared block; not a copy";
   const parts: string[] = [];
   if (pair.onlyInA.length) parts.push(`${plural(pair.onlyInA.length, "block")} only in ${pair.a}`);
   if (pair.onlyInB.length) parts.push(`${plural(pair.onlyInB.length, "block")} only in ${pair.b}`);
@@ -126,6 +134,16 @@ export function blockPreview(text: string): string {
 export function redactBlock(block: DriftBlockRef): DriftBlockRef {
   const text = redactSecrets(block.text);
   return text === block.text ? block : { kind: block.kind, text, hash: block.hash };
+}
+
+/** The pointer and its target: the shorter side names the longer; with equal lengths, whichever names the other. */
+function pointerDirection(pair: PairDrift): [from: string, to: string] {
+  const mentions = (blocks: readonly DriftBlockRef[], label: string): boolean =>
+    blocks.some((block) => block.text.toLowerCase().includes(label.slice(label.lastIndexOf("/") + 1).toLowerCase()));
+  if (pair.onlyInA.length === pair.onlyInB.length && !mentions(pair.onlyInA, pair.b) && mentions(pair.onlyInB, pair.a)) {
+    return [pair.b, pair.a];
+  }
+  return pair.onlyInA.length <= pair.onlyInB.length ? [pair.a, pair.b] : [pair.b, pair.a];
 }
 
 export function plural(count: number, noun: string): string {

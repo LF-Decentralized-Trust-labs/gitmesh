@@ -365,6 +365,30 @@ describe("gitmesh doctor - pipeline", () => {
     },
   );
 
+  it("does not charge a GEMINI.md import, a prose pointer or a separate document as drift (#501)", async () => {
+    const dir = makeRepo({
+      "AGENTS.md": "# Rules\n\nUse pnpm for all installs.\n\n- Run tests before every commit.\n",
+      "GEMINI.md": "@AGENTS.md\n",
+      "CLAUDE.md": "See AGENTS.md for the instructions in this repository.\n",
+      ".cursorrules": "# Cursor\n\nPrefer named exports.\n\n- Never push.\n\n- Never force.\n",
+    });
+    const { report, output } = await runDoctor({ dir, context: HERMETIC });
+    expect(report.drift.documents.map((d) => d.label)).toEqual([".cursorrules", "AGENTS.md", "CLAUDE.md"]);
+    expect(report.drift.pairs.map((pair) => [pair.a, pair.b, pair.relation])).toEqual([
+      [".cursorrules", "AGENTS.md", "separate"],
+      [".cursorrules", "CLAUDE.md", "separate"],
+      ["AGENTS.md", "CLAUDE.md", "pointer"],
+    ]);
+    expect(report.drift.divergentBlocks).toEqual([]);
+    expect(output).toContain("0 divergent pairs");
+    const warnings = report.findings.filter((f) => f.severity === "warning").length;
+    const errors = report.findings.filter((f) => f.severity === "error").length;
+    expect(JSON.parse(renderDoctorJson(report)).summary).toMatchObject({
+      driftingPairs: 0,
+      score: 100 - 20 * errors - 5 * warnings,
+    });
+  });
+
   it.skipIf(!symlinksSupported)("reports a symlinked CLAUDE.md as a zero-drift group", async () => {
     const dir = makeRepo({ "AGENTS.md": "# Rules\n\nUse pnpm.\n" });
     symlinkSync("AGENTS.md", join(dir, "CLAUDE.md"));
