@@ -1,0 +1,3 @@
+# Rules
+
+Use pnpm.

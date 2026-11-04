@@ -46,7 +46,7 @@ npx gitmesh-cli@next doctor
 
 The npm package is **`gitmesh-cli`** and the installed binary is **`gitmesh`**; the unscoped npm name `gitmesh` belongs to an unrelated project ([ADR-005](doc/adr/ADR-005-npm-package-naming.md)).
 
-`gitmesh doctor` reads the agent configuration in the repository's working tree across eleven registered adapters in one pass - instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings - diffs the instruction copies different agents read, and reports risk findings with stable ids. It **never writes a file, never opens a network connection and never runs a subprocess**; the test suite holds every release to that. Pass a directory to audit another checkout: `npx gitmesh-cli@next doctor ../other-repo` scans that directory's git root.
+`gitmesh doctor` reads the agent configuration in the repository's working tree across eleven registered adapters in one pass - instruction files, rules, MCP configs, skills, commands, subagents, permission and hook settings - diffs the instruction copies different agents read, and reports risk findings with stable ids. It **never writes a file, never opens a network connection and never runs a subprocess**; the test suite holds every release to that. Pass a directory to audit another checkout: `npx gitmesh-cli@next doctor ../other-repo` scans that directory's git root. A symlink that resolves outside the repository is reported as broken and never read or followed, so an unreviewed checkout cannot make doctor quote files of the machine running it.
 
 | Flag | Effect |
 |---|---|

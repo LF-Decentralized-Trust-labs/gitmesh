@@ -70,6 +70,7 @@ export function detect(repo: RepoContext): OpenCodeArtifact[] {
   // One repo-wide walk covers both any-depth families.
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),
@@ -95,6 +96,7 @@ export function detect(repo: RepoContext): OpenCodeArtifact[] {
   for (const dir of ["skill", "skills"]) {
     const base = `${OPENCODE_DIR}/${dir}`;
     walk(
+      root,
       join(root, base),
       base,
       new Set(),
@@ -102,7 +104,7 @@ export function detect(repo: RepoContext): OpenCodeArtifact[] {
       (name) => name === "SKILL.md",
       (_name, rel, info) => {
         const artifact = makeArtifact(rel, "skill", "project", info);
-        if (skillDirHasExecutable(join(root, rel, ".."))) {
+        if (skillDirHasExecutable(root, join(root, rel, ".."))) {
           artifact.executable = true;
         }
         out.push(artifact);

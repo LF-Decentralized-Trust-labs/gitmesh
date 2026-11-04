@@ -58,6 +58,7 @@ export function detect(repo: RepoContext): DevinArtifact[] {
 
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),

@@ -20,10 +20,11 @@
  *   (org-managed settings, requirements.toml, the Antigravity CLI settings,
  *   CODEX_HOME), the way doctor's own golden tests run it, and without
  *   `--user`.
- * - doctor follows symlinks (#500), and a census must never read files of
- *   the machine running it. A symlink that resolves outside the checkout is
- *   re-pointed at a path that does not exist before doctor runs, so doctor
- *   reports it broken, as on any machine without that path.
+ * - a census must never read files of the machine running it. Doctor itself
+ *   reports a symlink that resolves outside the checkout as broken and never
+ *   reads through it (#500); the census still re-points such a link at a
+ *   path that does not exist before doctor runs, a second barrier that does
+ *   not depend on the doctor version.
  */
 import { execFile } from "node:child_process";
 import { readFileSync, rmSync } from "node:fs";

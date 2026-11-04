@@ -71,6 +71,7 @@ export function detect(repo: RepoContext): CursorArtifact[] {
   //    `.cursor` dir is config housekeeping, not instructions.
   walk(
     root,
+    root,
     "",
     new Set(),
     (dir) => !WALK_EXCLUDES.has(dir),

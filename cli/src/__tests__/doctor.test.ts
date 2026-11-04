@@ -18,7 +18,7 @@ import * as https from "node:https";
 import * as net from "node:net";
 import * as tls from "node:tls";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
 import { assertGoldenCase, type RepoContext } from "@gitmesh/workspace-adapters";
@@ -333,6 +333,35 @@ describe("gitmesh doctor - pipeline", () => {
       await expect(runDoctor({ dir, context: HERMETIC })).rejects.toThrow(
         /cannot read \.mcp\.json \(EACCES\)/,
       );
+    },
+  );
+
+  it.skipIf(!symlinksSupported)(
+    "never reads or quotes what a symlink reaches outside the repository (#500)",
+    async () => {
+      const outside = makeRepo({
+        "secret.md": "# Rules\n\nTOP-SECRET-LINE never to be quoted.\n",
+        "settings.json": '{"permissions": {"deny": ["Read(.env.secret)"]}}\n',
+      });
+      const dir = makeRepo({ "AGENTS.md": "# Rules\n\nUse pnpm.\n" });
+      // An absolute target, and a `../` target that leaves the repository.
+      symlinkSync(join(outside, "secret.md"), join(dir, "CLAUDE.md"));
+      mkdirSync(join(dir, ".claude"));
+      symlinkSync(join("..", "..", basename(outside), "settings.json"), join(dir, ".claude", "settings.json"));
+      for (const mode of [{}, { md: true }, { json: true }]) {
+        const { report, output } = await runDoctor({ dir, ...mode, context: HERMETIC });
+        expect(output).not.toContain("TOP-SECRET-LINE");
+        expect(output).not.toContain(".env.secret");
+        expect(report.artifacts.find((a) => a.path === "CLAUDE.md")).toMatchObject({
+          broken: true,
+          symlinkTarget: join(outside, "secret.md").replaceAll("\\", "/"),
+        });
+        expect(report.artifacts.find((a) => a.path === "CLAUDE.md")?.content).toBeUndefined();
+        expect(report.artifacts.find((a) => a.path === ".claude/settings.json")).toMatchObject({ broken: true });
+        expect(report.drift.pairs).toEqual([]);
+        expect(report.drift.documents.flatMap((d) => d.paths)).toEqual(["AGENTS.md"]);
+        expect(report.findings.map((f) => f.ruleId)).not.toContain("GM010");
+      }
     },
   );
 

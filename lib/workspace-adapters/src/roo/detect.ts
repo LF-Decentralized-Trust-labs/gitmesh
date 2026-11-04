@@ -64,6 +64,7 @@ export function detect(repo: RepoContext): RooArtifact[] {
     const abs = join(rooBase, entry.name);
     if (RULES_DIR_PATTERN.test(entry.name) && isTraversableDir(entry, abs)) {
       walk(
+        root,
         abs,
         `${ROO_DIR}/${entry.name}`,
         new Set(),
@@ -82,7 +83,7 @@ export function detect(repo: RepoContext): RooArtifact[] {
     if (!ROORULES_PATTERN.test(entry.name) || isTraversableDir(entry, abs)) {
       continue;
     }
-    const info = fileInfoFromEntry(entry, abs);
+    const info = fileInfoFromEntry(root, entry, abs);
     if (info) {
       out.push(makeArtifact(entry.name, "rule", "project", info));
     }

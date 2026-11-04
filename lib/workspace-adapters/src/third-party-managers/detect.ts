@@ -171,7 +171,7 @@ export function detect(repo: RepoContext): ThirdPartyManagerArtifact[] {
   const out: ThirdPartyManagerArtifact[] = [];
 
   for (const probe of MANAGER_FILES) {
-    const info = inspectFile(join(root, probe.path));
+    const info = inspectFile(root, join(root, probe.path));
     if (info) {
       out.push({
         ...makeArtifact(probe.path, probe.kind, probe.scope ?? "project", info),
@@ -211,7 +211,7 @@ function collectSymlinkTopology(root: string, out: ThirdPartyManagerArtifact[]):
     seen.add(rel);
     const scope = rel === "CLAUDE.local.md" ? "local" : "project";
     out.push({
-      ...makeArtifact(rel, "symlink", scope, symlinkInfo(abs, () => true)),
+      ...makeArtifact(rel, "symlink", scope, symlinkInfo(root, abs, () => true)),
       manager: "symlinks",
     });
   };

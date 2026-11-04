@@ -1,0 +1,34 @@
+[
+  {
+    "path": ".claude/rules/escape.md",
+    "kind": "rule",
+    "scope": "project",
+    "symlinkTarget": "../../../outside/leak.md",
+    "broken": true
+  },
+  {
+    "path": ".claude/rules/ok.md",
+    "kind": "rule",
+    "scope": "project",
+    "symlinkTarget": "../../docs/rules.md"
+  },
+  {
+    "path": ".claude/settings.json",
+    "kind": "settings",
+    "scope": "project",
+    "symlinkTarget": "../hop.json",
+    "broken": true
+  },
+  {
+    "path": ".mcp.json",
+    "kind": "mcp-config",
+    "scope": "project"
+  },
+  {
+    "path": "CLAUDE.md",
+    "kind": "instructions",
+    "scope": "project",
+    "symlinkTarget": "<outside>/secret.md",
+    "broken": true
+  }
+]

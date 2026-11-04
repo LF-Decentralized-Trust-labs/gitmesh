@@ -50,7 +50,12 @@ export function loadCaseOptions<T>(caseDir: string): T {
  * in a `symlinks.json` sidecar (`{ "link": "target" }`, targets as literal
  * link contents). Such a case runs against a temp copy of `input-repo/`
  * with the links created - typed per resolved target so Windows works -
- * and is skipped where symlinks are unsupported.
+ * and is skipped where symlinks are unsupported. A case about links that
+ * leave the repository (#500) adds an `outside/` tree, materialized next to
+ * the copy so `../outside/...` targets escape the way they would in a real
+ * checkout; `<outside>` in a target stands for its absolute path, and the
+ * harness writes the placeholder back into `symlinkTarget` so the expected
+ * output stays byte-exact on every machine.
  */
 export function describeDetectorGoldens(
   adapter: AgentAdapter,
@@ -79,15 +84,11 @@ export function describeDetectorGoldens(
         `matches ${goldenCase.name} byte-exactly`,
         async () => {
           await assertGoldenCase(goldenCase, (inputRepoDir) => {
-            const root = needsSymlinks
-              ? materializeWithSymlinks(inputRepoDir, symlinks, temp.makeDir)
-              : inputRepoDir;
-            return [
-              {
-                path: "detected.json",
-                content: serialize(adapter.detect(contextFor(goldenCase.dir, root))),
-              },
-            ];
+            const { root, outsideDir } = needsSymlinks
+              ? materializeWithSymlinks(goldenCase.dir, inputRepoDir, symlinks, temp.makeDir)
+              : { root: inputRepoDir, outsideDir: undefined };
+            const detected = adapter.detect(contextFor(goldenCase.dir, root));
+            return [{ path: "detected.json", content: serialize(redactOutside(detected, outsideDir)) }];
           });
         },
       );
@@ -103,15 +104,30 @@ function loadCaseSymlinks(caseDir: string): Record<string, string> {
     : {};
 }
 
-/** Copies `inputRepoDir` into a temp dir and creates the declared links. */
+/** Stands for the materialized `outside/` tree in `symlinks.json` targets and in `expected/`. */
+const OUTSIDE_PLACEHOLDER = "<outside>";
+
+/**
+ * Copies `inputRepoDir` to `<temp>/repo`, the case's `outside/` tree (if any)
+ * to `<temp>/outside`, and creates the declared links.
+ */
 function materializeWithSymlinks(
+  caseDir: string,
   inputRepoDir: string,
   symlinks: Record<string, string>,
   makeDir: (prefix: string) => string,
-): string {
-  const root = makeDir("gitmesh-golden-symlinks-");
+): { root: string; outsideDir: string | undefined } {
+  const base = makeDir("gitmesh-golden-symlinks-");
+  const root = join(base, "repo");
   cpSync(inputRepoDir, root, { recursive: true });
-  for (const [link, target] of Object.entries(symlinks)) {
+  let outsideDir: string | undefined;
+  if (existsSync(join(caseDir, "outside"))) {
+    outsideDir = join(base, "outside");
+    cpSync(join(caseDir, "outside"), outsideDir, { recursive: true });
+  }
+  for (const [link, declared] of Object.entries(symlinks)) {
+    const target =
+      outsideDir === undefined ? declared : declared.replaceAll(OUTSIDE_PLACEHOLDER, outsideDir);
     const abs = join(root, link);
     mkdirSync(dirname(abs), { recursive: true });
     // Windows needs the link type; "dir" (not junction) keeps the literal
@@ -121,7 +137,23 @@ function materializeWithSymlinks(
       existsSync(resolved) && statSync(resolved).isDirectory() ? "dir" : "file";
     symlinkSync(target, abs, type);
   }
-  return root;
+  return { root, outsideDir };
+}
+
+/** Puts the placeholder back into literal targets that name the materialized `outside/` tree. */
+function redactOutside(
+  artifacts: readonly DetectedArtifact[],
+  outsideDir: string | undefined,
+): readonly DetectedArtifact[] {
+  if (outsideDir === undefined) {
+    return artifacts;
+  }
+  const prefix = outsideDir.replaceAll("\\", "/");
+  return artifacts.map((artifact) =>
+    artifact.symlinkTarget?.startsWith(prefix)
+      ? { ...artifact, symlinkTarget: OUTSIDE_PLACEHOLDER + artifact.symlinkTarget.slice(prefix.length) }
+      : artifact,
+  );
 }
 
 function serialize(artifacts: readonly DetectedArtifact[]): string {

@@ -48,6 +48,7 @@ describe("listGoldenCases", () => {
       "claude-code/full-surface",
       "claude-code/no-artifacts",
       "claude-code/scoped-and-managed",
+      "claude-code/symlink-escapes",
       "claude-code/user-scope-not-requested",
       "cline/legacy-single-file",
       "cline/no-artifacts",
