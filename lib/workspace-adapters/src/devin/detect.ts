@@ -1,4 +1,5 @@
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectMarkdownTree,
   collectSkillManifests,
@@ -45,12 +46,7 @@ export interface DevinArtifact extends DetectedArtifact {
 }
 
 /** The AGENTS.md walk skips these; `.devin`/`.windsurf` hold config, not instructions. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([
-  ".git",
-  "node_modules",
-  ".devin",
-  ".windsurf",
-]);
+const WALK_EXCLUDES: ReadonlySet<string> = new Set([...BASE_WALK_EXCLUDES, ".devin", ".windsurf"]);
 
 export function detect(repo: RepoContext): DevinArtifact[] {
   const root = repo.rootDir;

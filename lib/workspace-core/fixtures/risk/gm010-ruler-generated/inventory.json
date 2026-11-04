@@ -1,0 +1,43 @@
+[
+  {
+    "adapter": "claude-code",
+    "path": ".claude/settings.json",
+    "kind": "settings",
+    "scope": "project"
+  },
+  {
+    "adapter": "claude-code",
+    "path": "CLAUDE.md",
+    "kind": "instructions",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "adapter": "codex",
+    "path": "AGENTS.md",
+    "kind": "instructions",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "adapter": "third-party-managers",
+    "path": ".ruler/AGENTS.md",
+    "kind": "source",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "adapter": "third-party-managers",
+    "path": "AGENTS.md",
+    "kind": "output",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "adapter": "third-party-managers",
+    "path": "CLAUDE.md",
+    "kind": "output",
+    "scope": "project",
+    "manager": "ruler"
+  }
+]

@@ -1,4 +1,4 @@
-import { compareArtifacts, makeArtifact, walk } from "../detect-fs.js";
+import { BASE_WALK_EXCLUDES, compareArtifacts, makeArtifact, walk } from "../detect-fs.js";
 import type { DetectedArtifact, RepoContext } from "../types.js";
 
 /**
@@ -21,7 +21,7 @@ export interface AgentsMdArtifact extends DetectedArtifact {
 }
 
 /** The repo-wide AGENTS.md walk never enters these. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules"]);
+const WALK_EXCLUDES: ReadonlySet<string> = BASE_WALK_EXCLUDES;
 
 export function detect(repo: RepoContext): AgentsMdArtifact[] {
   const out: AgentsMdArtifact[] = [];

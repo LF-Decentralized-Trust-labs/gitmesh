@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
 import {
+  BASE_WALK_EXCLUDES,
   collectSkillManifests,
   compareArtifacts,
   fileInfoFromEntry,
@@ -59,12 +60,7 @@ export function defaultRequirementsTomlPaths(
 }
 
 /** The AGENTS.md walk skips these; `.codex`/`.agents` hold config, not instructions. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([
-  ".git",
-  "node_modules",
-  ".codex",
-  ".agents",
-]);
+const WALK_EXCLUDES: ReadonlySet<string> = new Set([...BASE_WALK_EXCLUDES, ".codex", ".agents"]);
 
 export function detect(repo: RepoContext): CodexArtifact[] {
   const root = repo.rootDir;

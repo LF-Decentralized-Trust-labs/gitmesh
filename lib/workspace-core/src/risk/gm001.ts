@@ -26,7 +26,11 @@ import type { RiskRule } from "./risk.js";
  * Third-party-manager files (`.ruler/mcp.json`, `.rulesync/mcp.jsonc`) are
  * scanned too: ADR-004 protects the manager's territory from GitMesh writes
  * and never flags management itself, but a committed token is a property
- * of the file, not of who generated it.
+ * of the file, not of who generated it. The one store a manager keeps
+ * secrets in by design - @agents-dev/cli's gitignored `.agents/local.json`,
+ * kind `secrets` - is outside the kinds here, so the rule never asks a user
+ * to undo that tool's split (#504); a committed copy is GM009's case once
+ * doctor reads git status.
  */
 export const gm001: RiskRule = {
   id: "GM001",

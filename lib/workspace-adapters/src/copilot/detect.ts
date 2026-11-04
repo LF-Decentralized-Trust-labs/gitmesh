@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseJsonc } from "@gitmesh/workspace-core";
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectMarkdownTree,
   compareArtifacts,
@@ -71,7 +72,7 @@ const INSTRUCTIONS_DIR = ".github/instructions";
 const AGENTS_DIR = ".github/agents";
 
 /** The repo-wide AGENTS.md walk never enters these. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules"]);
+const WALK_EXCLUDES: ReadonlySet<string> = BASE_WALK_EXCLUDES;
 
 export function detect(repo: RepoContext): CopilotArtifact[] {
   const root = repo.rootDir;

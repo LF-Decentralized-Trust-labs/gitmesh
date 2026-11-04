@@ -39,6 +39,7 @@ describe("listGoldenCases", () => {
     const cases = listGoldenCases(fixturesRoot);
     expect(cases.map((c) => `${c.adapter}/${c.name}`)).toEqual([
       "agentsmd/full-surface",
+      "agentsmd/manager-sources",
       "agentsmd/no-artifacts",
       "agentsmd/root-only",
       "antigravity/full-surface",

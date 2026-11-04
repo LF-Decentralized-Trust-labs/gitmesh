@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join, posix, win32 } from "node:path";
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectMarkdownTree,
   collectSkillManifests,
@@ -66,11 +67,7 @@ export function defaultManagedSettingsPaths(
  * dependency trees, and `.claude/` itself (its contents are inventoried by
  * the dedicated scans below, and files inside it are not memory files).
  */
-const INSTRUCTION_WALK_EXCLUDES: ReadonlySet<string> = new Set([
-  ".git",
-  "node_modules",
-  ".claude",
-]);
+const INSTRUCTION_WALK_EXCLUDES: ReadonlySet<string> = new Set([...BASE_WALK_EXCLUDES, ".claude"]);
 
 /** Display path used for the user-scope memory file, stable across machines. */
 const USER_MEMORY_PATH = "~/.claude/CLAUDE.md";

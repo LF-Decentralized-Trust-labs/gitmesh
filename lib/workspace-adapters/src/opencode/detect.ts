@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectDirFiles,
   collectMarkdownTree,
@@ -57,7 +58,7 @@ export interface OpenCodeArtifact extends DetectedArtifact {
 }
 
 /** The repo-wide walk skips these; `.opencode` holds config, not instructions. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules", ".opencode"]);
+const WALK_EXCLUDES: ReadonlySet<string> = new Set([...BASE_WALK_EXCLUDES, ".opencode"]);
 
 const CONFIG_NAMES: ReadonlySet<string> = new Set(["opencode.json", "opencode.jsonc"]);
 

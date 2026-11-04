@@ -206,11 +206,28 @@ export async function collectDoctorReport(repo: RepoContext): Promise<DoctorRepo
       artifacts.push(artifact);
     }
   }
+  labelManagedOutputs(artifacts);
   return {
     artifacts,
     drift: computeDriftReport([...documents.values()]),
     findings: runRiskRules({ artifacts }, riskRules),
   };
+}
+
+/**
+ * A file a third-party manager generates (its detector's `output`, e.g.
+ * Ruler's banner-marked CLAUDE.md) is that manager's wherever it is listed:
+ * every adapter's entry for the path gets the same `managed by X` label, so
+ * the inventory says so next to the agent that reads it (ADR-004, #505).
+ */
+function labelManagedOutputs(artifacts: DoctorArtifact[]): void {
+  const managers = new Map<string, string>();
+  for (const { path, kind, manager } of artifacts) {
+    if (kind === "output" && manager !== undefined) managers.set(path, manager);
+  }
+  for (const artifact of artifacts) {
+    if (artifact.manager === undefined) artifact.manager = managers.get(artifact.path);
+  }
 }
 
 const isDirectory = (dir: string): boolean => safeStat(dir)?.isDirectory() ?? false;
