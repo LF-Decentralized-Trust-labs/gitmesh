@@ -120,16 +120,25 @@ function isDriftDocument({ scope, kind, path }: DetectedArtifact): boolean {
 }
 
 /**
- * A CLAUDE.md carrying the `@AGENTS.md` import token is the shim GM010
- * recommends (pivot §8.2): a pointer to AGENTS.md plus Claude-only
- * extras, not an independent copy - so it stays out of the pairwise differ,
- * the same reasoning that makes a symlinked CLAUDE.md zero drift (§10.4).
- * Diffing the shim charged the score for adopting doctor's own remediation.
- * Resolving the import and diffing the merged document is the normalizer's
- * lane (E3) and can supersede this exclusion.
+ * Root instruction files whose agents expand `@path` imports: Claude Code
+ * reads CLAUDE.md that way, and Gemini / Antigravity read GEMINI.md with
+ * the same `@file.md` syntax (gemini-cli docs, "Modularize context with
+ * imports"). Elsewhere an `@AGENTS.md` line is text the model may or may
+ * not follow, which the differ reports as a pointer (#501).
+ */
+const IMPORTING_DOCUMENTS: ReadonlySet<string> = new Set(["CLAUDE.md", "GEMINI.md"]);
+
+/**
+ * A CLAUDE.md or GEMINI.md carrying the `@AGENTS.md` import token is the
+ * shim GM010 recommends (pivot §8.2): a pointer to AGENTS.md plus
+ * agent-only extras, not an independent copy - so it stays out of the
+ * pairwise differ, the same reasoning that makes a symlinked CLAUDE.md zero
+ * drift (§10.4). Diffing the shim charged the score for adopting doctor's
+ * own remediation. Resolving the import and diffing the merged document is
+ * the normalizer's lane (E3) and can supersede this exclusion.
  */
 function isAgentsMdShim(path: string, content: string): boolean {
-  return path === "CLAUDE.md" && importsAgentsMd(content);
+  return IMPORTING_DOCUMENTS.has(path) && importsAgentsMd(content);
 }
 
 /**

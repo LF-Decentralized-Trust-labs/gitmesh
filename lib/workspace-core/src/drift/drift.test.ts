@@ -18,6 +18,7 @@ describe("computeDriftReport - pairs", () => {
       {
         a: "AGENTS.md",
         b: "CLAUDE.md",
+        relation: "identical",
         onlyInA: [],
         onlyInB: [],
         reordered: [],
@@ -76,6 +77,59 @@ describe("computeDriftReport - pairs", () => {
   });
 });
 
+describe("computeDriftReport - pair relations (#501)", () => {
+  const AGENTS = "# Rules\n\nUse pnpm.\n\n- Run tests before every commit.\n";
+
+  it("calls copies that share a block and differ elsewhere diverged", () => {
+    const { pairs } = computeDriftReport([doc("AGENTS.md", AGENTS), doc("GEMINI.md", "# Rules\n\nUse pnpm.\n\nPrefer tabs.\n")]);
+    expect(pairs.map((pair) => pair.relation)).toEqual(["diverged"]);
+  });
+
+  it("calls identical copies identical", () => {
+    const { pairs } = computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", AGENTS)]);
+    expect(pairs.map((pair) => pair.relation)).toEqual(["identical"]);
+  });
+
+  it("calls a short file that names the other a pointer, whichever side is shorter", () => {
+    const pointer = "See AGENTS.md for the instructions in this repository.\n";
+    expect(computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", pointer)]).pairs[0]?.relation).toBe("pointer");
+    expect(computeDriftReport([doc("AGENTS.md", pointer.replace("AGENTS.md", "CLAUDE.md")), doc("CLAUDE.md", AGENTS)]).pairs[0]?.relation).toBe(
+      "pointer",
+    );
+    // Naming is case-insensitive and by file name, so a nested path is found by its basename.
+    expect(
+      computeDriftReport([doc("AGENTS.md", AGENTS), doc(".github/copilot-instructions.md", "Read agents.md first.\n")]).pairs[0]?.relation,
+    ).toBe("pointer");
+    // Equal lengths: either side may do the naming.
+    expect(computeDriftReport([doc("AGENTS.md", "Use pnpm.\n"), doc("CLAUDE.md", "Follow AGENTS.md.\n")]).pairs[0]?.relation).toBe("pointer");
+  });
+
+  it("calls a pair sharing no block separate when the shorter side has more than three blocks or names nothing", () => {
+    const other = "# Claude\n\nPrefer the Edit tool.\n\n- Never run git push.\n";
+    expect(computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", other)]).pairs[0]?.relation).toBe("separate");
+    const long = "# Guide\n\nOne.\n\nTwo.\n\nThree.\n\nFour, see AGENTS.md.\n";
+    expect(computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", long)]).pairs[0]?.relation).toBe("separate");
+    expect(computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", "")]).pairs[0]?.relation).toBe("separate");
+  });
+
+  it("aggregates divergent blocks over copies only", () => {
+    const { divergentBlocks, pairs } = computeDriftReport([
+      doc("AGENTS.md", AGENTS),
+      doc("CLAUDE.md", "See AGENTS.md.\n"),
+      doc("GEMINI.md", "# Rules\n\nUse pnpm.\n"),
+    ]);
+    expect(pairs.map((pair) => [pair.a, pair.b, pair.relation])).toEqual([
+      ["AGENTS.md", "CLAUDE.md", "pointer"],
+      ["AGENTS.md", "GEMINI.md", "diverged"],
+      ["CLAUDE.md", "GEMINI.md", "separate"],
+    ]);
+    expect(divergentBlocks.map(({ block, presentIn, missingFrom }) => [block.text, presentIn, missingFrom])).toEqual([
+      ["- Run tests before every commit.", ["AGENTS.md"], ["GEMINI.md"]],
+    ]);
+    expect(computeDriftReport([doc("AGENTS.md", AGENTS), doc("CLAUDE.md", "See AGENTS.md.\n")]).divergentBlocks).toEqual([]);
+  });
+});
+
 describe("computeDriftReport - symlink topology", () => {
   it("collapses paths sharing a logicalPath into one zero-drift document", () => {
     const report = computeDriftReport([
@@ -127,11 +181,10 @@ describe("computeDriftReport - divergent block aggregation", () => {
     ]);
   });
 
-  it("excludes universal blocks and handles empty documents", () => {
+  it("excludes universal blocks and treats an empty document as separate, not as a copy missing everything", () => {
     const report = computeDriftReport([doc("a.md", "# Same\n"), doc("b.md", "")]);
-    expect(report.divergentBlocks).toEqual([
-      expect.objectContaining({ presentIn: ["a.md"], missingFrom: ["b.md"] }),
-    ]);
+    expect(report.pairs[0]!.relation).toBe("separate");
+    expect(report.divergentBlocks).toEqual([]);
     const empty = computeDriftReport([doc("a.md", ""), doc("b.md", "\n\n")]);
     expect(empty.pairs[0]!.identical).toBe(true);
     expect(empty.divergentBlocks).toEqual([]);

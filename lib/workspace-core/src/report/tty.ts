@@ -89,7 +89,10 @@ export function renderDoctorTty(report: DoctorReport, options: DoctorTtyOptions 
     lines.push(`  ${group.join(" = ")}  ${p.green("symlink group, zero drift")}`);
   }
   for (const pair of drift.pairs) {
-    const result = pair.identical ? p.green("identical") : p.yellow(describePair(pair));
+    const result =
+      pair.relation === "diverged"
+        ? p.yellow(describePair(pair))
+        : (pair.identical ? p.green : p.dim)(describePair(pair));
     lines.push(`  ${pair.a} vs ${pair.b}  ${result}`);
   }
   if (drift.divergentBlocks.length > 0) {

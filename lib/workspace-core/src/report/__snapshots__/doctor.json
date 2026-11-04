@@ -106,6 +106,7 @@
       {
         "a": ".cursor/rules/style.mdc",
         "b": "AGENTS.md",
+        "relation": "diverged",
         "identical": false,
         "sharedCount": 1,
         "onlyInA": [
@@ -132,6 +133,7 @@
       {
         "a": ".cursor/rules/style.mdc",
         "b": "GEMINI.md",
+        "relation": "diverged",
         "identical": false,
         "sharedCount": 1,
         "onlyInA": [
@@ -163,6 +165,7 @@
       {
         "a": "AGENTS.md",
         "b": "GEMINI.md",
+        "relation": "diverged",
         "identical": false,
         "sharedCount": 3,
         "onlyInA": [],

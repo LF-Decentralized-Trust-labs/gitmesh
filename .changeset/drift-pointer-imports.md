@@ -1,0 +1,5 @@
+---
+"gitmesh-cli": patch
+---
+
+`gitmesh doctor` no longer charges drift for root instruction files that are not copies of one another (#501). A `GEMINI.md` that imports `@AGENTS.md` is one source with it, like the `CLAUDE.md` shim, and stays out of the comparison. Each compared pair now carries a `relation` in `--json`: `identical`, `diverged` (copies that share some content and differ elsewhere, the only relation that counts as a divergent pair and costs 5 points), `pointer` (no shared block, and the shorter file, at most three blocks, names the other, as in `See AGENTS.md`) or `separate` (no shared block otherwise, a document of its own). The TTY and Markdown reports describe pointers and separate documents as not copies, the divergent-pair count and the score include only diverged pairs, and the divergent-block list covers only documents that are copies of another. Before this, a one-line pointer or a single-agent document beside `AGENTS.md` was reported and charged as a diverged copy.

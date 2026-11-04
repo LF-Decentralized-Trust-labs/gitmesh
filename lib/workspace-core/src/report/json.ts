@@ -66,9 +66,10 @@ export function renderDoctorJson(report: DoctorReport): string {
         blocks: doc.blocks.length,
       })),
       symlinkGroups: drift.symlinkGroups,
-      pairs: drift.pairs.map(({ a, b, identical, sharedCount, onlyInA, onlyInB, reordered }) => ({
+      pairs: drift.pairs.map(({ a, b, relation, identical, sharedCount, onlyInA, onlyInB, reordered }) => ({
         a,
         b,
+        relation,
         identical,
         sharedCount,
         onlyInA: onlyInA.map(redactBlock),
