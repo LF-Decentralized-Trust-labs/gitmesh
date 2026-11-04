@@ -10,18 +10,24 @@ import type { RiskArtifact, RiskRule } from "./risk.js";
  * counting it would make the verdict differ between a laptop and CI on the
  * same commit (#493).
  *
- * Protection means a deny/ask pattern that actually matches a secret path
+ * Protection means a deny/ask rule that actually covers a secret path
  * (`SECRET_PATHS`, from the §10.5 `deny_read` set) under the agent's own
- * glob semantics - `Read(**)` protects, `Read(config/**)` does not.
- * - claude-code: a `Read(<glob>)` entry in `permissions.deny` or
- *   `permissions.ask` of any settings file.
+ * matching rules - `Read(**)` protects, `Read(config/**)` does not.
+ * - claude-code: an entry in `permissions.deny` or `permissions.ask` of any
+ *   settings file that covers the path: a `Read(<pattern>)` rule whose
+ *   gitignore-style pattern matches it under Claude's anchors, or a bare
+ *   tool name / tool-name glob (`Read`, `*`) that removes the Read tool
+ *   altogether (#488).
  * - cursor: a non-empty `hooks.beforeReadFile` list (the hook body is not
  *   inspectable; presence is the best available proxy).
- * - opencode: denies `*.env` / `*.env.*` reads by default (last matching
- *   rule wins), so it is unprotected only when the config's `permission.read`
- *   makes a secret path resolve to `"allow"`. The docs do not state how a
- *   user value merges with the default (verified 2026-08-29); the user's
- *   object is assumed to override default keys in place and append new ones.
+ * - opencode: asks before reading `*.env` / `*.env.*` by default, evaluates
+ *   its rules in order with the last match winning and `ask` as the
+ *   fallback, and the rules built from `opencode.json` follow those defaults
+ *   (anomalyco/opencode `packages/core/src/permission.ts`,
+ *   `packages/schema/src/agent.ts`, `packages/core/src/v1/config/migrate.ts`,
+ *   read 2026-11-04). Exposed when the last rule matching a secret path is
+ *   `allow`, whether it comes from `"permission": "allow"`, a `*` action key
+ *   or `permission.read` (#488).
  *
  * Excluded, with reasons: Copilot / VS Code has no hard deny (§10.5
  * coverage annotation); Codex `sandbox_mode` and Antigravity denied-commands
@@ -81,7 +87,7 @@ const PROTECTORS: readonly Protector[] = [
     adapter: "opencode",
     kind: "config",
     message:
-      'permission.read allows .env files, overriding OpenCode\'s default deny; remove the allow or set "*.env" and "*.env.*" back to "deny" in opencode.json.',
+      'permission allows .env reads, overriding OpenCode\'s default ask; remove the allow or add "*.env": "deny" and "*.env.*": "deny" after it under permission.read in opencode.json.',
     unprotected: (configs) => configs.some(opencodeAllowsEnvRead),
   },
 ];
@@ -93,13 +99,16 @@ function parsed(artifact: RiskArtifact): unknown[] {
 /** Paths a read deny must cover; any one covered counts as protection. */
 const SECRET_PATHS = [".env", ".env.local"];
 
-/** OpenCode's built-in `permission.read` rules (opencode.ai/docs/permissions). */
-const OPENCODE_READ_DEFAULTS: Record<string, unknown> = {
-  "*": "allow",
-  "*.env": "deny",
-  "*.env.*": "deny",
-  "*.env.example": "allow",
-};
+/**
+ * OpenCode's built-in read rules as [resource pattern, effect], in
+ * evaluation order (`Info.default` in anomalyco/opencode `schema/agent.ts`).
+ */
+const OPENCODE_READ_DEFAULTS: readonly [string, string][] = [
+  ["*", "allow"],
+  ["*.env", "ask"],
+  ["*.env.*", "ask"],
+  ["*.env.example", "allow"],
+];
 
 function claudeDeniesEnvRead(config: unknown): boolean {
   const permissions = isRecord(config) ? config.permissions : undefined;
@@ -109,11 +118,42 @@ function claudeDeniesEnvRead(config: unknown): boolean {
   return [permissions.deny, permissions.ask].some(
     (rules) =>
       Array.isArray(rules) &&
-      rules.some((rule) => {
-        const glob = typeof rule === "string" ? /^Read\((.*)\)$/.exec(rule)?.[1] : undefined;
-        return glob !== undefined && SECRET_PATHS.some((path) => globMatches(glob, path));
-      }),
+      rules.some((rule) => typeof rule === "string" && claudeRuleCoversSecret(rule)),
   );
+}
+
+/**
+ * True when one Claude Code deny/ask rule covers a secret path. A rule
+ * without parentheses names a tool or, in deny/ask, a tool-name glob: `Read`,
+ * `*` and `Re*` all remove the Read tool, as `Read(*)` does. A
+ * `Read(<pattern>)` rule uses gitignore syntax with four anchors
+ * (code.claude.com/docs/en/permissions, "How path patterns match"): `//` the
+ * filesystem root, `~/` the home directory, `/` the settings source - the
+ * repository root for a project settings file - and no prefix or `./` the
+ * current directory. The secret paths are repository-root files, so a
+ * `/`-anchored or relative pattern is matched against them directly (a bare
+ * filename matches at any depth in gitignore, so `Read(.env)` covers the
+ * root file as its `**`-prefixed spelling does), and a pattern anchored
+ * outside the repository counts only when it starts with `**` and so covers
+ * the file wherever the clone sits: `Read(//**)` followed by `/.env`
+ * protects every clone, `Read(//home/alice/repo/.env)` protects one machine
+ * - the reasoning that keeps user-scope denies from counting. A `!` carve-out never matches a secret path and is ignored.
+ */
+function claudeRuleCoversSecret(rule: string): boolean {
+  const scoped = /^Read\((.*)\)$/.exec(rule);
+  if (scoped === null) {
+    return !rule.includes("(") && wildcardMatches(rule, "Read");
+  }
+  const pattern = scoped[1] ?? "";
+  if (pattern.startsWith("//") || pattern.startsWith("~/")) {
+    const rest = pattern.slice(2);
+    return /^\*\*(\/|$)/.test(rest) && claudePatternCoversSecret(rest);
+  }
+  return claudePatternCoversSecret(pattern.startsWith("/") ? pattern.slice(1) : pattern);
+}
+
+function claudePatternCoversSecret(pattern: string): boolean {
+  return SECRET_PATHS.some((path) => globMatches(pattern, path));
 }
 
 function cursorHasBeforeReadFile(config: unknown): boolean {
@@ -121,19 +161,45 @@ function cursorHasBeforeReadFile(config: unknown): boolean {
   return isRecord(hooks) && Array.isArray(hooks.beforeReadFile) && hooks.beforeReadFile.length > 0;
 }
 
+/**
+ * True when OpenCode's effective read rules leave a secret path on `allow`.
+ * OpenCode matches a read by its project-relative path (`.env` for the root
+ * file) against the rules in order, last match wins, `ask` when none
+ * matches, and the rules from `permission` follow the defaults. A plain
+ * string is `{"*": <effect>}`; each key is an action glob (`*`, `read`)
+ * whose value is one effect for every resource or an object of resource
+ * pattern -> effect in writing order. So `{"read": {"*.env": "deny"}, "*":
+ * "allow"}` ends on allow and `{"read": {"**": "allow", "*.env": "deny"}}`
+ * ends on deny.
+ */
 function opencodeAllowsEnvRead(config: unknown): boolean {
   const permission = isRecord(config) ? config.permission : undefined;
-  const read = isRecord(permission) ? permission.read : undefined;
-  if (!isRecord(read)) {
-    return read === "allow";
-  }
-  const rules = Object.entries({ ...OPENCODE_READ_DEFAULTS, ...read });
+  const rules: [string, unknown][] = [...OPENCODE_READ_DEFAULTS, ...opencodeReadRules(permission)];
   return SECRET_PATHS.some(
-    (path) => rules.filter(([glob]) => globMatches(glob, path)).at(-1)?.[1] === "allow",
+    (path) => rules.filter(([pattern]) => wildcardMatches(pattern, path)).at(-1)?.[1] === "allow",
   );
 }
 
-/** Minimal glob match: `**` spans directories, `*`/`?` stay in a segment, a `./` prefix is dropped. */
+/** The read rules `permission` adds, as [resource pattern, effect] in evaluation order. */
+function opencodeReadRules(permission: unknown): [string, unknown][] {
+  const actions: [string, unknown][] =
+    typeof permission === "string" ? [["*", permission]] : isRecord(permission) ? Object.entries(permission) : [];
+  return actions.flatMap(([action, rule]): [string, unknown][] => {
+    if (!wildcardMatches(action, "read")) {
+      return [];
+    }
+    if (typeof rule === "string") {
+      return [["*", rule]];
+    }
+    return isRecord(rule) ? Object.entries(rule) : [];
+  });
+}
+
+/**
+ * Claude Code path-pattern match: `**` spans directories, `*` and `?` stay
+ * within one segment (gitignore), a `./` prefix is dropped. The caller has
+ * already resolved the anchor.
+ */
 function globMatches(glob: string, path: string): boolean {
   const source = glob
     .replace(/^\.\//, "")
@@ -143,4 +209,18 @@ function globMatches(glob: string, path: string): boolean {
     .replace(/\?/g, "[^/]")
     .replace(/\u0000/g, ".*");
   return new RegExp(`^${source}$`).test(path);
+}
+
+/**
+ * Plain wildcard match: `*` matches any run of characters, `/` included, and
+ * `?` one character. Claude Code's tool-name globs and OpenCode's permission
+ * patterns (anomalyco/opencode `packages/core/src/util/wildcard.ts`) both
+ * work this way.
+ */
+function wildcardMatches(pattern: string, text: string): boolean {
+  const source = pattern
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replace(/\*/g, ".*")
+    .replace(/\?/g, ".");
+  return new RegExp(`^${source}$`).test(text);
 }

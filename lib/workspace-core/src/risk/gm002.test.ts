@@ -54,6 +54,19 @@ describe("GM002", () => {
     '{"permissions": {"deny": ["Read(*.env)"]}}',
     '{"permissions": {"deny": ["Read(**)"]}}',
     '{"permissions": {"ask": ["Read(.env*)"]}}',
+    // #488: the whole Read tool removed, by name or tool-name glob.
+    '{"permissions": {"deny": ["Read"]}}',
+    '{"permissions": {"deny": ["Read(*)"]}}',
+    '{"permissions": {"ask": ["*"]}}',
+    '{"permissions": {"deny": ["Re*"]}}',
+    // #488: anchored patterns - `/` is the settings source (the repository
+    // root for project settings), `//` the filesystem root, `~/` the home.
+    '{"permissions": {"deny": ["Read(/.env)"]}}',
+    '{"permissions": {"deny": ["Read(/**/.env.*)"]}}',
+    '{"permissions": {"deny": ["Read(/*)"]}}',
+    '{"permissions": {"deny": ["Read(//**/.env)"]}}',
+    '{"permissions": {"deny": ["Read(//**)"]}}',
+    '{"permissions": {"ask": ["Read(~/**/.env)"]}}',
   ])("treats claude-code as protected by %s", (settings) => {
     expect(adaptersFlagged([claude(settings)])).toEqual([]);
   });
@@ -64,6 +77,13 @@ describe("GM002", () => {
     '{"permissions": {"deny": ["Read(.env.example)"]}}',
     '{"permissions": {"deny": ["Read(.environment)"]}}',
     '{"permissions": {"allow": ["Read(.env)"]}}',
+    // A rule anchored outside the repository protects one machine's clone.
+    '{"permissions": {"deny": ["Read(//home/alice/repo/.env)"]}}',
+    '{"permissions": {"deny": ["Read(~/.env)"]}}',
+    '{"permissions": {"deny": ["Read(/config/.env)"]}}',
+    '{"permissions": {"deny": ["Read(!.env)"]}}',
+    '{"permissions": {"deny": ["Edit", "Bash", "mcp__*", "Grep(.env)"]}}',
+    '{"permissions": {"allow": ["*"]}}',
     "{}",
     "not json",
   ])("treats claude-code as unprotected by %s", (settings) => {
@@ -97,41 +117,42 @@ describe("GM002", () => {
     expect(adaptersFlagged([artifact("cursor", ".cursor/mcp.json", "mcp-config", "{}")])).toEqual(["cursor"]);
   });
 
-  it("treats opencode as protected by default and unprotected when a secret path resolves to allow", () => {
-    for (const config of [
-      '{"permission": {"edit": "ask"}}',
-      '{"permission": {"read": "deny"}}',
-      '{"permission": {"read": {"*": "allow", "*.env.example": "allow"}}}',
-      '{"permission": {"read": {"*": "deny"}}}',
-      "not json",
-    ]) {
-      expect(adaptersFlagged([opencode(config)])).toEqual([]);
-    }
-    expect(adaptersFlagged([artifact("opencode", "AGENTS.md", "instructions", "# x")])).toEqual([]);
-    for (const config of [
-      '{"permission": {"read": "allow"}}',
-      '{"permission": {"read": {"*.env": "allow"}}}',
-      '{"permission": {"read": {"**/.env": "allow"}}}',
-      '{"permission": {"read": {"*.env.*": "allow"}}}',
-    ]) {
-      expect(adaptersFlagged([opencode(config)])).toEqual(["opencode"]);
-    }
+  it.each([
+    '{"permission": {"edit": "ask"}}',
+    '{"permission": {"read": "deny"}}',
+    '{"permission": {"read": {"*": "deny"}}}',
+    '{"permission": {"read": {"src/*": "allow", "*.env.example": "allow"}}}',
+    // #488: OpenCode appends these after its defaults and the last match wins.
+    '{"permission": "deny"}',
+    '{"permission": {"*": "ask"}}',
+    '{"permission": {"*": "allow", "read": {"*.env": "ask", "*.env.*": "ask"}}}',
+    '{"permission": {"read": {"**": "allow", "*.env": "deny", "*.env.*": "deny"}}}',
+    // OpenCode has no `**`: `*` already crosses `/`, and the `/` is literal, so
+    // this allow reaches nested .env files only, never the root one.
+    '{"permission": {"read": {"**/.env": "allow"}}}',
+    "not json",
+  ])("treats opencode as protected by default and by %s", (config) => {
+    expect(adaptersFlagged([opencode(config)])).toEqual([]);
   });
-});
 
-describe("GM002 - protection must be committed project scope", () => {
-  it("a user-scope deny does not protect the repo's other clones", () => {
-    expect(
-      adaptersFlagged([
-        claude("{}"),
-        {
-          adapter: "claude-code",
-          path: "~/.claude/settings.json",
-          kind: "settings",
-          scope: "user",
-          content: '{"permissions": {"deny": ["Read(**/.env)"]}}',
-        },
-      ]),
-    ).toEqual(["claude-code"]);
+  it("does not judge opencode by its instruction files", () => {
+    expect(adaptersFlagged([artifact("opencode", "AGENTS.md", "instructions", "# x")])).toEqual([]);
+  });
+
+  it.each([
+    '{"permission": {"read": "allow"}}',
+    '{"permission": {"read": {"*.env": "allow"}}}',
+    '{"permission": {"read": {"*/.env*": "allow", ".env*": "allow"}}}',
+    '{"permission": {"read": {"*.env.*": "allow"}}}',
+    // #488: a catch-all after the defaults exposes .env, however it is spelled.
+    '{"permission": "allow"}',
+    '{"permission": {"*": "allow"}}',
+    '{"permission": {"re*": {"*": "allow"}}}',
+    '{"permission": {"read": {"*": "allow"}}}',
+    '{"permission": {"read": {"*": "allow", "*.env.example": "allow"}}}',
+    '{"permission": {"read": {"**": "allow"}}}',
+    '{"permission": {"read": {"*.env": "deny", "*.env.*": "deny"}, "*": "allow"}}',
+  ])("treats opencode as unprotected when the last rule matching a secret path is allow: %s", (config) => {
+    expect(adaptersFlagged([opencode(config)])).toEqual(["opencode"]);
   });
 });

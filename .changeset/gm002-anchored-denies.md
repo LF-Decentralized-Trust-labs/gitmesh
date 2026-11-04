@@ -1,0 +1,5 @@
+---
+"gitmesh-cli": patch
+---
+
+`gitmesh doctor` GM002 now reads Claude Code and OpenCode permission rules the way those tools do (#488). For Claude Code, a bare `Read` rule or a tool-name glob such as `*` in `permissions.deny` or `permissions.ask` counts as protection, and so do anchored patterns: `Read(/.env)` (the settings source, the repository root for project settings) and `Read(//**/.env)` or `Read(~/**/.env)` (anchored outside the repository and covering every location). A pattern anchored at one machine's path, such as `Read(//home/alice/repo/.env)`, still does not count. For OpenCode, the rules in `opencode.json` are evaluated after OpenCode's defaults (`*.env` and `*.env.*` ask) with the last match winning, so `"permission": "allow"`, `{"*": "allow"}` and `{"read": {"*": "allow"}}` are now reported as exposing `.env`, and `{"read": {"**": "allow", "*.env": "deny", "*.env.*": "deny"}}` is no longer reported. The OpenCode message now describes the default as `ask` and says to add the deny rules after the allow.

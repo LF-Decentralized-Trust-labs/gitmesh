@@ -14,7 +14,7 @@
   {
     "ruleId": "GM002",
     "severity": "warning",
-    "message": "permission.read allows .env files, overriding OpenCode's default deny; remove the allow or set \"*.env\" and \"*.env.*\" back to \"deny\" in opencode.json.",
+    "message": "permission allows .env reads, overriding OpenCode's default ask; remove the allow or add \"*.env\": \"deny\" and \"*.env.*\": \"deny\" after it under permission.read in opencode.json.",
     "adapter": "opencode"
   }
 ]
