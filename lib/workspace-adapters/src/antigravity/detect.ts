@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectSkillManifests,
   compareArtifacts,
@@ -63,12 +64,7 @@ export function defaultAntigravitySettingsPaths(home: string = homedir()): strin
 const CLI_SETTINGS_PROBE_PATH = "antigravity-cli/settings.json";
 
 /** The GEMINI.md walk skips these; `.gemini`/`.agent` hold config, not instructions. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([
-  ".git",
-  "node_modules",
-  ".gemini",
-  ".agent",
-]);
+const WALK_EXCLUDES: ReadonlySet<string> = new Set([...BASE_WALK_EXCLUDES, ".gemini", ".agent"]);
 
 const GEMINI_DIR = ".gemini";
 

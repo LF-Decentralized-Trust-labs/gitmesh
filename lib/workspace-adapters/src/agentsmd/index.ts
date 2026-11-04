@@ -18,5 +18,10 @@ export const agentsMdAdapter: AgentAdapter = {
   capabilities: () => notImplemented("capabilities", "T7.2"),
   plan: () => notImplemented("plan", "T5.1"),
   emit: () => notImplemented("emit", "T4.1"),
-  fixtures: [{ name: "full-surface" }, { name: "no-artifacts" }, { name: "root-only" }],
+  fixtures: [
+    { name: "full-surface" },
+    { name: "manager-sources" },
+    { name: "no-artifacts" },
+    { name: "root-only" },
+  ],
 };

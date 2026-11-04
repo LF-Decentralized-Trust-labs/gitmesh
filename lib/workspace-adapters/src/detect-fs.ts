@@ -22,6 +22,21 @@ import type { ArtifactScope, DetectedArtifact } from "./types.js";
  * followed (#500), so doctor is safe to point at an unreviewed checkout.
  */
 
+/**
+ * Directories no repository-wide walk enters: VCS internals, dependency
+ * trees, and the source trees of third-party managers (`.ruler/`,
+ * `.rulesync/`). A Markdown file under a manager's tree is that manager's
+ * source, inventoried by the third-party-managers detector as `source`, not
+ * an instruction file of the agent whose name it carries (#505). Adapters
+ * add their own config directories on top.
+ */
+export const BASE_WALK_EXCLUDES: ReadonlySet<string> = new Set([
+  ".git",
+  "node_modules",
+  ".ruler",
+  ".rulesync",
+]);
+
 /** Symlink details of an inventoried file; empty for a regular file. */
 export interface FileInfo {
   symlinkTarget?: string;

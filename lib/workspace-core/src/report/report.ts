@@ -22,11 +22,8 @@ import type { DriftBlockRef, DriftReport, PairDrift } from "../drift/index.js";
 import { redactSecrets } from "../risk/gm001.js";
 import type { RiskArtifact, RiskFinding, RiskSeverity } from "../risk/index.js";
 
-/** An inventoried artifact plus its third-party manager, when one owns it. */
-export interface DoctorArtifact extends RiskArtifact {
-  /** Manager reported by the T1.7 detector, e.g. `"ruler"`; informational. */
-  manager?: string;
-}
+/** An inventoried artifact as the doctor pipeline hands it to the renderers: the engine's input, manager label included. */
+export type DoctorArtifact = RiskArtifact;
 
 /** Everything one `gitmesh doctor` run produces, before rendering. */
 export interface DoctorReport {

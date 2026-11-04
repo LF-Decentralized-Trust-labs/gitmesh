@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import {
+  BASE_WALK_EXCLUDES,
   addFile,
   collectMarkdownTree,
   compareArtifacts,
@@ -58,7 +59,7 @@ export interface CursorArtifact extends DetectedArtifact {
 }
 
 /** The repo walk never enters these. */
-const WALK_EXCLUDES: ReadonlySet<string> = new Set([".git", "node_modules"]);
+const WALK_EXCLUDES: ReadonlySet<string> = BASE_WALK_EXCLUDES;
 
 export function detect(repo: RepoContext): CursorArtifact[] {
   const root = repo.rootDir;

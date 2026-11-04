@@ -6,6 +6,12 @@
     "manager": "agents-json"
   },
   {
+    "path": ".agents/local.json",
+    "kind": "secrets",
+    "scope": "local",
+    "manager": "agents-json"
+  },
+  {
     "path": ".agentsync-state.json",
     "kind": "state",
     "scope": "project",

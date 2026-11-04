@@ -73,6 +73,12 @@ export interface RiskArtifact {
   /** True when the artifact does not resolve to a file inside the repository; it is never read. */
   broken?: boolean;
   /**
+   * Third-party manager that owns the artifact (T1.7), e.g. `"ruler"`;
+   * informational (ADR-004). On a manager's generated `output`, the doctor
+   * pipeline copies it onto every adapter's entry for the same path.
+   */
+  manager?: string;
+  /**
    * VCS status, caller-supplied (the doctor pipeline's lane): true when
    * the file is committed to the repository. Absent = unknown; GM009 fires
    * only on explicit values.

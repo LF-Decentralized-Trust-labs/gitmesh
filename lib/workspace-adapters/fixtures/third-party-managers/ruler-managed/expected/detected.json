@@ -1,5 +1,11 @@
 [
   {
+    "path": ".mcp.json",
+    "kind": "output",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
     "path": ".ruler/AGENTS.md",
     "kind": "source",
     "scope": "project",
@@ -26,6 +32,18 @@
   {
     "path": ".ruler/style/frontend.md",
     "kind": "source",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": "AGENTS.md",
+    "kind": "output",
+    "scope": "project",
+    "manager": "ruler"
+  },
+  {
+    "path": "CLAUDE.md",
+    "kind": "output",
     "scope": "project",
     "manager": "ruler"
   }
